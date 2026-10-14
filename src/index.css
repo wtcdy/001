@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* 主题变量（浅色为默认，确保浅底深字的高可读性）                       */
+/* ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    --psc-bg: 248 250 252;
+    --psc-surface: 255 255 255;
+    --psc-surface-muted: 241 245 249;
+    --psc-border: 226 232 240;
+    --psc-text: 15 23 42;
+    --psc-text-muted: 71 85 105;
+    --psc-accent: 51 102 255;
+  }
+
+  .dark {
+    --psc-bg: 9 11 18;
+    --psc-surface: 21 24 34;
+    --psc-surface-muted: 30 34 46;
+    --psc-border: 48 54 70;
+    --psc-text: 236 240 248;
+    --psc-text-muted: 158 168 189;
+    --psc-accent: 118 152 255;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased dark:bg-[#090b12] dark:text-slate-50;
+    font-feature-settings: 'tnum' on, 'lnum' on;
+  }
+
+  /* 统一焦点样式 */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-white dark:ring-offset-[#090b12];
+  }
+}
+
+@layer components {
+  /* 卡片 */
+  .psc-card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow
+           hover:shadow-md dark:border-slate-700/70 dark:bg-[#151822];
+  }
+
+  /* 主按钮 */
+  .psc-btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium
+           transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .psc-btn-primary {
+    @apply psc-btn bg-brand-600 text-white hover:bg-brand-700;
+  }
+
+  .psc-btn-ghost {
+    @apply psc-btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-100
+           dark:border-slate-600 dark:bg-transparent dark:text-slate-200 dark:hover:bg-slate-700/40;
+  }
+
+  .psc-btn-danger {
+    @apply psc-btn border border-red-200 bg-red-50 text-red-600 hover:bg-red-100
+           dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300 dark:hover:bg-red-500/20;
+  }
+
+  /* 表单控件 */
+  .psc-input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900
+           placeholder:text-slate-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500
+           dark:border-slate-600 dark:bg-[#0f1320] dark:text-slate-100 dark:placeholder:text-slate-500;
+  }
+
+  .psc-chip {
+    @apply inline-flex cursor-pointer select-none items-center rounded-full border px-3 py-1 text-xs
+           font-medium transition-colors;
+  }
+
+  .psc-chip-off {
+    @apply border-slate-300 bg-white text-slate-600 hover:bg-slate-100
+           dark:border-slate-600 dark:bg-transparent dark:text-slate-300 dark:hover:bg-slate-700/40;
+  }
+
+  .psc-chip-on {
+    @apply border-brand-500 bg-brand-50 text-brand-700 dark:border-brand-400/70 dark:bg-brand-500/20 dark:text-brand-200;
+  }
+
+  /* 分组标题 */
+  .psc-group-title {
+    @apply bg-slate-100 text-xs font-semibold uppercase tracking-wide text-slate-600
+           dark:bg-slate-800/80 dark:text-slate-300;
+  }
+
+  /* 更优（红/橙系，符合国内直觉） */
+  .psc-cell-better {
+    @apply border-l-2 border-better-strong bg-better-bg text-better-text;
+  }
+
+  /* 更差（绿/灰系） */
+  .psc-cell-worse {
+    @apply border-l-2 border-worse-border bg-worse-bg text-worse-text;
+  }
+
+  /* 仅差异（中性高亮） */
+  .psc-cell-diff {
+    @apply bg-amber-50/70 text-amber-900 dark:bg-amber-400/10 dark:text-amber-200;
+  }
+}
+
+@layer utilities {
+  /* 隐藏滚动条但保留滚动能力 */
+  .psc-no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .psc-no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .psc-scroll-x {
+    scrollbar-width: thin;
+  }
+}

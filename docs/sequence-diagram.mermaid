@@ -1,0 +1,43 @@
+sequenceDiagram
+    autonumber
+    participant CRON as GitHub Actions cron
+    participant FETCH as scripts/fetch-prices.mjs
+    participant SRC as price-sources
+    participant SAN as _types.sanitizeRecord
+    participant RENDER as lib/price-render.mjs
+    participant FS as src/data files
+    participant CI as CI Gate
+    participant USER as 站点访客
+
+    CRON->>FETCH: node scripts/fetch-prices.mjs
+    FETCH->>FS: 读 deviceIds 扫描 phones + tablets + laptops
+    FETCH->>FS: 读昨日 PRICES 与 PRICE_SNAPSHOT 作为基线
+    loop 按 priority 遍历启用的源
+        FETCH->>SRC: fetch deviceIds
+        alt 源返回 ok true
+            SRC-->>FETCH: records
+        else 源失败或未启用
+            SRC-->>FETCH: ok false errors
+            Note over FETCH: 仅 warning 不中止
+        end
+    end
+    FETCH->>SAN: 逐条 sanitize 价格区间 整数 id 存在 偏离 40 百分比
+    SAN-->>FETCH: 有效记录 与 丢弃明细
+    FETCH->>FETCH: 闸门2 覆盖率是否低于基线 80 百分比
+    alt 覆盖率不足 或 全部源失败
+        FETCH-->>CRON: exit 0 不写入 保留昨日价
+        Note over FS: prices.ts 原封不动
+    else 通过
+        FETCH->>RENDER: renderModule records 生成 prices 文本
+        FETCH->>RENDER: renderMeta snapshot 生成 priceMeta 文本
+        FETCH->>FS: 写 prices.next 校验后 cp prices.prev 再 mv 覆盖 prices
+        FETCH-->>CRON: exit 0
+    end
+    CRON->>CI: npm run typecheck 且 npm test 且 npm run build
+    alt 任一失败
+        CI-->>CRON: 不提交 仓库保留昨日数据
+    else 全绿
+        CRON->>CRON: git commit 与 push 触发 deploy.yml
+        CRON-->>USER: Pages 更新 展示新价 与 snapshotDate
+    end
+    USER->>USER: priceFreshness 渲染最后更新日期

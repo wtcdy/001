@@ -1,0 +1,217 @@
+classDiagram
+    direction LR
+
+    class DeviceCategory {
+        <<enumeration>>
+        phone
+        tablet
+        laptop
+    }
+    class FormFactor {
+        <<enumeration>>
+        bar
+        fold_h
+        fold_mid
+        fold_v
+        fold_wide
+        fold_triple
+        slate
+        detachable
+        clamshell
+    }
+
+    class Device {
+        +string id
+        +string brand
+        +string name
+        +string releaseDate
+        +number launchPrice
+        +number currentPrice
+        +DeviceCategory category
+        +FormFactor formFactor
+        +DeviceScreen screen
+        +DevicePerformance performance
+        +DeviceStorage storage
+        +DeviceCamera camera
+        +string frontCamera
+        +DeviceBattery battery
+        +DeviceSystem system
+        +DeviceBody body
+        +string[] tags
+        +TabletExtras tablet
+        +LaptopExtras laptop
+        +string source
+    }
+
+    class DeviceScreen {
+        +number size
+        +string resolution
+        +number ppi
+        +string material
+        +number refreshRate
+        +number peakBrightness
+        +string dimming
+        +string hdr
+        +string ratio
+        +number coverSize
+        +string coverResolution
+    }
+    class DevicePerformance {
+        +string soc
+        +string socBrand
+        +string process
+        +string cpu
+        +string gpu
+        +number antutu
+        +string ramType
+        +string romType
+    }
+    class DeviceStorage {
+        +number[] ramOptions
+        +number[] romOptions
+    }
+    class DeviceCamera {
+        +string main
+        +string ultraWide
+        +string telephoto
+        +string extra
+        +string zoom
+        +string video
+    }
+    class DeviceBattery {
+        +number capacity
+        +number wiredCharge
+        +number wirelessCharge
+        +string reverseCharge
+    }
+    class DeviceSystem {
+        +string os
+        +string ui
+        +string network
+        +string wifi
+        +string bluetooth
+        +boolean nfc
+        +boolean infrared
+        +string satellite
+    }
+    class DeviceBody {
+        +string dimensions
+        +number weight
+        +string material
+        +string ip
+        +string biometrics
+        +string speaker
+        +string port
+        +string colors
+    }
+
+    class TabletExtras {
+        +boolean cellular
+        +StylusSpec stylus
+        +KeyboardSpec keyboard
+        +string desktopMode
+        +number speakerCount
+        +boolean microSd
+    }
+    class StylusSpec {
+        +boolean supported
+        +string name
+        +boolean bundled
+        +number latencyMs
+        +number pressureLevels
+    }
+    class KeyboardSpec {
+        +boolean supported
+        +string name
+        +string attach
+        +boolean bundled
+    }
+    class LaptopExtras {
+        +string cpuModel
+        +number cpuTdp
+        +string gpuDiscrete
+        +number gpuVram
+        +number gpuTgp
+        +string ports
+        +number batteryWh
+        +string colorGamut
+        +boolean ramUpgradable
+    }
+
+    class Phone {
+        <<type alias>>
+        Phone = Device
+    }
+
+    class CompactSeed {
+        +string i
+        +string n
+        +string d
+        +DeviceCategory cat
+        +FormFactor ff
+        +TabletExtras tb
+        +LaptopExtras lp
+        +number fsz
+        +string fres
+    }
+    class Factory {
+        +c(brand, CompactSeed[]) Device[]
+        +mk(brand, PhoneSeed) Device
+        +list(brand, PhoneSeed[]) Device[]
+    }
+
+    class FeatureDef {
+        +FeatureId id
+        +string label
+        +string icon
+        +DeviceCategory[] categories
+        +test(Device) boolean
+        +string rule
+    }
+    class PriceRecord {
+        +number jd
+        +number pdd
+        +string updatedAt
+        +boolean isReference
+    }
+    class SpecRow {
+        +string key
+        +string label
+        +get(Device) SpecValue
+        +format(SpecValue, Device) string
+        +string unit
+        +BetterDirection better
+        +boolean numeric
+        +DeviceCategory[] categories
+        +boolean crossComparable
+    }
+    class SpecGroup {
+        +string key
+        +string label
+        +string icon
+        +boolean defaultOpen
+        +DeviceCategory[] categories
+        +SpecRow[] rows
+    }
+
+    Device *-- DeviceScreen
+    Device *-- DevicePerformance
+    Device *-- DeviceStorage
+    Device *-- DeviceCamera
+    Device *-- DeviceBattery
+    Device *-- DeviceSystem
+    Device *-- DeviceBody
+    Device o-- TabletExtras : 仅 tablet
+    Device o-- LaptopExtras : 仅 laptop
+    Device --> DeviceCategory
+    Device --> FormFactor
+    TabletExtras *-- StylusSpec
+    TabletExtras *-- KeyboardSpec
+    Phone ..|> Device : 类型别名 向后兼容
+    CompactSeed ..> Device : c() 展开
+    Factory ..> Device : 构造
+    Factory ..> CompactSeed : 消费
+    FeatureDef ..> Device : test()
+    SpecGroup *-- SpecRow
+    SpecRow ..> Device : get()
+    Device "1" -- "0..1" PriceRecord : PRICES by id
