@@ -1,7 +1,13 @@
-# 平板第二批种子块（华为 14 + 荣耀 12 + Apple 17 + 三星 11 + OPPO/一加 9 = 63 款）
+# 平板第二批种子块（华为 14 + 荣耀 12 + Apple 17 + 三星 11 + OPPO/一加 9 + vivo/iQOO 11 = 74 款）
 
-> 进度：§2~§4 华为/荣耀/Apple 43 款（team-lead 已拍板全录）；§6~§7 三星/OPPO 20 款（本轮新增）。
-> 剩 §9 的 vivo/iQOO 11 + 小米/REDMI 19 + 联想 5 = 35 款。**全部只写在 research/，未写 `src/data/`。**
+> 进度：
+> - §2~§4 华为 / 荣耀 / Apple = 43 款（team-lead 已拍板全录）
+> - §6~§7 三星 / OPPO+一加 = 20 款
+> - §8 vivo / iQOO = 11 款
+> - **合计 74 / 98**，剩 §11 的小米/REDMI 19 + 联想 5 = 24 款。
+>
+> **全部只写在 `research/`，未写 `src/data/` 下任何文件。**
+> 74 个 id 全局无重复；7 个 TS 代码块全部通过 esbuild 语法检查。
 
 > 用途：等工程师改完 `src/types/device.ts` / `_factory.ts` / `index.ts` 后一次性灌入 `src/data/tablets/`。
 > **本文件只是准备工作，没有写任何 `src/data/` 下的文件。**
@@ -1331,7 +1337,270 @@ export const OPPO_TABLETS = cTablet('OPPO', SEEDS);
 
 ---
 
-## 8. 本批（三星 11 + OPPO/一加 9 = 20 款）待补清单
+## 8. vivo / iQOO 平板（11 款，已落地 `vivo-pad5-pro` 之外的全部）
+
+本批口径补充：
+
+- **vivo 与 iQOO 是两个品牌**：手机侧 `src/data/phones/iqoo.ts` 用 `c('iQOO', …)`，平板侧 `src/data/tablets/vivo.ts` 用 `c('vivo', …)`。
+  🔴 **`src/data/tablets/index.ts` 的 `TABLETS_BY_BRAND` / `ALL_TABLETS` 里目前没有 `iQOO` 这一项**——灌入 iQOO 这 5 条时，工程师需要在 `index.ts` 增加 `IQOO_TABLETS`（品牌字符串 `'iQOO'`）。本文件里我把两组分开写了。
+- **全系 `cellular: false`**：vivo / iQOO 国行平板无官方蜂窝版。
+- **`bwl: 0`**：全系不支持无线充电。
+- **本轮修正的发布日期**（首轮调研只有年份，本轮查到了月份）：
+  - `iqoo-pad5e`：`'2026'` → **`'2025-10'`**（ZOL 上市时间 2025-10-17；京东备案型号 iPA2537）
+  - `vivo-pad6-pro`：`'2026'` → **`'2026-03'`**（ZOL 上市时间 2026-03-30）
+- **本轮新补到的参数**：`vivo-pad6-pro`（13.2" 4K / 第五代骁龙8至尊版 / 13000mAh / 66W / Wi-Fi 7）、`vivo-pad-se`（12.3" / 2464x1600 / 骁龙4 Gen2 / 8500mAh / 559g）、`iqoo-pad5e`（12.1" / 2800x1968 / 第三代骁龙8s / 10000mAh / bdim）、`vivo-pad3`（骁龙8s Gen3 / 600nit）。
+
+### 8.1 vivo（6 款）
+
+```ts
+import { cTablet, type CompactSeed } from './_factory';
+
+const SEEDS: CompactSeed[] = [
+  {
+    // 上市 2026-03-30。⚠️ 官方只写「13.2 英寸 4K 原彩屏」，未确认面板类型 → mat 留 null；os（Android 版本）未查到 → null
+    // 柔光版另行存在，但按架构师口径「柔光版不拆机型」，本条为标准版
+    i: 'vivo-pad6-pro', n: 'vivo Pad6 Pro', d: '2026-03', lp: 4499, cp: 4499,
+    sz: 13.2, res: '4K', ppi: null, mat: null, rr: 144, nit: null, hdr: '杜比视界',
+    soc: '第五代骁龙8至尊版', sb: '高通', pr: '3nm', rt: 'LPDDR5X', ft: 'UFS 4.1',
+    ram: [8], rom: [256],
+    cm: null, fc: null,
+    bc: 13000, bw: 66, bwl: 0,
+    os: null, ui: 'OriginOS 6 平板定制系统', net: 'Wi-Fi', wf: 'Wi-Fi 7', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'vivo Pencil 3', bundled: false },
+      keyboard: { supported: true, name: 'vivo 智能键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '生产力'],
+  },
+  {
+    // ⚠️ lp 冲突不采：首轮调研（gizmochina）记「1599 元起」，京东 / ZOL / 太平洋记 6+128 = 999，差 600 元
+    // 柔光版 569g（标准版 559g），按架构师口径不拆
+    i: 'vivo-pad-se', n: 'vivo Pad SE', d: '2025', lp: null, cp: 999,
+    sz: 12.3, res: '2464x1600', ppi: null, mat: 'LCD', rr: null,
+    soc: '骁龙4 Gen2', sb: '高通', ram: [6, 8], rom: [128, 256],
+    cm: '5000万像素', fc: '500万像素',
+    bc: 8500, bw: null, bwl: 0,
+    os: null, ui: 'OriginOS 5 HD', net: 'Wi-Fi', wf: 'Wi-Fi 5', nfc: false, ir: false,
+    wt: 559, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
+  {
+    // lp 未查到（2024-03 发布）
+    i: 'vivo-pad3-pro', n: 'vivo Pad3 Pro', d: '2024-03', lp: null, cp: null,
+    sz: 13, res: '3096x2064', ppi: null, mat: 'LCD', rr: 144,
+    soc: '天玑9300', sb: '联发科', pr: '4nm', ram: [8, 12, 16], rom: [256, 512],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 11500, bw: 66, bwl: 0,
+    os: 'Android 14', ui: 'OriginOS 4', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 678, bm: null, ip: null, bio: null, spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'vivo Pencil 2', bundled: false },
+      keyboard: { supported: true, name: '智能触控键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    // soc / nit 本轮新补（太平洋产品库）。⚠️ lp：ZOL / 太平洋均报 2499，但是渠道在售价，不是确认的首发价 → null
+    i: 'vivo-pad3', n: 'vivo Pad3', d: '2024-06', lp: null, cp: null,
+    sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144, nit: 600,
+    soc: '骁龙8s Gen3', sb: '高通', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 10000, bw: 44, bwl: 0,
+    os: 'Android 14', ui: 'OriginOS 4', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 589, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'vivo Pencil', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    // lp 未查到（2023-08 发布）
+    i: 'vivo-pad-air', n: 'vivo Pad Air', d: '2023-08', lp: null, cp: null,
+    sz: 11.5, res: '2800x1840', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [8, 12], rom: [128, 256, 512],
+    cm: '1300万像素', fc: '500万像素',
+    bc: 8500, bw: 44, bwl: 0,
+    os: 'Android 13', ui: 'OriginOS 3', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 530, bm: '一体化铝合金', ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'vivo Pencil', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流', '轻薄'],
+  },
+  {
+    // lp 未查到（2023-04 发布）
+    i: 'vivo-pad2', n: 'vivo Pad2', d: '2023-04', lp: null, cp: null,
+    sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144,
+    soc: '天玑9000', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 10000, bw: 44, bwl: 0,
+    os: 'Android 13', ui: 'OriginOS 3', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 585, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'vivo Pencil', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流', '大屏', '长续航'],
+  },
+];
+
+export const VIVO_TABLETS = cTablet('vivo', SEEDS);
+```
+
+### 8.2 iQOO（5 款）
+
+```ts
+import { cTablet, type CompactSeed } from './_factory';
+
+const SEEDS: CompactSeed[] = [
+  {
+    // 🔴 极稀疏：官方只放出「8.8 英寸 OLED + 9020mAh」，SoC / 分辨率 / 刷新率 / 充电 / 重量全部未查到
+    i: 'iqoo-pad-ultra', n: 'iQOO Pad Ultra', d: '2026-09', lp: null, cp: null,
+    sz: 8.8, res: null, ppi: null, mat: 'OLED', rr: null,
+    soc: null, sb: null, ram: null, rom: null,
+    cm: null, fc: null,
+    bc: 9020, bw: null, bwl: 0,
+    os: null, ui: 'OriginOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏', '长续航'],
+  },
+  {
+    // 本批 vivo / iQOO 里唯一参数最全的一条（vivo 官方参数页是一手来源）
+    i: 'iqoo-pad5-pro', n: 'iQOO Pad5 Pro', d: '2025-05-20', lp: 3199, cp: 3299,
+    sz: 13, res: '3096x2064', ppi: null, mat: 'LCD', rr: 144, nit: 1200, hdr: 'HDR10',
+    soc: '天玑9400+', sb: '联发科', pr: '3nm', cpu: '3.73GHz×1 + 3.3GHz×3 + 2.4GHz×4', gpu: '1.6GHz', an: 2750000,
+    rt: 'LPDDR5X 四通道', ft: 'UFS 4.1', ram: [8, 12, 16], rom: [256, 512],
+    cm: '1300万像素', cv: '4K', fc: '800万像素',
+    bc: 12050, bw: 66, bwl: 0,
+    os: 'Android 15', ui: 'OriginOS 5 平板定制系统', net: 'Wi-Fi', wf: 'Wi-Fi 7', bt: '5.4', nfc: false, ir: false,
+    bdim: '289.56x198.32x6.07mm', wt: 635, bm: '金属机身', ip: null, bio: '面部识别/密码',
+    spk: '8 扬声器（全景声 HDR 影院）', port: 'USB-C（USB 3.2 Gen1）', col: '曼岛,灰晶,银翼',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'iQOO Pencil 3', bundled: false },
+      keyboard: { supported: true, name: '智能触控键盘 5 Pro', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '游戏', '长续航'],
+  },
+  {
+    // 🔴 稀疏：与 Pad5 Pro 同期发布（2025-05），但 SoC / 电池 / 摄像头 / 价格全部未查到
+    i: 'iqoo-pad5', n: 'iQOO Pad5', d: '2025-05', lp: null, cp: null,
+    sz: 13, res: null, ppi: null, mat: 'LCD', rr: 144,
+    soc: null, sb: null, ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: null, ui: 'OriginOS 5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'iQOO Pencil', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '主流', '游戏'],
+  },
+  {
+    // ✅ 日期修正：首轮调研只有年份 '2026'，本轮查到上市 2025-10-17（京东备案型号 iPA2537 / ZOL）
+    // 屏幕 12.1" 2.8K 144Hz、第三代骁龙8s、10000mAh 均为本轮新补
+    i: 'iqoo-pad5e', n: 'iQOO Pad5e', d: '2025-10', lp: 1999, cp: 2199,
+    sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144,
+    soc: '第三代骁龙8s', sb: '高通', cpu: '3.0GHz', gpu: 'Adreno 735',
+    ram: [8], rom: [128, 256],
+    cm: '800万像素', fc: '500万像素',
+    bc: 10000, bw: null, bwl: 0,
+    os: 'Android 15', ui: 'OriginOS 5', net: 'Wi-Fi', nfc: false, ir: false,
+    bdim: '266.43x192x6.62mm', wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: '曼岛,银翼',
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门', '游戏'],
+  },
+  {
+    // lp 未查到（2023-05 发布）
+    i: 'iqoo-pad', n: 'iQOO Pad', d: '2023-05', lp: null, cp: null,
+    sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144,
+    soc: '天玑9000+', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 10000, bw: 44, bwl: 0,
+    os: 'Android 13', ui: 'OriginOS 3', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 585, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'iQOO Pencil', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '主流', '大屏', '长续航', '游戏'],
+  },
+];
+
+export const IQOO_TABLETS = cTablet('iQOO', SEEDS);
+```
+
+---
+
+## 9. vivo / iQOO（11 款）待补清单
+
+| id | 缺什么 | 说明 |
+|---|---|---|
+| `iqoo-pad-ultra` | `soc` / `res` / `rr` / `bw` / `wt` / `spk` / `lp` | 🔴 只有尺寸+面板+电池，本批最稀疏的一条 |
+| `iqoo-pad5` | `soc` / `bc` / `cm` / `fc` / `wt` / `spk` / `lp` | 🔴 只剩尺寸+刷新率+存储 |
+| `iqoo-pad5e` | `bw` / `wt` / `spk` | 其余已补齐 |
+| `vivo-pad6-pro` | `mat` / `os` / `wt` / `spk` / `cm` / `fc` | 官方文案只给「4K 原彩屏」，未确认面板类型与 Android 版本 |
+| `vivo-pad-se` | `lp` / `rr` / `bw` / `spk` | `lp` 来源冲突（1599 vs 999），不采 |
+| `vivo-pad3` | `lp` / `cm` / `fc` | 2499 是渠道价非首发价 |
+| `vivo-pad3-pro` | `lp` / `ppi` | |
+| `vivo-pad2` | `lp` / `ppi` | |
+| `vivo-pad-air` | `lp` / `ppi` | |
+| `iqoo-pad` | `lp` / `ppi` | |
+
+**硬门槛四项（`id` / `brand` / `name` / `releaseDate`）**：本批 11 款**全部齐全**，零剔除。
+本批把两条 `d` 从年份粒度升到了月份粒度（`iqoo-pad5e` → `2025-10`、`vivo-pad6-pro` → `2026-03`）。
+
+### 9.1 本轮额外发现（不在原 98 款清单内）
+
+太平洋产品库 / 中关村在线的 vivo 平板列表里还有 3 款我此前未收录：
+
+| 机型 | 已知信息 | 建议 |
+|---|---|---|
+| **vivo Pad5** | 12.1" / 2800×1968 / 天玑 9300+ / 8~16GB / 10000mAh / 590g / OriginOS 5 / ￥2499 | 建议补录 |
+| **vivo Pad5c** | 骁龙 8s Gen 3 / 8~12GB / 584g / OriginOS 6 | 信息太少，建议先标记观察 |
+| **iQOO Pad6 Pro** | 13.2" / 第五代骁龙 8 至尊版 / 天猫常卖 ￥4999 | 建议补录（vivo Pad6 Pro 的 iQOO 孪生版） |
+
+同样没编种子块，等 team-lead 决定是否纳入再正式核实。
+
+---
+
+## 10. 三星 11 + OPPO/一加 9（20 款）待补清单
 
 | id | 缺什么 | 说明 |
 |---|---|---|
@@ -1348,7 +1617,7 @@ export const OPPO_TABLETS = cTablet('OPPO', SEEDS);
 
 **硬门槛四项（`id` / `brand` / `name` / `releaseDate`）**：本批 20 款**全部齐全**，无一需要剔除。
 
-### 8.1 本轮额外发现（不在原 98 款清单内，供 team-lead 决定是否补录）
+### 10.1 本轮额外发现（不在原 98 款清单内，供 team-lead 决定是否补录）
 
 OPPO 商城官方推荐页（`hd.opposhop.cn`）出现两款我此前未收录的机型：
 
@@ -1361,13 +1630,12 @@ OPPO 商城官方推荐页（`hd.opposhop.cn`）出现两款我此前未收录�
 
 ---
 
-## 9. 剩余 35 款（本批未做）
+## 11. 剩余 24 款（本批未做）
 
 | 品牌 | 剩余条数 | 已落地 | 说明 |
 |---|---|---|---|
-| vivo / iQOO | 11 | 1 | 下一批先做 |
 | 小米 / REDMI | 19 | 3 | 卡点最多：多款缺 `cm`、`d` 只有年份 |
 | 联想 | 5 | 1 | 卡点多 |
-| **合计** | **35** | | 43 + 20 + 35 = 98 ✓ |
+| **合计** | **24** | | 43 + 20 + 11 + 24 = 98 ✓ |
 
-下一批按 team-lead 既定顺序：**vivo / iQOO 11** 优先。
+下一批按 team-lead 既定顺序：**小米 / REDMI 19**，最后联想 5。
