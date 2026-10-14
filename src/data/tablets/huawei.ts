@@ -1,10 +1,11 @@
-import { c, type CompactSeed } from './_factory';
+import { cTablet, type CompactSeed } from './_factory';
 
 /**
  * 华为平板（MatePad）机型。
  *
  * 数据来源：`research/tablets.md` B 段。本批先接入 3 款验证管线，
  * 其中 **MatePad Edge X90 是全库唯一 `ff: 'detachable'`**（带可拆卸键盘、平板/电脑双模式）。
+ * 第二批追加 14 款（来源 `research/tablets-batch2.md` §3），全库共 17 款。
  */
 const SEEDS: CompactSeed[] = [
   {
@@ -13,8 +14,6 @@ const SEEDS: CompactSeed[] = [
     d: '2026-08',
     lp: 5999,
     cp: 5699,
-    cat: 'tablet',
-    ff: 'slate',
     sz: 12,
     res: '3036x1952',
     mat: '柔性 OLED',
@@ -62,8 +61,6 @@ const SEEDS: CompactSeed[] = [
     d: '2025-05',
     lp: 3999,
     cp: 3999,
-    cat: 'tablet',
-    ff: 'slate',
     sz: 12.2,
     res: '2800x1840',
     ppi: 275,
@@ -114,7 +111,7 @@ const SEEDS: CompactSeed[] = [
     d: '2025-11',
     lp: 5999,
     cp: 5799,
-    cat: 'tablet',
+    // 全库唯一二合一，显式覆盖 cTablet 默认的 ff:'slate'
     ff: 'detachable',
     sz: 14.2,
     res: '3120x2080',
@@ -151,6 +148,242 @@ const SEEDS: CompactSeed[] = [
     },
     tags: ['平板', '二合一', '生产力', '大屏'],
   },
+  {
+    // ⚠️ d 只有年份、soc / lp / bc 未查到
+    i: 'huawei-matepad-pro-max-2026', n: '华为 MatePad Pro Max（13.2，2026 款）', d: '2026', lp: null, cp: 5699,
+    sz: 13.2, res: '3000x2000', ppi: 273, mat: '柔性 OLED PaperMatte 云晰柔光屏', rr: 144, hdr: 'HDR Vivid',
+    soc: null, sb: '海思', ram: [12], rom: [512],
+    cm: '5000万像素 f/1.8', fc: '1200万像素 f/2.4',
+    bc: null, bwl: 0,
+    os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 509, spk: '6 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil Pro', bundled: false },
+      keyboard: { supported: true, name: 'HUAWEI 星跃键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '生产力'],
+  },
+  {
+    i: 'huawei-matepad-pro-132-2025', n: '华为 MatePad Pro 13.2（2025 款）', d: '2024-11', lp: 5199, cp: 5299,
+    sz: 13.2, res: '2880x1920', ppi: 262, mat: 'OLED', rr: 144, nit: 1000, hdr: 'HDR',
+    soc: '麒麟', sb: '海思', cpu: '八核', ram: [12, 16], rom: [256, 512, 1024],
+    cm: '5000万像素 f/1.8', cw: '800万像素超广角 f/2.2', fc: '1600万像素广角 f/2.2',
+    bc: 10100, bw: 88, bwl: 0,
+    os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', bt: '5.2', nfc: false, ir: false,
+    bdim: '289.1x196.1x5.5mm', wt: 580, spk: '4 扬声器', port: 'USB-C 3.1', col: '黑,白,金',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil（第三代）', bundled: false },
+      keyboard: { supported: true, name: '华为智能磁吸键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '生产力'],
+  },
+  {
+    i: 'huawei-matepad-pro-132-2023', n: '华为 MatePad Pro 13.2（2023 款）', d: '2023-09', lp: 5199, cp: null,
+    sz: 13.2, res: '2880x1920', ppi: 262, mat: 'OLED', rr: 144, hdr: 'HDR Vivid',
+    soc: '麒麟 9000s', sb: '海思', ram: [12, 16], rom: [256, 512, 1024],
+    cm: '5000万像素', cw: '800万像素超广角', fc: '1600万像素',
+    bc: 10100, bw: 88, bwl: 0,
+    os: 'HarmonyOS 4', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 580, spk: '6 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil（第三代）', bundled: false },
+      keyboard: { supported: true, name: '华为智能磁吸键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏'],
+  },
+  {
+    // ⚠️ 只缺 lp（首发价未查到）
+    i: 'huawei-matepad-pro-11-2024', n: '华为 MatePad Pro 11（2024）', d: '2024-05', lp: null, cp: null,
+    sz: 11, res: '2560x1600', mat: 'OLED', rr: 144, hdr: 'HDR Vivid',
+    soc: '麒麟', sb: '海思', ram: [8, 12], rom: [128, 256, 512],
+    cm: '1300万像素', cw: '800万像素超广角', fc: '1600万像素',
+    bc: 8300, bw: 66, bwl: 0,
+    os: 'HarmonyOS 4', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 449, spk: '4 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil（第三代）', bundled: false },
+      keyboard: { supported: true, name: '华为智能磁吸键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '旗舰', '轻薄', '生产力'],
+  },
+  {
+    // ⚠️ d 只有年份、soc / lp 未查到
+    i: 'huawei-matepad-air-12-2025', n: '华为 MatePad Air 12（2025 第二代）', d: '2025', lp: null, cp: null,
+    sz: 12, res: '2800x1840', mat: 'LCD', rr: 144,
+    soc: null, ram: [12], rom: [256, 512],
+    cm: '5000万像素 f/1.8', fc: '800万像素 f/2.2',
+    bc: 10100, bw: 66, bwl: 0,
+    os: 'HarmonyOS 5.0', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 555, spk: '6 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil（第三代）', bundled: false },
+      keyboard: { supported: true, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '主流', '大屏'],
+  },
+  {
+    // ⚠️ d 只有年份、lp 未查到（华为商城 3999 与太平洋 5299 冲突，两个都没取作 lp）
+    i: 'huawei-matepad-air-12-3rd', n: '华为 MatePad Air 12（第三代，鸿蒙焕新版）', d: '2026', lp: null, cp: 3999,
+    sz: 12, res: '2800x1840', mat: 'OLED', rr: 144,
+    soc: '麒麟 T93B', sb: '海思', ram: [8, 12], rom: [256, 512],
+    cm: '5000万像素 f/1.8', fc: '1200万像素 f/2.4',
+    bc: 10100, bw: 66, bwl: 0,
+    os: 'HarmonyOS 6.1', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 509, spk: '4 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil', bundled: false },
+      keyboard: { supported: true, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流', '大屏'],
+  },
+  {
+    // ⚠️ d 只有年份、soc / bc 未查到
+    i: 'huawei-matepad-115s-2025', n: '华为 MatePad 11.5 S（2025）', d: '2025', lp: 2199, cp: null,
+    sz: 11.5, res: '2800x1840', ppi: 291, mat: 'LCD', rr: 144,
+    soc: null, sb: '海思', ram: [12], rom: [256, 512],
+    cm: '1300万像素 f/1.8 AF', cw: '800万像素 f/2.0',
+    bc: null, bwl: 0,
+    os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 515, spk: '4 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil Pro', bundled: false },
+      keyboard: { supported: true, name: 'HUAWEI 智能磁吸键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流', '学习'],
+  },
+  {
+    // ⚠️ 仅查到价格与屏幕，soc / bc / cm / wt 全缺
+    i: 'huawei-matepad-115s-lingdong', n: '华为 MatePad 11.5 S 灵动款（鸿蒙焕新版，2026）', d: '2026', lp: null, cp: 2999,
+    sz: 11.5, res: '2800x1840', ppi: 291, mat: 'LCD', rr: 144,
+    soc: null, sb: '海思',
+    cm: null, fc: null,
+    bc: null, bwl: 0,
+    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    spk: null, port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil', bundled: false },
+      keyboard: { supported: true, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '主流', '学习'],
+  },
+  {
+    // ⚠️ d 只有年份、soc / cm / wt 缺（10100mAh 是华为商城口径）
+    i: 'huawei-matepad-115-2026', n: '华为 MatePad 11.5（鸿蒙焕新版，2026）', d: '2026', lp: null, cp: 2199,
+    sz: 11.5, res: null, mat: 'LCD', rr: 120,
+    soc: null, sb: '海思',
+    cm: null, fc: null,
+    bc: 10100, bwl: 0,
+    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    spk: null, port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门', '长续航'],
+  },
+  {
+    // ⚠️ 只剩价格与尺寸，其余全缺
+    i: 'huawei-matepad-air-z', n: '华为 MatePad Air Z（12 英寸，2026）', d: '2026', lp: null, cp: 2799,
+    sz: 12, res: null, mat: 'LCD',
+    soc: null,
+    cm: null, fc: null,
+    bc: null, bwl: 0,
+    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    spk: null, port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '主流', '学习'],
+  },
+  {
+    // ⚠️ d 只有年份，soc / bc / cm 缺
+    i: 'huawei-matepad-se-11', n: '华为 MatePad SE 11（焕新版）', d: '2025', lp: null, cp: 1799,
+    sz: 11, res: null, mat: 'LCD', rr: 90,
+    soc: null,
+    cm: null, fc: null,
+    bc: null, bwl: 0,
+    os: 'HarmonyOS 4', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    bm: '全金属一体机身', spk: null, port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
+  {
+    // ⚠️ soc / bc 未查到。华为唯一支持插卡通话 + 北斗卫星消息的平板
+    i: 'huawei-matepad-mini', n: '华为 MatePad Mini（8.8，2025）', d: '2025-09', lp: 3299, cp: 3799,
+    sz: 8.8, res: '2560x1600', ppi: 343, mat: '柔性 OLED（PaperMatte 云晰柔光屏）', rr: 120,
+    soc: null, sb: '海思', ram: [12], rom: [256, 512],
+    cm: '5000万像素 f/1.8', cw: '800万像素广角 f/2.2', fc: '3200万像素 f/2.4',
+    bc: null, bwl: 0,
+    os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi + 全网通（可插卡通话）', nfc: false, ir: false, sat: '北斗卫星消息',
+    wt: 255, spk: '2 扬声器', port: 'USB-C',
+    tb: {
+      cellular: true,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil Pro', bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '小屏', '轻薄', '长续航'],
+  },
+  {
+    // ⚠️ lp 未查到；墨水屏特殊品类，无前后摄像头（cm / fc 为 null）
+    i: 'huawei-matepad-paper', n: '华为 MatePad Paper（10.3 墨水屏）', d: '2022-08', lp: null, cp: 4298,
+    sz: 10.3, res: '1872x1404', ppi: 227, mat: '墨水屏（E-Ink）',
+    soc: '麒麟 820E', sb: '海思', cpu: '2.4GHz', ram: [6], rom: [128],
+    cm: null, fc: null,
+    bc: 4000, bwl: 0,
+    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    bdim: '225.2x182.7x6.65mm', wt: 360, spk: '2 扬声器', port: 'USB-C', col: '锦白,墨黑',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil（第二代，4096 级压感）', bundled: true },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '墨水屏', '阅读'],
+  },
+  {
+    // ⚠️ d 只有年份、soc / lp / bc 未查到
+    i: 'huawei-matepad-12x', n: '华为 MatePad 12 X（2025）', d: '2025', lp: null, cp: null,
+    sz: 12.2, res: '2800x1840', ppi: 280, mat: 'HUAWEI PaperMatte 屏（IPS）', rr: 144,
+    soc: null, ram: [12], rom: [256],
+    cm: '5000万像素 f/1.8 AF', cw: '800万像素 f/2.2',
+    bc: null, bwl: 0,
+    os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 512, spk: '6 扬声器', port: 'USB-C',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'HUAWEI M-Pencil Pro', bundled: false },
+      keyboard: { supported: true, name: 'HUAWEI 智能磁吸键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '主流', '大屏'],
+  },
 ];
 
-export const HUAWEI_TABLETS = c('华为', SEEDS);
+export const HUAWEI_TABLETS = cTablet('华为', SEEDS);

@@ -1,13 +1,25 @@
-# 平板第二批种子块（华为 14 + 荣耀 12 + Apple 17 + 三星 11 + OPPO/一加 9 + vivo/iQOO 11 = 74 款）
+# 平板第二批种子块（98 款全部备齐）
 
-> 进度：
-> - §2~§4 华为 / 荣耀 / Apple = 43 款（team-lead 已拍板全录）
-> - §6~§7 三星 / OPPO+一加 = 20 款
-> - §8 vivo / iQOO = 11 款
-> - **合计 74 / 98**，剩 §11 的小米/REDMI 19 + 联想 5 = 24 款。
->
-> **全部只写在 `research/`，未写 `src/data/` 下任何文件。**
-> 74 个 id 全局无重复；7 个 TS 代码块全部通过 esbuild 语法检查。
+| 批次 | 品牌 | 条数 | 章节 |
+|---|---|---|---|
+| 1 | Apple / 华为 / 荣耀 | 43 | §2 ~ §5 |
+| 2 | 三星 / OPPO + 一加 | 20 | §6 ~ §7、§14 |
+| 3 | vivo / iQOO | 11 | §8 ~ §9 |
+| 4 | 小米 / REDMI | 19 | §10 ~ §11 |
+| 5 | 联想 | 5 | §12 ~ §13 |
+| | **合计** | **98** | |
+
+加上此前已落地的 15 款，平板库存可达 **113 款**。
+
+**校验**：98 个 id 全局无重复；9 个 TS 代码块全部通过 esbuild 语法检查；硬门槛四项（`id` / `brand` / `name` / `releaseDate`）98 款**全部齐全，零剔除**。
+
+**全部只写在 `research/`，`src/data/` 下任何文件都没动。** 等 team-lead 通知统一灌入。
+
+### 灌入前必读的三件事
+
+1. **🔴 iQOO 品牌缺失**：`src/data/tablets/index.ts` 的 `TABLETS_BY_BRAND` / `ALL_TABLETS` 里**没有 iQOO**，需要工程师新增 `src/data/tablets/iqoo.ts` + `index.ts` 两处注册（`ALL_TABLETS` 是重复展开两遍的数组，别只加一处）。
+2. **品牌字符串**：`Apple` / `华为` / `荣耀` / `三星` / `OPPO` / `一加` / `vivo` / `iQOO` / `小米` / `Redmi` / `联想`。OPPO 与一加同文件不同数组（`oppo.ts`），小米与 REDMI 同理（`xiaomi.ts`）。
+3. **字段名**：Wh 的录入短键是 **`bwh`**，类型字段 `battery.batteryWh`（**不是 `bcWh`**，全库无此标识符）。
 
 > 用途：等工程师改完 `src/types/device.ts` / `_factory.ts` / `index.ts` 后一次性灌入 `src/data/tablets/`。
 > **本文件只是准备工作，没有写任何 `src/data/` 下的文件。**
@@ -1600,7 +1612,487 @@ export const IQOO_TABLETS = cTablet('iQOO', SEEDS);
 
 ---
 
-## 10. 三星 11 + OPPO/一加 9（20 款）待补清单
+## 10. 小米 / REDMI 平板（19 款，已落地 `xiaomi-pad-9-pro` / `xiaomi-pad-9` / `redmi-k-pad` 之外的全部）
+
+本批口径补充：
+
+- **小米与 REDMI 是两个品牌**：`src/data/tablets/xiaomi.ts` 里 `XIAOMI_TABLETS = c('小米', …)`、`REDMI_TABLETS = c('Redmi', …)`，本文件同样拆两个代码块。
+- **全系 `cellular: false`**：小米 / REDMI 国行平板无官方蜂窝版（小米平板 5 Pro 12.4 曾有 5G 版，但国行未发售，不计）。
+- **柔光版不拆机型**：小米平板 9 Pro / 9 都有柔光版，按架构师口径并入同一条。
+- 小米侧**大量 `cm` / `wt` / `ppi` 官方未列**，本批 `null` 比例偏高，已在每条注释里标注。
+- `xiaomi-pad-5` / `xiaomi-pad-5-pro` 是 2021 年机型、**超出 3 年窗口**，但首轮调研已收录且仍在售，本批照录（已在注释标注）。
+
+### 10.1 小米（14 款）
+
+```ts
+import { cTablet, type CompactSeed } from './_factory';
+
+const XIAOMI_SEEDS: CompactSeed[] = [
+  {
+    // 🔴 极稀疏：官方只放出「13.3" 3408x2272 + 玄戒 O3 + 4799 元起」，电池 / 摄像头 / 重量 / 刷新率全部未查到
+    i: 'xiaomi-pad-9-pro-max', n: '小米平板 9 Pro Max', d: '2026-09', lp: 4799, cp: 4799,
+    sz: 13.3, res: '3408x2272', ppi: null, mat: 'LCD', rr: null,
+    soc: '玄戒 O3', sb: '小米', ram: null, rom: null,
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '生产力'],
+  },
+  {
+    i: 'xiaomi-pad-8-pro', n: '小米平板 8 Pro', d: '2025-09-25', lp: 3199, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8至尊版', sb: '高通', pr: '3nm', ram: [8, 12, 16], rom: [128, 256, 512],
+    cm: null, fc: null,
+    bc: 9200, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-8', n: '小米平板 8', d: '2025-09-25', lp: 2499, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8s Gen4', sb: '高通', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 9200, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '主流', '长续航'],
+  },
+  {
+    // 14" 3.2K 高亮 OLED + 玄戒 O1 自研芯片 + 12000mAh，5699 元起
+    i: 'xiaomi-pad-7-ultra', n: '小米平板 7 Ultra', d: '2025-05-22', lp: 5699, cp: null,
+    sz: 14, res: '3.2K', ppi: null, mat: 'OLED', rr: 120,
+    soc: '玄戒 O1', sb: '小米', ram: [12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 12000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔 Pro', bundled: false },
+      keyboard: { supported: true, name: '官方悬浮键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-7s-pro', n: '小米平板 7S Pro 12.5', d: '2025-06-26', lp: 3699, cp: 3299,
+    sz: 12.5, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '玄戒 O1', sb: '小米', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10610, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔 Pro', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-7-pro', n: '小米平板 7 Pro', d: '2024-10-29', lp: 2699, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8s Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
+    cm: null, fc: null,
+    bc: 8850, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-7', n: '小米平板 7', d: '2024-10-29', lp: 2299, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙7+ Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 8850, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    // lp 未查到（2024-02-22 发布）。120W 快充是本系列独一份
+    i: 'xiaomi-pad-6s-pro', n: '小米平板 6S Pro 12.4', d: '2024-02-22', lp: null, cp: null,
+    sz: 12.4, res: '3048x2032', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8 Gen2', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10000, bw: 120, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-6-max', n: '小米平板 6 Max', d: '2023-08-14', lp: 3799, cp: null,
+    sz: 14, res: '2880x1800', ppi: null, mat: 'LCD', rr: 120,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10000, bw: null, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-6-pro', n: '小米平板 6 Pro', d: '2023-04-18', lp: 2499, cp: null,
+    sz: 11, res: '2880x1800', ppi: 309, mat: 'LCD', rr: 144,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', cpu: '3.2GHz 八核', ram: [8, 12], rom: [128, 256, 512],
+    cm: '5000万像素', cw: '200万像素景深', fc: '2000万像素',
+    bc: 8600, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    bdim: '253.95x165.18x6.51mm', wt: null, bm: null, ip: null, bio: '侧边指纹',
+    spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-6', n: '小米平板 6', d: '2023-04-18', lp: 1999, cp: null,
+    sz: 11, res: '2880x1800', ppi: 309, mat: 'LCD', rr: 144,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8], rom: [128, 256],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 8840, bw: 33, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 490, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-5-pro-124', n: '小米平板 5 Pro 12.4', d: '2022-08-11', lp: 2999, cp: 1889,
+    sz: 12.4, res: '2560x1600', ppi: 244, mat: 'LCD（OGS全贴合）', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8, 12], rom: [128, 256, 512],
+    cm: '5000万像素', cw: '200万像素景深', fc: '2000万像素',
+    bc: 10000, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI 13', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 620, bm: '全金属一体化机身', ip: null, bio: '侧边指纹', spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // ⚠️ 2021-08 发布，超出 3 年窗口，但首轮调研已收录且仍在售，照录
+    i: 'xiaomi-pad-5-pro', n: '小米平板 5 Pro', d: '2021-08-10', lp: 2499, cp: null,
+    sz: 11, res: '2560x1600', ppi: 274, mat: 'LCD', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8], rom: [128, 256],
+    cm: '1300万像素', cw: '500万像素', fc: '800万像素',
+    bc: 8600, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 515, bm: null, ip: null, bio: '侧边指纹', spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    // ⚠️ 2021-08 发布，超出 3 年窗口，照录
+    i: 'xiaomi-pad-5', n: '小米平板 5', d: '2021-08-10', lp: 1999, cp: null,
+    sz: 11, res: '2560x1600', ppi: 274, mat: 'LCD', rr: 120,
+    soc: '骁龙860', sb: '高通', pr: '7nm', ram: [6], rom: [128, 256],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 8720, bw: 33, bwl: 0,
+    os: null, ui: 'MIUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 511, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
+];
+
+const REDMI_SEEDS: CompactSeed[] = [
+  {
+    // 🔴 极稀疏 + 日期只有年份：3599 元起、天玑 9500 之外全部未查到
+    i: 'redmi-k-pad-2', n: 'REDMI K Pad 2', d: '2026', lp: 3599, cp: null,
+    sz: 8.8, res: null, ppi: null, mat: 'LCD', rr: null,
+    soc: '天玑9500', sb: '联发科', pr: '3nm', ram: null, rom: null,
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏', '长续航'],
+  },
+  {
+    // 官方卖点：12000mAh 超大容量电池。SoC / 摄像头 / 重量未查到
+    i: 'redmi-pad-2-pro', n: 'REDMI Pad 2 Pro', d: '2026-01-29', lp: 1999, cp: null,
+    sz: 12.1, res: null, ppi: null, mat: 'LCD', rr: 120,
+    soc: null, sb: null, ram: null, rom: null,
+    cm: null, fc: null,
+    bc: 12000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门', '大屏', '长续航'],
+  },
+  {
+    // 官方卖点：9000mAh 超长续航
+    i: 'redmi-pad-2', n: 'REDMI Pad 2', d: '2025-08-01', lp: 1399, cp: null,
+    sz: 11, res: null, ppi: null, mat: 'LCD', rr: 90,
+    soc: null, sb: null, ram: null, rom: null,
+    cm: null, fc: null,
+    bc: 9000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门', '长续航'],
+  },
+  {
+    i: 'redmi-pad-pro', n: 'Redmi Pad Pro', d: '2024-04-10', lp: 1599, cp: null,
+    sz: 12.1, res: '2560x1600', ppi: 249, mat: 'LCD', rr: 120,
+    soc: '骁龙7s Gen2', sb: '高通', pr: '4nm', ram: [6, 8], rom: [128, 256],
+    cm: '800万像素', fc: '800万像素',
+    bc: 10000, bw: 33, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 570, bm: null, ip: null, bio: null, spk: '4 扬声器（杜比全景声）', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'Redmi 灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: 'Redmi 键盘保护套', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门', '大屏'],
+  },
+  {
+    // lp 未查到（2024-08 发布）
+    i: 'redmi-pad-se-87', n: 'REDMI Pad SE 8.7', d: '2024-08', lp: null, cp: null,
+    sz: 8.7, res: '1340x800', ppi: null, mat: 'LCD', rr: 90,
+    soc: 'Helio G85', sb: '联发科', ram: [4, 6], rom: [64, 128],
+    cm: '800万像素', fc: '500万像素',
+    bc: 6650, bw: 18, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 373, bm: null, ip: null, bio: null, spk: '2 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '入门', '小屏', '长续航'],
+  },
+];
+
+export const XIAOMI_TABLETS = cTablet('小米', XIAOMI_SEEDS);
+export const REDMI_TABLETS = cTablet('Redmi', REDMI_SEEDS);
+```
+
+---
+
+## 11. 小米 / REDMI（19 款）待补清单
+
+| id | 缺什么 | 说明 |
+|---|---|---|
+| `xiaomi-pad-9-pro-max` | `bc` / `cm` / `fc` / `rr` / `wt` / `spk` / `ram` / `rom` | 🔴 本批最稀疏，只有尺寸+分辨率+SoC+价格 |
+| `redmi-k-pad-2` | `res` / `rr` / `bc` / `cm` / `wt` / `spk` / `ram` / `rom` + 日期只有年份 | 🔴 次稀疏 |
+| `redmi-pad-2-pro` | `soc` / `cm` / `fc` / `wt` / `spk` / `ram` / `rom` | |
+| `redmi-pad-2` | `soc` / `res` / `cm` / `fc` / `wt` / `ram` / `rom` | |
+| `xiaomi-pad-8-pro` / `xiaomi-pad-8` | `cm` / `fc` / `wt` / `spk` / `bw` | 官方未列摄像头与重量 |
+| `xiaomi-pad-7-ultra` / `xiaomi-pad-7s-pro` | `cm` / `fc` / `wt` / `spk` / `bw` | 同上 |
+| `xiaomi-pad-7-pro` / `xiaomi-pad-7` | `cm` / `fc` / `wt` / `bw` | 同上 |
+| `xiaomi-pad-6s-pro` | `lp` / `cm` / `fc` / `wt` | |
+| `xiaomi-pad-6-max` / `xiaomi-pad-6-pro` | `wt` / `bw`（6 Max） | |
+| `redmi-pad-se-87` | `lp` | |
+
+**硬门槛四项**：19 款**全部齐全**，零剔除。
+`redmi-k-pad-2` 是唯一一条日期只有年份粒度的（`'2026'`），按三级梯度保留原值，不伪造成 `'2026-01'`。
+
+> 提示：小米侧 `cm`（主摄）大面积为空是因为**小米官方参数页对平板摄像头参数普遍不列**，
+> 不是我漏查。灌入后这些机型在「影像」维度会渲染成「—」，属于诚实表达。
+
+---
+
+## 12. 联想平板（5 款，已落地 `lenovo-legion-y700-2025` 之外的全部）
+
+本批口径补充：
+
+- **拯救者 Y700 全系无官方手写笔**（定位游戏小平板），`stylus.supported: false`。
+- **小新 Pad Pro 支持小新触控笔**，但官方未说明连接方式 → `attach: null`。
+- 联想侧**年份粒度偏多**（`'2022'` / `'2023'` / `'2024'`），按三级梯度保留，不伪造月份。
+
+```ts
+import { cTablet, type CompactSeed } from './_factory';
+
+const SEEDS: CompactSeed[] = [
+  {
+    // 🔴 完整度最低：芯片型号、价格、重量均未查到，日期只有年份
+    i: 'lenovo-legion-y700-2024', n: '联想拯救者 Y700（2024 款）', d: '2024', lp: null, cp: null,
+    sz: 8.8, res: '2560x1600', ppi: null, mat: 'LCD', rr: 144,
+    soc: null, sb: '高通', ram: [12, 16], rom: [256, 512],
+    cm: null, fc: null,
+    bc: 6550, bw: null, bwl: 0,
+    os: 'Android', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '2 扬声器', port: '双 USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏'],
+  },
+  {
+    i: 'lenovo-legion-y700-2023', n: '联想拯救者 Y700（2023 款）', d: '2023', lp: 2299, cp: null,
+    sz: 8.8, res: '2560x1600', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', cpu: '八核', ram: [12, 16], rom: [256, 512],
+    cm: null, fc: null,
+    bc: 6550, bw: null, bwl: 0,
+    os: 'Android 13', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 348, bm: null, ip: null, bio: null, spk: '2 扬声器', port: '双 USB-C', col: '钛晶灰',
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏', '轻薄'],
+  },
+  {
+    i: 'lenovo-xiaoxin-pad-pro-127', n: '联想小新 Pad Pro 12.7（2023）', d: '2023', lp: 1599, cp: 1499,
+    sz: 12.7, res: '2944x1840', ppi: null, mat: 'LCD', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', cpu: '八核', ram: [8], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 10200, bw: null, bwl: 0,
+    os: 'Android 13', ui: 'ZUI 15', net: 'Wi-Fi', wf: 'Wi-Fi 6', nfc: false, ir: false,
+    wt: 620, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: '鸽子灰',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小新触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // 2024-10 上市，但官方命名为「2025 款」——id 与 name 都按官方命名走
+    i: 'lenovo-xiaoxin-pad-pro-127-2025', n: '联想小新 Pad Pro 12.7（2025 款）', d: '2024-10', lp: 1599, cp: 1444,
+    sz: 12.7, res: '2944x1840', ppi: null, mat: 'LCD', rr: 144,
+    soc: '天玑8300', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 10200, bw: null, bwl: 0,
+    os: 'Android', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小新触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // ⚠️ 2022 年机型，超出 3 年窗口，但首轮已收录，照录。SoC 与电池未查到
+    i: 'lenovo-xiaoxin-pad-plus', n: '联想小新 Pad Plus（11 英寸）', d: '2022', lp: 1499, cp: null,
+    sz: 11, res: '2000x1200', ppi: null, mat: 'LCD（莱茵TUV低蓝光认证）', rr: 60,
+    soc: null, sb: null, cpu: '八核', ram: [6], rom: [128],
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: 'Android 11', ui: 'ZUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 520, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
+];
+
+export const LENOVO_TABLETS = cTablet('联想', SEEDS);
+```
+
+---
+
+## 13. 联想（5 款）待补清单
+
+| id | 缺什么 | 说明 |
+|---|---|---|
+| `lenovo-legion-y700-2024` | `soc` / `lp` / `wt` | 🔴 芯片型号、价格、重量全无 |
+| `lenovo-xiaoxin-pad-plus` | `soc` / `bc` | 2022 款，ZOL 只列了尺寸/重量/系统/价格 |
+| `lenovo-xiaoxin-pad-pro-127-2025` | `wt` / `os`（Android 版本）/ `cm` / `fc` | |
+| `lenovo-legion-y700-2023` | `bw` / `cm` / `fc` | |
+| `lenovo-xiaoxin-pad-pro-127` | `bw` / `cm` / `fc` | |
+
+**硬门槛四项**：5 款**全部齐全**，零剔除。
+
+---
+
+## 14. 三星 11 + OPPO/一加 9（20 款）待补清单
 
 | id | 缺什么 | 说明 |
 |---|---|---|
@@ -1617,7 +2109,7 @@ export const IQOO_TABLETS = cTablet('iQOO', SEEDS);
 
 **硬门槛四项（`id` / `brand` / `name` / `releaseDate`）**：本批 20 款**全部齐全**，无一需要剔除。
 
-### 10.1 本轮额外发现（不在原 98 款清单内，供 team-lead 决定是否补录）
+### 14.1 本轮额外发现（不在原 98 款清单内，供 team-lead 决定是否补录）
 
 OPPO 商城官方推荐页（`hd.opposhop.cn`）出现两款我此前未收录的机型：
 
@@ -1630,12 +2122,17 @@ OPPO 商城官方推荐页（`hd.opposhop.cn`）出现两款我此前未收录�
 
 ---
 
-## 11. 剩余 24 款（本批未做）
+## 15. 98 款全部备齐
 
-| 品牌 | 剩余条数 | 已落地 | 说明 |
+| 批次 | 品牌 | 条数 | 章节 |
 |---|---|---|---|
-| 小米 / REDMI | 19 | 3 | 卡点最多：多款缺 `cm`、`d` 只有年份 |
-| 联想 | 5 | 1 | 卡点多 |
-| **合计** | **24** | | 43 + 20 + 11 + 24 = 98 ✓ |
+| 第 1 批 | Apple / 华为 / 荣耀 | 43 | §2 ~ §4 |
+| 第 2 批 | 三星 / OPPO + 一加 | 20 | §6 ~ §7 |
+| 第 3 批 | vivo / iQOO | 11 | §8 |
+| 第 4 批 | 小米 / REDMI | 19 | §10 |
+| 第 5 批 | 联想 | 5 | §12 |
+| **合计** | | **98** | 43 + 20 + 11 + 19 + 5 = 98 ✓ |
 
-下一批按 team-lead 既定顺序：**小米 / REDMI 19**，最后联想 5。
+加上此前已落地的 15 款，平板库存目标 **113 款**。
+
+**全部只写在 `research/`，`src/data/` 未动。** 等 team-lead 通知统一灌入。

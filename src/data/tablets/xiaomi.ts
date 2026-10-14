@@ -1,10 +1,17 @@
-import { c, type CompactSeed } from './_factory';
+import { cTablet, type CompactSeed } from './_factory';
 
 /**
  * 小米 / REDMI 平板机型。
  *
- * 数据来源：`research/tablets.md` C 段。REDMI 与小米同属一个文件（沿用 `phones/` 的品牌命名），
+ * 数据来源：`research/tablets.md` C 段、`research/tablets-batch2.md` §10。
+ * REDMI 与小米同属一个文件（沿用 `phones/` 的品牌命名），
  * 但 `brand` 分别取 `小米` / `Redmi`，保证筛选器里两个品牌各自可选。
+ *
+ * ⚠️ 口径：
+ * - 全系国行平板无官方蜂窝版，`tb.cellular` 一律 `false`；
+ * - 安卓平板电池只填 `bc`（mAh），**不填 `bwh`、严禁 Wh→mAh 换算**；
+ * - 小米官方参数页对平板摄像头 / 重量普遍不列，这些字段为 `null` 属于诚实表达，不是漏录；
+ * - `xiaomi-pad-5` / `xiaomi-pad-5-pro` 为 2021-08 机型，超出 3 年窗口但仍在售，照录。
  */
 const XIAOMI_SEEDS: CompactSeed[] = [
   {
@@ -102,6 +109,236 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     },
     tags: ['平板', '主流', '长续航'],
   },
+  {
+    // 🔴 极稀疏：官方只放出「13.3" 3408x2272 + 玄戒 O3 + 4799 元起」，电池 / 摄像头 / 重量 / 刷新率全部未查到
+    i: 'xiaomi-pad-9-pro-max', n: '小米平板 9 Pro Max', d: '2026-09', lp: 4799, cp: 4799,
+    sz: 13.3, res: '3408x2272', ppi: null, mat: 'LCD', rr: null,
+    soc: '玄戒 O3', sb: '小米', // ram / rom 未查到（类型不接受 null，故省略 → 空选项）
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '生产力'],
+  },
+  {
+    i: 'xiaomi-pad-8-pro', n: '小米平板 8 Pro', d: '2025-09-25', lp: 3199, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8至尊版', sb: '高通', pr: '3nm', ram: [8, 12, 16], rom: [128, 256, 512],
+    cm: null, fc: null,
+    bc: 9200, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-8', n: '小米平板 8', d: '2025-09-25', lp: 2499, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8s Gen4', sb: '高通', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 9200, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '主流', '长续航'],
+  },
+  {
+    // 14" 3.2K 高亮 OLED + 玄戒 O1 自研芯片 + 12000mAh，5699 元起
+    i: 'xiaomi-pad-7-ultra', n: '小米平板 7 Ultra', d: '2025-05-22', lp: 5699, cp: null,
+    sz: 14, res: '3.2K', ppi: null, mat: 'OLED', rr: 120,
+    soc: '玄戒 O1', sb: '小米', ram: [12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 12000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔 Pro', bundled: false },
+      keyboard: { supported: true, name: '官方悬浮键盘', attach: 'magnetic', bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-7s-pro', n: '小米平板 7S Pro 12.5', d: '2025-06-26', lp: 3699, cp: 3299,
+    sz: 12.5, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '玄戒 O1', sb: '小米', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10610, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔 Pro', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-7-pro', n: '小米平板 7 Pro', d: '2024-10-29', lp: 2699, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8s Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
+    cm: null, fc: null,
+    bc: 8850, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-7', n: '小米平板 7', d: '2024-10-29', lp: 2299, cp: null,
+    sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙7+ Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 8850, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    // lp 未查到（2024-02-22 发布）。120W 快充是本系列独一份
+    i: 'xiaomi-pad-6s-pro', n: '小米平板 6S Pro 12.4', d: '2024-02-22', lp: null, cp: null,
+    sz: 12.4, res: '3048x2032', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8 Gen2', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10000, bw: 120, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 6, microSd: null,
+    },
+    tags: ['平板', '旗舰', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-6-max', n: '小米平板 6 Max', d: '2023-08-14', lp: 3799, cp: null,
+    sz: 14, res: '2880x1800', ppi: null, mat: 'LCD', rr: 120,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
+    cm: null, fc: null,
+    bc: 10000, bw: null, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    i: 'xiaomi-pad-6-pro', n: '小米平板 6 Pro', d: '2023-04-18', lp: 2499, cp: null,
+    sz: 11, res: '2880x1800', ppi: 309, mat: 'LCD', rr: 144,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', cpu: '3.2GHz 八核', ram: [8, 12], rom: [128, 256, 512],
+    cm: '5000万像素', cw: '200万像素景深', fc: '2000万像素',
+    bc: 8600, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    bdim: '253.95x165.18x6.51mm', wt: null, bm: null, ip: null, bio: '侧边指纹',
+    spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-6', n: '小米平板 6', d: '2023-04-18', lp: 1999, cp: null,
+    sz: 11, res: '2880x1800', ppi: 309, mat: 'LCD', rr: 144,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8], rom: [128, 256],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 8840, bw: 33, bwl: 0,
+    os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 490, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    i: 'xiaomi-pad-5-pro-124', n: '小米平板 5 Pro 12.4', d: '2022-08-11', lp: 2999, cp: 1889,
+    sz: 12.4, res: '2560x1600', ppi: 244, mat: 'LCD（OGS全贴合）', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8, 12], rom: [128, 256, 512],
+    cm: '5000万像素', cw: '200万像素景深', fc: '2000万像素',
+    bc: 10000, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI 13', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 620, bm: '全金属一体化机身', ip: null, bio: '侧边指纹', spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // ⚠️ 2021-08 发布，超出 3 年窗口，但首轮调研已收录且仍在售，照录
+    i: 'xiaomi-pad-5-pro', n: '小米平板 5 Pro', d: '2021-08-10', lp: 2499, cp: null,
+    sz: 11, res: '2560x1600', ppi: 274, mat: 'LCD', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', ram: [6, 8], rom: [128, 256],
+    cm: '1300万像素', cw: '500万像素', fc: '800万像素',
+    bc: 8600, bw: 67, bwl: 0,
+    os: null, ui: 'MIUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 515, bm: null, ip: null, bio: '侧边指纹', spk: '8 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 8, microSd: null,
+    },
+    tags: ['平板', '主流'],
+  },
+  {
+    // ⚠️ 2021-08 发布，超出 3 年窗口，照录
+    i: 'xiaomi-pad-5', n: '小米平板 5', d: '2021-08-10', lp: 1999, cp: null,
+    sz: 11, res: '2560x1600', ppi: 274, mat: 'LCD', rr: 120,
+    soc: '骁龙860', sb: '高通', pr: '7nm', ram: [6], rom: [128, 256],
+    cm: '1300万像素', fc: '800万像素',
+    bc: 8720, bw: 33, bwl: 0,
+    os: null, ui: 'MIUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 511, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小米灵感触控笔', bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
 ];
 
 const REDMI_SEEDS: CompactSeed[] = [
@@ -149,7 +386,91 @@ const REDMI_SEEDS: CompactSeed[] = [
     },
     tags: ['平板', '小屏', '游戏', '长续航', '轻薄'],
   },
+  {
+    // 🔴 极稀疏 + 日期只有年份：3599 元起、天玑 9500 之外全部未查到
+    i: 'redmi-k-pad-2', n: 'REDMI K Pad 2', d: '2026', lp: 3599, cp: null,
+    sz: 8.8, res: null, ppi: null, mat: 'LCD', rr: null,
+    soc: '天玑9500', sb: '联发科', pr: '3nm', // ram / rom 未查到
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏', '长续航'],
+  },
+  {
+    // 官方卖点：12000mAh 超大容量电池。SoC / 摄像头 / 重量未查到
+    i: 'redmi-pad-2-pro', n: 'REDMI Pad 2 Pro', d: '2026-01-29', lp: 1999, cp: null,
+    sz: 12.1, res: null, ppi: null, mat: 'LCD', rr: 120,
+    soc: null, sb: null, // ram / rom 未查到
+    cm: null, fc: null,
+    bc: 12000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: null, microSd: null,
+    },
+    tags: ['平板', '入门', '大屏', '长续航'],
+  },
+  {
+    // 官方卖点：9000mAh 超长续航
+    i: 'redmi-pad-2', n: 'REDMI Pad 2', d: '2025-08-01', lp: 1399, cp: null,
+    sz: 11, res: null, ppi: null, mat: 'LCD', rr: 90,
+    soc: null, sb: null, // ram / rom 未查到
+    cm: null, fc: null,
+    bc: 9000, bw: null, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门', '长续航'],
+  },
+  {
+    i: 'redmi-pad-pro', n: 'Redmi Pad Pro', d: '2024-04-10', lp: 1599, cp: null,
+    sz: 12.1, res: '2560x1600', ppi: 249, mat: 'LCD', rr: 120,
+    soc: '骁龙7s Gen2', sb: '高通', pr: '4nm', ram: [6, 8], rom: [128, 256],
+    cm: '800万像素', fc: '800万像素',
+    bc: 10000, bw: 33, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 570, bm: null, ip: null, bio: null, spk: '4 扬声器（杜比全景声）', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: 'Redmi 灵感触控笔', bundled: false },
+      keyboard: { supported: true, name: 'Redmi 键盘保护套', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门', '大屏'],
+  },
+  {
+    // lp 未查到（2024-08 发布）
+    i: 'redmi-pad-se-87', n: 'REDMI Pad SE 8.7', d: '2024-08', lp: null, cp: null,
+    sz: 8.7, res: '1340x800', ppi: null, mat: 'LCD', rr: 90,
+    soc: 'Helio G85', sb: '联发科', ram: [4, 6], rom: [64, 128],
+    cm: '800万像素', fc: '500万像素',
+    bc: 6650, bw: 18, bwl: 0,
+    os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 373, bm: null, ip: null, bio: null, spk: '2 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '入门', '小屏', '长续航'],
+  },
 ];
 
-export const XIAOMI_TABLETS = c('小米', XIAOMI_SEEDS);
-export const REDMI_TABLETS = c('Redmi', REDMI_SEEDS);
+export const XIAOMI_TABLETS = cTablet('小米', XIAOMI_SEEDS);
+export const REDMI_TABLETS = cTablet('Redmi', REDMI_SEEDS);

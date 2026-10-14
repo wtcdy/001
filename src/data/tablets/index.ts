@@ -3,6 +3,7 @@ import type { Device } from '../../types/device';
 import { APPLE_TABLETS } from './apple';
 import { HONOR_TABLETS } from './honor';
 import { HUAWEI_TABLETS } from './huawei';
+import { IQOO_TABLETS } from './iqoo';
 import { LENOVO_TABLETS } from './lenovo';
 import { ONEPLUS_TABLETS, OPPO_TABLETS } from './oppo';
 import { SAMSUNG_TABLETS } from './samsung';
@@ -32,6 +33,7 @@ export const TABLETS_BY_BRAND: Record<string, Device[]> = {
   OPPO: OPPO_TABLETS,
   一加: ONEPLUS_TABLETS,
   vivo: VIVO_TABLETS,
+  iQOO: IQOO_TABLETS,
   三星: SAMSUNG_TABLETS,
   联想: LENOVO_TABLETS,
 };
@@ -46,6 +48,7 @@ export const ALL_TABLETS: Device[] = [
   OPPO_TABLETS,
   ONEPLUS_TABLETS,
   VIVO_TABLETS,
+  IQOO_TABLETS,
   SAMSUNG_TABLETS,
   LENOVO_TABLETS,
 ].flat();
@@ -59,6 +62,7 @@ export {
   OPPO_TABLETS,
   ONEPLUS_TABLETS,
   VIVO_TABLETS,
+  IQOO_TABLETS,
   SAMSUNG_TABLETS,
   LENOVO_TABLETS,
 };

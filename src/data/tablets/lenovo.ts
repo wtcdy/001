@@ -1,4 +1,4 @@
-import { c, type CompactSeed } from './_factory';
+import { cTablet, type CompactSeed } from './_factory';
 
 /**
  * 联想平板（拯救者 Y700 / 小新 Pad）机型。
@@ -50,6 +50,89 @@ const SEEDS: CompactSeed[] = [
     },
     tags: ['平板', '小屏', '游戏', '长续航'],
   },
+  {
+    // 🔴 完整度最低：芯片型号、价格、重量均未查到，日期只有年份
+    i: 'lenovo-legion-y700-2024', n: '联想拯救者 Y700（2024 款）', d: '2024', lp: null, cp: null,
+    sz: 8.8, res: '2560x1600', ppi: null, mat: 'LCD', rr: 144,
+    soc: null, sb: '高通', ram: [12, 16], rom: [256, 512],
+    cm: null, fc: null,
+    bc: 6550, bw: null, bwl: 0,
+    os: 'Android', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '2 扬声器', port: '双 USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏'],
+  },
+  {
+    i: 'lenovo-legion-y700-2023', n: '联想拯救者 Y700（2023 款）', d: '2023', lp: 2299, cp: null,
+    sz: 8.8, res: '2560x1600', ppi: null, mat: 'LCD', rr: 144,
+    soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', cpu: '八核', ram: [12, 16], rom: [256, 512],
+    cm: null, fc: null,
+    bc: 6550, bw: null, bwl: 0,
+    os: 'Android 13', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 348, bm: null, ip: null, bio: null, spk: '2 扬声器', port: '双 USB-C', col: '钛晶灰',
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 2, microSd: null,
+    },
+    tags: ['平板', '小屏', '游戏', '轻薄'],
+  },
+  {
+    i: 'lenovo-xiaoxin-pad-pro-127', n: '联想小新 Pad Pro 12.7（2023）', d: '2023', lp: 1599, cp: 1499,
+    sz: 12.7, res: '2944x1840', ppi: null, mat: 'LCD', rr: 120,
+    soc: '骁龙870', sb: '高通', pr: '7nm', cpu: '八核', ram: [8], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 10200, bw: null, bwl: 0,
+    os: 'Android 13', ui: 'ZUI 15', net: 'Wi-Fi', wf: 'Wi-Fi 6', nfc: false, ir: false,
+    wt: 620, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: '鸽子灰',
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小新触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // 2024-10 上市，但官方命名为「2025 款」——id 与 name 都按官方命名走
+    i: 'lenovo-xiaoxin-pad-pro-127-2025', n: '联想小新 Pad Pro 12.7（2025 款）', d: '2024-10', lp: 1599, cp: 1444,
+    sz: 12.7, res: '2944x1840', ppi: null, mat: 'LCD', rr: 144,
+    soc: '天玑8300', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256],
+    cm: null, fc: null,
+    bc: 10200, bw: null, bwl: 0,
+    os: 'Android', ui: 'ZUI', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: true, name: '小新触控笔', bundled: false },
+      keyboard: { supported: true, name: '官方键盘', attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '大屏', '长续航'],
+  },
+  {
+    // ⚠️ 2022 年机型，超出 3 年窗口，但首轮已收录，照录。SoC 与电池未查到
+    i: 'lenovo-xiaoxin-pad-plus', n: '联想小新 Pad Plus（11 英寸）', d: '2022', lp: 1499, cp: null,
+    sz: 11, res: '2000x1200', ppi: null, mat: 'LCD（莱茵TUV低蓝光认证）', rr: 60,
+    soc: null, sb: null, cpu: '八核', ram: [6], rom: [128],
+    cm: null, fc: null,
+    bc: null, bw: null, bwl: 0,
+    os: 'Android 11', ui: 'ZUI 12.5', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 520, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    tb: {
+      cellular: false,
+      stylus: { supported: false, name: null, bundled: false },
+      keyboard: { supported: false, name: null, attach: null, bundled: false },
+      desktopMode: null, speakerCount: 4, microSd: null,
+    },
+    tags: ['平板', '入门'],
+  },
 ];
 
-export const LENOVO_TABLETS = c('联想', SEEDS);
+export const LENOVO_TABLETS = cTablet('联想', SEEDS);

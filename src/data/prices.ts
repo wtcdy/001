@@ -193,7 +193,8 @@ export const PRICES: Record<string, PriceRecord> = {
   'iqoo-z10-turbo': { jd: 1499, pdd: 1389, updatedAt: '2026-10-13', isReference: true },
   'iqoo-z9-turbo': { jd: 1499, pdd: 1389, updatedAt: '2026-10-13', isReference: true },
   'iqoo-z9': { jd: 1099, pdd: 1019, updatedAt: '2026-10-13', isReference: true },
-  'iqoo-pad5-pro': { jd: 4299, pdd: 3949, updatedAt: '2026-10-13', isReference: true },
+  // id 跟随 src/data/phones/iqoo.ts 的修正（原 `iqoo-pad5-pro` 是手机，与平板撞键）
+  'iqoo-13-legend': { jd: 4299, pdd: 3949, updatedAt: '2026-10-13', isReference: true },
   'iqoo-neo9s-pro': { jd: 2199, pdd: 1999, updatedAt: '2026-10-13', isReference: true },
   'iqoo-neo9s-pro-plus': { jd: 2499, pdd: 2269, updatedAt: '2026-10-13', isReference: true },
   /* ---------- 三星 ---------- */
