@@ -27,6 +27,7 @@ import { SAMSUNG_PHONES } from './phones/samsung';
 import { SONY_PHONES } from './phones/sony';
 import { VIVO_PHONES } from './phones/vivo';
 import { XIAOMI_PHONES } from './phones/xiaomi';
+import { ALL_TABLETS } from './tablets';
 
 /**
  * 全部设备数据源。
@@ -35,8 +36,7 @@ import { XIAOMI_PHONES } from './phones/xiaomi';
  *  - 详细格式使用 `../_factory.ts` 的 `list()`（见 apple.ts）
  *  - 紧凑格式使用 `../_factory.ts` 的 `c()`（其余品牌）
  *
- * 品类抽象后：手机 / 平板 / 笔记本全部产出 `Device`，在 `ALL_DEVICES` 汇总；
- * 平板目录（`src/data/tablets/`）在 T03 接入后追加到 `ALL_DEVICES` 即可。
+ * 品类抽象后：手机 / 平板 / 笔记本全部产出 `Device`，在 `ALL_DEVICES` 汇总。
  */
 
 /** 按品牌分组的机型数据 */
@@ -83,8 +83,14 @@ export const ALL_PHONES: Device[] = [
   OTHERS_ALL,
 ].flat();
 
-/** 全部设备（跨品类总表）。当前只有手机；平板 / 笔记本接入后在此追加 */
-export const ALL_DEVICES: Device[] = ALL_PHONES;
+/**
+ * 全部设备（跨品类总表）。
+ *
+ * `ALL_PHONES` 保持「只有手机」不变——`BRANDS` / `YEARS` / `PRICE_BOUNDS` 等
+ * 手机侧派生索引仍以它为口径，避免平板把它们污染掉。
+ * 分品类的索引用 `DEVICES_BY_CATEGORY` / `BOUNDS_BY_CATEGORY`。
+ */
+export const ALL_DEVICES: Device[] = [...ALL_PHONES, ...ALL_TABLETS];
 
 /* ------------------------------------------------------------------ */
 /* 数据自检：跨品类 id 唯一性校验                                       */
@@ -387,12 +393,24 @@ export const DEVICE_MAP_BY_CATEGORY: Record<DeviceCategory, Record<string, Devic
   return map;
 })();
 
-/** id -> Phone 的索引（旧别名，等价于 `DEVICE_MAP`） */
-export const PHONE_MAP: Record<string, Phone> = DEVICE_MAP;
+/**
+ * id -> Phone 的索引（旧别名）。
+ *
+ * 注意：它是**只含手机**的索引，不是 `DEVICE_MAP` 的别名——
+ * 平板接入后 `DEVICE_MAP` 会带上平板，`PHONE_MAP` 若跟着膨胀，
+ * `getPhonesByIds` 就会把平板当手机返回，既有测试也会红。
+ */
+export const PHONE_MAP: Record<string, Phone> = ALL_PHONES.reduce(
+  (acc: Record<string, Phone>, phone: Phone) => {
+    acc[phone.id] = phone;
+    return acc;
+  },
+  {} as Record<string, Phone>,
+);
 
 /** 按 id 列表取机型（自动过滤不存在的 id，并保持传入顺序） */
 export function getPhonesByIds(ids: string[]): Phone[] {
-  return ids.map((id) => DEVICE_MAP[id]).filter((device): device is Device => Boolean(device));
+  return ids.map((id) => PHONE_MAP[id]).filter((phone): phone is Phone => Boolean(phone));
 }
 
 /** 按 id 列表取设备（跨品类） */

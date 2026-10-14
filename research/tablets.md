@@ -86,6 +86,19 @@
 **落地建议**：用 `net` 字段承载（`'Wi-Fi'` / `'Wi-Fi / 5G'`），再配一个「仅看蜂窝版」筛选器（判据：`net` 含「5G」）。
 若架构师坚持要拆，请告知，我按 `ipad-pro-m5-13-cellular` 这种后缀规则补一轮条目。
 
+### 6. 录入 `src/data/tablets/*.ts` 时的格式硬约束（2026-10-14 T03b 首批 15 款验证后补充）
+
+> 这 8 条是首批 15 款真正进管线时踩到的，**补录剩余 99 款前必须先看**，否则会一条条被 `validate:data` 弹回来。
+
+1. **`d` 必须是 `YYYY-MM`**。本文件少数条目写了完整日期（`2025-06-26` / `2025-04-23` / `2024-07-12`），录入时必须截断到月 —— 校验脚本用 `^\d{4}-\d{2}$`，写完整日期直接判违规。（这三处本轮已改回 `2025-06` / `2025-04` / `2024-07`）
+2. **`bc`（电池 mAh）是必填，null 会被拦**。⚠️ **Apple 全系 18 款都卡在这里**（官方只公布 Wh，不公布 mAh）。首批 iPad Pro 13（M5）取第三方 10290mAh（GSMArena / PhoneArena；另有 10210 / 10340 两种口径），**需团队拍板口径**。
+3. **`cm`（主摄）也是必填，null 会被拦**。联想 6 款、部分华为 / 小米条目的 `cm` 仍为 null，补录前要补查。
+4. `ram` / `rom` **不能是空数组**（`[]` 会判「运行内存选项为空数组」）。
+5. `rr`（刷新率）必须是 `60 / 90 / 120 / 144 / 165 / 185 / 240` 之一。
+6. **`pen` / `kbd` / `cell` 三个调研键不入库** —— 架构师已改成 `tb` 扩展块，六个字段：`cellular` / `stylus{supported,name,bundled}` / `keyboard{supported,name,attach,bundled}` / `desktopMode` / `speakerCount` / `microSd`。
+7. 扬声器数量**两处都写**：`spk`（展示串「N 扬声器（XX）」）+ `tb.speakerCount`（数值，供派生筛选）。
+8. 平板区间已按品类放宽（`scripts/_qa-validate.mjs` 的 `CATEGORY_RULES.tablet`）：**屏幕 7~15"、电池 3000~15000mAh、重量 200~900g**；手机侧区间完全不变。注意三星 Tab S9 Ultra 是 14.6"、华为 MatePad Edge 是 12900mAh / 789g，都已在上限内。
+
 ---
 
 ## A. Apple iPad（18 款）
@@ -717,20 +730,24 @@ pen: '支持 HUAWEI M-Pencil Pro，不随附'   kbd: '支持 HUAWEI 智能磁吸
 
 ```
 cat: 'tablet'   ff: 'detachable'
-d: '2026'   lp: null   cp: 5999
-sz: 14.2   res: null   ppi: null   mat: null   rr: null   nit: null   dim: null   hdr: null
-soc: 'X90 系列芯片'   sb: null   pr: null   cpu: null   gpu: null   an: null
-rt: null   ft: null   ram: null   rom: null
-cm: null   cw: null   ct: null   cz: null   cv: null   fc: null
-bc: null   bw: null   bwl: 0   br: null
-os: 'HarmonyOS'   ui: 'HarmonyOS'   net: 'Wi-Fi'   wf: null   bt: null   nfc: false   ir: false   sat: null
-bdim: null   wt: null   bm: null   ip: null   bio: null
+d: '2025-11'   lp: 5999   cp: 5799
+sz: 14.2   res: '3120x2080'   ppi: 264   mat: 'OLED'   rr: 120   nit: 1000   dim: null   hdr: null
+soc: '麒麟 X90 / X90A'   sb: '海思'   pr: null   cpu: null   gpu: null   an: null
+rt: null   ft: null   ram: [16,24,32]   rom: [256,512,1024,2048]
+cm: '5000万像素'   cw: '800万像素'   ct: null   cz: null   cv: null   fc: '3200万像素'
+bc: 12900   bw: 140   bwl: 0   br: null
+os: 'HarmonyOS 5.1'   ui: 'HarmonyOS'   net: 'Wi-Fi'   wf: null   bt: null   nfc: false   ir: false   sat: null
+bdim: '312.08x212.02x6.85mm'   wt: 789   bm: null   ip: null   bio: null
 spk: null   port: 'USB-C'   col: null
-pen: null   kbd: '随附/支持 二合一键盘（平板模式 + 电脑模式双形态）'   cell: '无蜂窝版'
+pen: '支持 HUAWEI M-Pencil Pro，不随附'   kbd: '支持 华为星跃悬浮键盘（磁吸，液冷版随附）'   cell: '无蜂窝版'
 ```
-- 华为商城 ¥5999（X90 系列芯片首登平板 / 平板、电脑双模式 / 14.2 英寸鸿蒙二合一平板电脑）
-- **本文件唯一一条 `ff: 'detachable'`**：带可拆卸键盘、可在平板/电脑双模式间切换
-- 来源：https://www.vmall.com?mod=viewthread&tid=28732/
+- ✅ **2026-10-14 复核补实**（原稿 `d`/`bc`/`wt`/`cm` 全为 null，已按华为商城官方参数页补上）：
+  上市 **2025-11**（11-25 发布），麒麟 **X90A**（液冷版为 X90），14.2" OLED 3120×2080 264ppi 3:2 94% 屏占比 / 120Hz / 1000nit，
+  **12900mAh + 140W**，**789g**，312.08×212.02×6.85mm，后置 5000 万 + 800 万、前置 3200 万，HarmonyOS 5.1
+- 售价：16+256=5999 / 16+512=6499 / 16+512 柔光版=7299 / 24+1TB=7999 / 24+1TB 柔光版含键盘=9999 / 32+2TB 液冷版含键盘=12999；华为商城现价 5799（直降 200）
+- **本文件唯一一条 `ff: 'detachable'`**：带可拆卸键盘、可在平板/电脑双模式间切换 → `tb.desktopMode` = '平板 / 电脑双模式（HarmonyOS）'
+- 来源：**华为商城官方参数页** https://item.vmall.com/product/comdetail/index.html?prdId=10086590821009
+- 来源：https://tablet-news.com/huawei-matepad-edge-14-2-inch-2-in-1-tablet-debuts-as-pc-replacement/
 
 ---
 
@@ -1017,7 +1034,7 @@ pen: '支持 小米灵感触控笔，不随附'   kbd: null   cell: '无蜂窝�
 
 ```
 cat: 'tablet'   ff: 'slate'
-d: '2025-06-26'   lp: 3099   cp: 2799
+d: '2025-06'   lp: 3099   cp: 2799
 sz: 8.8   res: '3008x1880'   ppi: 403   mat: 'LCD'   rr: 165   nit: 700   dim: null   hdr: null
 soc: '天玑9400+'   sb: '联发科'   pr: '3nm'   cpu: null   gpu: null   an: null
 rt: null   ft: null   ram: [8,12,16]   rom: [256,512,1024]
@@ -1163,7 +1180,7 @@ pen: '支持 荣耀手写笔，不随附'   kbd: '支持 官方键盘，不随�
 
 ```
 cat: 'tablet'   ff: 'slate'
-d: '2025-04-23'   lp: 1899   cp: null
+d: '2025-04'   lp: 1899   cp: null
 sz: 11.5   res: '2800x1840'   ppi: 291   mat: 'LCD（IMAX Enhanced）'   rr: 144   nit: 500   dim: null   hdr: null
 soc: '天玑8350'   sb: '联发科'   pr: '4nm'   cpu: '3.35GHz 八核'   gpu: 'Mali-G615 MC6'   an: null
 rt: null   ft: null   ram: [8,12]   rom: [128,256,512]
@@ -1325,7 +1342,7 @@ pen: '支持 荣耀 Magic-Pen，不随附'   kbd: '支持 官方键盘，不随�
 
 ```
 cat: 'tablet'   ff: 'slate'
-d: '2024-07-12'   lp: 2899   cp: 2599
+d: '2024-07'   lp: 2899   cp: 2599
 sz: 12.3   res: '3000x1920'   ppi: 290   mat: 'OLED（10bit，IMAX Enhanced）'   rr: 144   nit: 1600   dim: '4320Hz PWM 调光'   hdr: 'HDR10'
 soc: '第三代骁龙8s'   sb: '高通'   pr: '4nm'   cpu: '3.0GHz 八核'   gpu: 'Adreno 735'   an: null
 rt: null   ft: null   ram: [8,12,16]   rom: [256,512,1024]

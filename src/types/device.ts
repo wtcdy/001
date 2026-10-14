@@ -117,10 +117,21 @@ export interface DeviceCamera {
   video: string | null;
 }
 
-/** 电池与充电（手机 / 平板用 mAh；笔记本用 `LaptopExtras.batteryWh`，不做单位换算） */
+/**
+ * 电池与充电。
+ *
+ * 双单位并存、**绝不换算**：
+ *  - `capacity`（mAh）：手机 / 安卓平板用；
+ *  - `batteryWh`（Wh）：Apple 全系平板与笔记本用（这两类官方只公布 Wh，不公布 mAh）。
+ *
+ * 一台设备**只填其中一个**，另一个留 null。Wh→mAh 需要电压才能反推，换算等于制造假精度，
+ * 且估算值会与官方 mAh 混在同一列比较，用户无从分辨。
+ */
 export interface DeviceBattery {
-  /** 电池容量（mAh） */
+  /** 电池容量（mAh）；官方未公布 mAh 时为 null */
   capacity: number | null;
+  /** 电池容量（Wh）；官方未公布 Wh 时为 null */
+  batteryWh?: number | null;
   /** 有线充电功率（W） */
   wiredCharge: number | null;
   /** 无线充电功率（W） */
@@ -230,8 +241,6 @@ export interface LaptopExtras {
   gpuTgp: number | null;
   /** 接口清单，如 "雷电4 x2 / USB-A x2 / HDMI 2.1 / SD" */
   ports: string | null;
-  /** 电池容量（Wh）——笔记本行业惯例，不换算成 mAh */
-  batteryWh: number | null;
   /** 屏幕色域，如 "100% DCI-P3" */
   colorGamut: string | null;
   /** 内存是否可扩展 */

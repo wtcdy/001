@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
 
-import type { FormFactor } from '../types/device';
+import type { DeviceCategory, FormFactor } from '../types/device';
 import type { SpecRow } from '../types/phone';
 
-import { c, mk } from '../data/_factory';
+import { FORM_FACTOR_LABELS } from '../constants';
+import { c, cLaptop, cTablet, mk } from '../data/_factory';
 import { LAPTOP_SPEC_GROUPS } from '../data/laptopSpecGroups';
 import {
   ALL_DEVICES,
   ALL_PHONES,
   BOUNDS_BY_CATEGORY,
   BRANDS_BY_CATEGORY,
+  CATEGORY_COUNTS,
   DEVICE_MAP,
   DUPLICATE_IDS,
   FORM_FACTOR_COUNTS_BY_CATEGORY,
@@ -40,11 +42,18 @@ describe('品类抽象（T01）', () => {
     expect(device.laptop).toBeNull();
   });
 
-  it('② ALL_DEVICES 与 ALL_PHONES 同为 455 条且索引齐全', () => {
-    expect(ALL_DEVICES.length).toBe(455);
-    expect(ALL_PHONES.length).toBe(455);
-    expect(Object.keys(DEVICE_MAP).length).toBe(455);
-    expect(Object.keys(PHONE_MAP).length).toBe(455);
+  it('② 品类派生自洽：ALL_DEVICES = 手机 + 平板 + 笔记本', () => {
+    // 绝对条数交给 `npm run validate:data` 守（它会随录入/补录一起涨）。
+    // 这里只守「派生结果与源头一致」——别人往数据目录加机型不会误伤本用例。
+    expect(CATEGORY_COUNTS.phone).toBe(ALL_PHONES.length);
+    // 总表按品类累加：不该凭空多出/少掉设备
+    expect(ALL_DEVICES.length).toBe(
+      CATEGORY_COUNTS.phone + CATEGORY_COUNTS.tablet + CATEGORY_COUNTS.laptop,
+    );
+    // 下限护栏：T01 落地时的基线是 455 条手机，只会增不会减
+    expect(ALL_PHONES.length).toBeGreaterThanOrEqual(455);
+    expect(Object.keys(DEVICE_MAP).length).toBe(ALL_DEVICES.length);
+    expect(Object.keys(PHONE_MAP).length).toBe(ALL_PHONES.length);
   });
 
   it('③ 跨品类 id 无重复', () => {
@@ -67,7 +76,9 @@ describe('品类抽象（T01）', () => {
         d: '2025-01',
         cat: 'laptop',
         ff: 'clamshell',
-        lx: { cpuModel: 'Core Ultra 7 155H', cpuTdp: 28, batteryWh: 75 },
+        // 电池用共享的双单位字段 bwh（Wh），不再是 LaptopExtras.batteryWh
+        lx: { cpuModel: 'Core Ultra 7 155H', cpuTdp: 28 },
+        bwh: 75,
       },
     ]);
 
@@ -75,7 +86,9 @@ describe('品类抽象（T01）', () => {
     expect(laptop.formFactor).toBe('clamshell');
     expect(laptop.laptop?.cpuModel).toBe('Core Ultra 7 155H');
     expect(laptop.laptop?.cpuTdp).toBe(28);
-    expect(laptop.laptop?.batteryWh).toBe(75);
+    expect(laptop.battery?.batteryWh).toBe(75);
+    // 双单位互斥：填了 Wh 就必须是 mAh 为 null，绝不换算
+    expect(laptop.battery?.capacity).toBeNull();
     // 未填写的扩展块字段必须兜底为 null，不能是 undefined（渲染层统一按 null 处理）
     expect(laptop.laptop?.gpuDiscrete).toBeNull();
     expect(laptop.laptop?.ramUpgradable).toBeNull();
@@ -129,7 +142,7 @@ describe('品类抽象（T01）', () => {
         cat: 'laptop',
         ff: 'clamshell',
         wt: 1500,
-        lx: { batteryWh: 75 },
+        bwh: 75,
       },
     ]);
 
@@ -168,11 +181,28 @@ describe('品类抽象（T01）', () => {
   });
 
   it('⑪ 形态 chips 的候选来自数据派生，不是硬编码列表', () => {
-    // 455 款现有手机全部是工厂默认值 bar
-    expect(FORM_FACTORS_BY_CATEGORY.phone).toEqual(['bar']);
-    expect(FORM_FACTOR_COUNTS_BY_CATEGORY.phone.bar).toBe(455);
-    // 无数据的品类给空数组而不是崩溃，UI 侧据此不渲染形态区
-    expect(FORM_FACTORS_BY_CATEGORY.tablet).toEqual([]);
+    const forms = FORM_FACTORS_BY_CATEGORY.phone;
+    const counts = FORM_FACTOR_COUNTS_BY_CATEGORY.phone;
+
+    // 不锁死具体回填进度：只断言「派生结果与数据一致」，回填多少台折叠机都不会红
+    expect(forms).toContain('bar');
+    // 各形态计数之和 === 机型总数（守住「不新增不删除条目」）
+    const sum = Object.values(counts).reduce((acc, n) => acc + n, 0);
+    expect(sum).toBe(ALL_PHONES.length);
+    // 派生出来的形态必须是合法枚举值（比锁死 ['bar'] 更有价值）
+    const validForms = Object.keys(FORM_FACTOR_LABELS);
+    for (const ff of forms) expect(validForms).toContain(ff);
+    // 计数与列表一一对应
+    for (const ff of forms) expect(counts[ff]).toBeGreaterThan(0);
+    // 无数据的品类给空数组而不是崩溃，UI 侧据此不渲染形态区；
+    // 有数据的品类必定能派生出至少一个形态（不写死 tablet/laptop，谁先接入都不会红）
+    for (const cat of Object.keys(CATEGORY_COUNTS) as DeviceCategory[]) {
+      if (CATEGORY_COUNTS[cat] === 0) {
+        expect(FORM_FACTORS_BY_CATEGORY[cat]).toEqual([]);
+      } else {
+        expect(FORM_FACTORS_BY_CATEGORY[cat].length).toBeGreaterThan(0);
+      }
+    }
   });
 
   it('⑫ 笔记本参数组空壳已占住扩展位（仅 laptop 品类）', () => {
@@ -188,10 +218,55 @@ describe('品类抽象（T01）', () => {
         d: '2025-01',
         cat: 'laptop',
         ff: 'clamshell',
-        lx: { cpuModel: 'Core Ultra 5 125H', batteryWh: 60 },
+        lx: { cpuModel: 'Core Ultra 5 125H' },
+        bwh: 60,
       },
     ]);
     const row = LAPTOP_SPEC_GROUPS[0].rows.find((item) => item.key === 'laptop.batteryWh');
     expect(row?.get(laptop)).toBe(60);
+  });
+
+  it('⑬ 外屏行的真闸门是「形态」而非「品类」（跨品类对比不出现「—」噪音）', () => {
+    const screenGroup = SPEC_GROUPS.find((group) => group.key === 'screen');
+    const coverRow = screenGroup?.rows.find((row) => row.key === 'screen.coverSize') as SpecRow;
+    expect(coverRow).toBeDefined();
+
+    const [iphone] = c('Apple', [{ i: 't-iphone', n: 'iPhone', d: '2025-09', ff: 'bar' }]);
+    const [puraX] = c('华为', [
+      { i: 't-pura-x', n: 'Pura X', d: '2025-03', ff: 'fold-wide', fsz: 3.5, fres: '980x980' },
+    ]);
+    const [ipad] = cTablet('Apple', [{ i: 't-ipad', n: 'iPad', d: '2025-10' }]);
+
+    // 直板手机 vs 平板：没有任何折叠形态参与 → 外屏行不渲染
+    expect(shouldRenderRow(coverRow, [iphone, ipad])).toBe(false);
+    // 阔折叠 vs 平板：外屏正是 Pura X 的定义性差异 → 必须渲染
+    expect(shouldRenderRow(coverRow, [puraX, ipad])).toBe(true);
+    // 形态是 OR 语义：只要有一台是折叠机就渲染
+    expect(shouldRenderRow(coverRow, [puraX, iphone])).toBe(true);
+  });
+
+  it('⑭ cTablet() / cLaptop() 让品类与形态不可能写错', () => {
+    // 平板文件不必写 cat / ff
+    const [ipad] = cTablet('Apple', [{ i: 't-ipad-2', n: 'iPad Pro', d: '2025-10' }]);
+    expect(ipad.category).toBe('tablet');
+    expect(ipad.formFactor).toBe('slate');
+
+    // 可拆卸二合一显式覆盖形态，品类仍由工厂兜底
+    const [edge] = cTablet('华为', [
+      { i: 't-edge', n: 'MatePad Edge', d: '2026-01', ff: 'detachable' },
+    ]);
+    expect(edge.category).toBe('tablet');
+    expect(edge.formFactor).toBe('detachable');
+
+    const [laptop] = cLaptop('联想', [{ i: 't-thinkpad', n: 'ThinkPad', d: '2026-01' }]);
+    expect(laptop.category).toBe('laptop');
+    expect(laptop.formFactor).toBe('clamshell');
+
+    // 种子里的显式值永远优先于工厂默认（不影响既有 455 条数据的零改动）
+    const [override] = cTablet('测试', [
+      { i: 't-override', n: '显式覆盖', d: '2026-01', cat: 'phone', ff: 'bar' },
+    ]);
+    expect(override.category).toBe('phone');
+    expect(override.formFactor).toBe('bar');
   });
 });

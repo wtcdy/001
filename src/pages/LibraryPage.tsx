@@ -124,6 +124,7 @@ export function LibraryPage() {
               reset={reset}
               sortKey={sortKey}
               setSortKey={setSortKey}
+              category={filters.category}
             />
           </div>
         </aside>

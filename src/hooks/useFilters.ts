@@ -1,8 +1,11 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { BATTERY_BOUNDS, PRICE_BOUNDS, SCREEN_SIZE_BOUNDS } from '../data';
-import { effectivePriceOf } from '../utils/effectivePrice';
+import type { DeviceCategory, FeatureId, FormFactor } from '../types/device';
 import type { Phone, SortKey } from '../types/phone';
+
+import { featuresOf } from '../utils/features';
+import { effectivePriceOf } from '../utils/effectivePrice';
 
 /** 默认筛选条件 */
 export const DEFAULT_FILTERS = {
@@ -16,6 +19,11 @@ export const DEFAULT_FILTERS = {
   wirelessOnly: false,
   ip68Only: false,
   nfcOnly: false,
+  // 品类默认 phone：默认值（phone + 空 formFactors + 空 features）恰好等价于「不过滤」，
+  // 因此既有断言（未设置这三个字段时返回全部机型）无需改动即可继续成立。
+  category: 'phone' as DeviceCategory,
+  formFactors: [] as FormFactor[],
+  features: [] as FeatureId[],
 };
 
 export type Filters = typeof DEFAULT_FILTERS;
@@ -30,6 +38,9 @@ export function hasActiveFilters(filters: Filters): boolean {
     filters.wirelessOnly ||
     filters.ip68Only ||
     filters.nfcOnly ||
+    filters.formFactors.length > 0 ||
+    filters.features.length > 0 ||
+    filters.category !== DEFAULT_FILTERS.category ||
     filters.priceRange[0] !== DEFAULT_FILTERS.priceRange[0] ||
     filters.priceRange[1] !== DEFAULT_FILTERS.priceRange[1] ||
     filters.screenSizeRange[0] !== DEFAULT_FILTERS.screenSizeRange[0] ||
@@ -79,9 +90,11 @@ export function useFilters(phones: Phone[]) {
 
   /** 多选开关：已选则移除，未选则加入 */
   const toggleInArray = useCallback(
-    (key: 'brands' | 'years' | 'socBrands', value: string) => {
+    (key: 'brands' | 'years' | 'socBrands' | 'formFactors' | 'features', value: string) => {
       setFilters((prev) => {
-        const list = prev[key];
+        // 五个键的值都是字符串数组（FormFactor / FeatureId 均为字符串联合，
+        // 可安全视作 string[]），显式标注避免索引访问被推成 never[]
+        const list: string[] = prev[key];
         const next = list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
         return { ...prev, [key]: next };
       });
@@ -132,6 +145,23 @@ export function useFilters(phones: Phone[]) {
       }
 
       if (filters.nfcOnly && phone.system?.nfc !== true) return false;
+
+      // 品类：单选精确匹配
+      if (phone.category !== filters.category) return false;
+
+      // 形态：空数组 = 不限，否则命中任一即保留（OR）
+      if (filters.formFactors.length > 0 && !filters.formFactors.includes(phone.formFactor)) {
+        return false;
+      }
+
+      // 特性：空数组 = 不限，否则全部命中才保留（AND）——
+      // 用户勾「折叠屏 + 潜望长焦」是想找同时满足的机型，不是二选一。
+      if (filters.features.length > 0) {
+        const features = featuresOf(phone);
+        for (const id of filters.features) {
+          if (!features.includes(id)) return false;
+        }
+      }
 
       return true;
     });

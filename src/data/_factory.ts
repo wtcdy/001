@@ -66,6 +66,8 @@ export interface PhoneSeed {
   body?: Partial<DeviceBody>;
   /** 标签 */
   tags?: string[];
+  /** 数据来源标注；缺省 '公开参数整理' */
+  src?: string | null;
 }
 
 /** 把平板扩展块补齐为完整结构（未填字段一律 null，前端渲染为「—」） */
@@ -91,14 +93,27 @@ function normalizeLaptop(extras: Partial<LaptopExtras> | null | undefined): Lapt
     gpuVram: extras.gpuVram ?? null,
     gpuTgp: extras.gpuTgp ?? null,
     ports: extras.ports ?? null,
-    batteryWh: extras.batteryWh ?? null,
     colorGamut: extras.colorGamut ?? null,
     ramUpgradable: extras.ramUpgradable ?? null,
   };
 }
 
+/**
+ * 品类默认值（工厂的可选第三参）。
+ *
+ * 存在的意义是**防呆**：平板文件里不必每条都写 `cat:'tablet'` + `ff:'slate'`
+ * （100 条写 100 遍必然漏，漏了就是静默错误），而是由工厂兜底，
+ * 只有「可拆卸二合一」这类少数派才需要显式覆盖。
+ */
+export interface CategoryDefaults {
+  /** 品类；缺省 'phone' */
+  category?: DeviceCategory;
+  /** 形态；缺省 'bar' */
+  formFactor?: FormFactor;
+}
+
 /** 用默认值填充为完整的 Device 对象 */
-export function mk(brand: string, seed: PhoneSeed): Device {
+export function mk(brand: string, seed: PhoneSeed, defaults?: CategoryDefaults): Device {
   const screen: DeviceScreen = {
     size: seed.screen?.size ?? null,
     resolution: seed.screen?.resolution ?? null,
@@ -141,6 +156,8 @@ export function mk(brand: string, seed: PhoneSeed): Device {
 
   const battery: DeviceBattery = {
     capacity: seed.bat?.capacity ?? null,
+    // 双单位：mAh 与 Wh 只填其一，绝不换算
+    batteryWh: seed.bat?.batteryWh ?? null,
     wiredCharge: seed.bat?.wiredCharge ?? null,
     wirelessCharge: seed.bat?.wirelessCharge ?? null,
     reverseCharge: seed.bat?.reverseCharge ?? null,
@@ -175,9 +192,9 @@ export function mk(brand: string, seed: PhoneSeed): Device {
     releaseDate: seed.release,
     launchPrice: seed.launch ?? null,
     currentPrice: seed.price ?? null,
-    // 品类 / 形态：工厂兜底，让 455 条既有数据零改动
-    category: seed.cat ?? 'phone',
-    formFactor: seed.ff ?? 'bar',
+    // 品类 / 形态：种子显式值 > 品类默认值 > 兜底（'phone' / 'bar'）
+    category: seed.cat ?? defaults?.category ?? 'phone',
+    formFactor: seed.ff ?? defaults?.formFactor ?? 'bar',
     screen,
     performance,
     storage,
@@ -189,7 +206,8 @@ export function mk(brand: string, seed: PhoneSeed): Device {
     tags: seed.tags ?? [],
     tablet: normalizeTablet(seed.tb),
     laptop: normalizeLaptop(seed.lx),
-    source: '公开参数整理',
+    // 口径存疑的条目由录入方显式标注来源（如 '官网规格页'），缺省统一文案
+    source: seed.src ?? '公开参数整理',
   };
 }
 
@@ -279,8 +297,17 @@ export interface CompactSeed {
   cv?: string | null;
   /** 前置 */
   fc?: string | null;
-  /** 电池容量 */
+  /** 电池容量（mAh） */
   bc?: number | null;
+  /**
+   * 电池容量（Wh，录入短键）；与 `bc` **二选一**，绝不换算。
+   *
+   * Apple 全系平板与笔记本官方只公布 Wh，填这里；安卓平板 / 手机填 `bc`。
+   *
+   * 注意分层：短键叫 `bwh`，落到 `Device` 上的类型字段叫 `batteryWh`
+   * （类型层字段一律全拼，与 `capacity` / `wiredCharge` 保持同一风格）。
+   */
+  bwh?: number | null;
   /** 有线充电 */
   bw?: number | null;
   /** 无线充电 */
@@ -321,16 +348,19 @@ export interface CompactSeed {
   col?: string | null;
   /** 标签 */
   tags?: string[];
+  /** 数据来源标注；缺省 '公开参数整理' */
+  src?: string | null;
 }
 
 /** 将精简录入结构转换为完整 Device 对象 */
-function fromCompact(brand: string, s: CompactSeed): Device {
+function fromCompact(brand: string, s: CompactSeed, defaults?: CategoryDefaults): Device {
   return mk(brand, {
     id: s.i,
     name: s.n,
     release: s.d,
     launch: s.lp ?? null,
     price: s.cp ?? null,
+    src: s.src ?? null,
     cat: s.cat,
     ff: s.ff,
     tb: s.tb ?? null,
@@ -371,6 +401,7 @@ function fromCompact(brand: string, s: CompactSeed): Device {
     front: s.fc ?? null,
     bat: {
       capacity: s.bc ?? null,
+      batteryWh: s.bwh ?? null,
       wiredCharge: s.bw ?? null,
       wirelessCharge: s.bwl ?? null,
       reverseCharge: s.br ?? null,
@@ -396,10 +427,29 @@ function fromCompact(brand: string, s: CompactSeed): Device {
       colors: s.col ?? null,
     },
     tags: s.tags ?? [],
-  });
+  }, defaults);
 }
 
-/** 批量构造（精简录入版本） */
-export function c(brand: string, seeds: CompactSeed[]): Device[] {
-  return seeds.map((seed) => fromCompact(brand, seed));
+/**
+ * 批量构造（精简录入版本）。
+ *
+ * `defaults` 只影响**未显式写 `cat` / `ff`** 的种子，既有 455 条手机数据零影响。
+ */
+export function c(brand: string, seeds: CompactSeed[], defaults?: CategoryDefaults): Device[] {
+  return seeds.map((seed) => fromCompact(brand, seed, defaults));
+}
+
+/**
+ * 平板批量构造：默认 `cat:'tablet'` + `ff:'slate'`。
+ *
+ * 数据文件里**不必写品类与形态**，也不可能因漏写而错；
+ * 可拆卸二合一（Surface / MatePad Edge 类）在种子里显式写 `ff:'detachable'` 覆盖即可。
+ */
+export function cTablet(brand: string, seeds: CompactSeed[]): Device[] {
+  return c(brand, seeds, { category: 'tablet', formFactor: 'slate' });
+}
+
+/** 笔记本批量构造：默认 `cat:'laptop'` + `ff:'clamshell'` */
+export function cLaptop(brand: string, seeds: CompactSeed[]): Device[] {
+  return c(brand, seeds, { category: 'laptop', formFactor: 'clamshell' });
 }

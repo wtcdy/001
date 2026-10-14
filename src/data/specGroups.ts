@@ -61,11 +61,15 @@ export const SPEC_GROUPS: SpecGroup[] = [
         key: 'brand',
         label: '品牌',
         get: (device: Device) => v(device.brand),
+        // 跨品类对比必须能看到「哪一列是哪台设备」，否则用户对着一堆数值不知道在看什么；
+        // 这两行非数值型，标 true 只是保证渲染，不会产生优劣判定
+        crossComparable: true,
       },
       {
         key: 'name',
         label: '机型名称',
         get: (device: Device) => v(device.name),
+        crossComparable: true,
       },
       {
         key: 'releaseDate',
@@ -81,6 +85,8 @@ export const SPEC_GROUPS: SpecGroup[] = [
         unit: '元',
         better: 'lower',
         numeric: true,
+        // 与渠道价同属「元」量纲，口径保持一致：价格类一律跨品类可比
+        crossComparable: true,
       },
       {
         key: 'currentPrice',
@@ -90,6 +96,7 @@ export const SPEC_GROUPS: SpecGroup[] = [
         unit: '元',
         better: 'lower',
         numeric: true,
+        crossComparable: true,
       },
       // 渠道价与国补后到手价：价格类一律「越低越优」，参与差异高亮与最优/最弱标记；
       // 且跨品类可比——「同预算买手机还是平板」是真实决策场景

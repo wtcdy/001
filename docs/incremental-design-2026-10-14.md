@@ -120,6 +120,67 @@ export interface LaptopExtras {
 > **新增任何短键前必须对既有键表查重**（见 §七 共享知识第 16 条）。
 > 这正是「为笔记本预留扩展位」的落地方式：不是留一句 TODO 注释，而是让整条链路（类型 → 工厂 → 参数组 → 筛选 → 对比）现在就跑通，将来只需往 `src/data/laptops/*.ts` 里灌数据。
 
+## 1.2-bis 数据录入判据（2026-10-14 补充，调研 113 款平板后确立）
+
+### 判据一：什么时候才算「两款机型」
+
+> **拆机型的判据：`SoC` / 屏幕尺寸 / 分辨率 / 电池 / 影像硬件 任一不同，才拆。**
+> 仅配色、存储组合、表面处理、网络版本不同 → **不拆**，用数组或字段表达。
+
+| 变体 | 拆？ | 怎么表达 |
+|---|---|---|
+| 存储/内存配置 | ❌ | `ram:[8,12]` / `rom:[256,512]` 数组 |
+| 配色 | ❌ | `col` 字符串 |
+| **蜂窝版（Wi-Fi vs 5G）** | ❌ | `net:'Wi-Fi / 5G'` + `tb.cellular:true`；**价格存 Wi-Fi 版（基准版）** |
+| **柔光版 / PaperMatte / 护眼版** | ❌ | `col` 或 `tags:['柔光版']`；价格存标准版 |
+
+**为什么蜂窝版不拆**：同款 Wi-Fi 与 5G 版的屏幕/SoC/电池/影像/重量（差 <5g）完全一致，拆了就是两行 95% 相同的参数；且价格必然打架（5G 版贵 800-1000，填一条另一条就是错价）。
+**为什么柔光版不拆**：PaperMatte 只改屏幕表面处理（蚀刻玻璃），分辨率/尺寸/亮度不变，属于「版本」而非「机型」。
+
+### 判据二：电池双单位 —— Apple 只公布 Wh，禁止换算成 mAh
+
+> **Apple 全系平板（18/113）官方只公布 Wh（28.65~40.88Wh），从不公布 mAh。**
+> 若直接留 `bc: null`，iPad 全系会从「长续航」筛选里整条消失。
+
+| 方案 | 评价 |
+|---|---|
+| A. Wh÷3.82V×1000 估算 mAh | ❌ **禁止**。这是制造假精度：估算值会与安卓官方 mAh 混在同一列里比较，且用户无从分辨哪个是实测哪个是推算 |
+| B. iPad 不参与长续航派生 | ❌ 16% 的平板（18 款）静默缺席一个核心筛选，是功能退化 |
+| **C. 存储原生单位（选定）** | ✅ 电池块加 `bcWh?: number \| null`（Wh，官方值）。iPad 填 `bc:null, bcWh:31.29`；安卓平板填 `bc:7500, bcWh:null`。**对比表按有无渲染对应单位，绝不换算** |
+
+`long-battery` 规则改为（平板）：
+```
+bc >= 8000 || bcWh >= 30
+```
+⚠️ `bcWh >= 30` 是**暂定阈值**，待 113 款录入后按实际分布校准。
+**验收方式**：加一条测试断言该筛选 `0 < 命中数 < 平板总数`（既不能为 0，也不能全部命中——两头都是阈值错的信号）。
+
+> 这条同时简化笔记本：`LaptopExtras.batteryWh` 上提到共享电池块 `DeviceBattery.bcWh`，笔记本也用同一个字段。
+
+### 判据三：平板扩展块用嵌套 `tb`，不用平铺短键
+
+调研员提议 `pen`/`kbd`/`cell` 三个平铺短键。**不采用**，统一走 `tb: TabletExtras`（T01 已实现）：
+
+| 调研字段 | → `tb` 结构 |
+|---|---|
+| `pen`（是否支持/型号/随附） | `tb.stylus: { supported, name, bundled }` |
+| `kbd`（连接方式/随附） | `tb.keyboard: { supported, name, attach:'pogo'\|'magnetic'\|'bluetooth', bundled }` |
+| `cell`（蜂窝版） | `tb.cellular: boolean` |
+
+理由：① 平铺需要 6+ 个新顶层短键，且与「不支持 / 未知」的区分表达不清；② `Device.tablet?` 与 `TabletExtras` 已接线，直接用。
+**一致性校验**：`net` 含「5G」 ⟺ `tb.cellular === true`（`validate:data` 硬 error）。
+
+### 判据四：扬声器数量不新开字段
+
+`spk` 字符串承载，但**强制阿拉伯数字 + 固定格式**：`'8 扬声器（空间音频）'`。
+（不用「八扬声器」——中文数字无法正则提取。）
+未来若要「扬声器 ≥6」筛选，届时加 `tb.speakerCount` 数值字段 + 回填即可，**本期不做**（用户未要求，且正则提数易碎）。
+
+### 判据五：重量量纲（调研员提出的警告，已在设计中覆盖）
+
+平板 250~700g，与手机 168~251g 不是一个量级。三处已分别处理：
+① `BOUNDS_BY_CATEGORY` 按品类算滑块边界；② `light-weight` 阈值按品类分（手机 ≤180g / 平板 ≤450g）；③ 跨品类对比时 `body.weight` 标 `crossComparable:false`（不比、不高亮）。
+
 ## 1.3 迁移成本评估（选 C 的账）
 
 | 工作项 | 文件 | 是否要动 455 条数据 | 工作量 |
@@ -187,6 +248,24 @@ export interface SpecRow {
 **优先级（短路求值）**：`categories`(AND) → `formFactors`(OR) → `crossComparable`(仅跨品类模式)。
 由 `shouldRenderRow(row, devices, mode)` 统一实现，T02 的 `SpecTable` 与 `getSpecGroups()` 都调它，**不各写一份**。
 
+#### 「外屏尺寸 / 外屏分辨率」两行的裁剪：真闸门是 `formFactors`，不是 `categories`
+
+这两行同时带 `formFactors: ['fold-h','fold-mid','fold-v','fold-wide','fold-triple']`。
+**因为形态是 OR 语义，它已经完全决定了这两行渲不渲染，`categories` 在此是冗余的**：
+
+| 对比组合 | 有折叠形态参与？ | 外屏行 |
+|---|---|---|
+| iPhone(`bar`) vs iPad(`slate`) | ❌ | **不渲染** ✅（无意义的「—」噪音不会出现） |
+| Pura X(`fold-wide`) vs iPad | ✅ | 渲染（3.5" vs —，这正是 Pura X 的定义性差异） |
+| 未来「折叠平板」(`tablet`+`fold-wide`) vs iPad | ✅ | 渲染 |
+
+→ **`categories` 维持 `['phone','tablet']`**（工程师的选择）：把未来可能出现的「折叠平板」挡在门外是错的，
+而手机 vs 平板的噪音已由 `formFactors` 挡掉；跨品类下真正会误导的「优劣高亮」由 `crossComparable:false` 挡掉。
+三道闸门各司其职，不需要把 `categories` 收窄到 `['phone']`。
+
+**锁死行为的两条断言**（`shouldRenderRow` 单测）：
+① iPhone vs iPad → 外屏行**不**渲染；② Pura X vs iPad → 外屏行**渲染**。
+
 **`crossComparable` 白名单（手机 vs 平板）——刻意很窄：**
 
 | 行 | crossComparable | 理由 |
@@ -233,13 +312,35 @@ export type FormFactor =
 | `fold-h` 横折叠 | 7.6-8.12" | 近方 ~1.1:1 或竖长 | **细长条**（Mate X7 合上约 156×73mm，2.1:1） | Mate X7、Find N6、Z Fold8 |
 | **`fold-mid` 中折叠** | 7.58" | **√2:1（1.41:1）** | **护照形 117.8×83.6mm（1.41:1）** | **小米 18 Fold**（官方命名「中折叠」） |
 | `fold-v` 竖折叠 | 6.9" | ~21:9 细长 | 细长条小外屏（Z Flip8 外屏 4.1"） | Pocket 2、Flip、Razr |
-| **`fold-wide` 阔折叠** | **6.3"（Pura X）/ ~7.6"（Pura X Max）** | **16:10（1.6:1，阔）** | **3.5" 1:1 方屏** | **华为 Pura X / Pura X Max** |
+| **`fold-wide` 阔折叠** | 6.3"（Pura X）/ **7.69"（Pura X Max）** | 16:10（1.6:1）→ **√2:1（1.41:1）** | 3.5" **1:1 方屏**（初代）→ 5.4" 1848×1264（1.46:1，**近方**） | **华为 Pura X / Pura X Max** |
 
 **关键：展开尺寸在这四种之间重叠且反转**（阔折叠 6.3" < 竖折叠 6.9" < 中折叠 7.58" ≈ 横折叠 7.6-8.12"），
-**靠 `screen.size` 阈值推导必然误判**；唯一稳定的区分特征是「**合上态 / 外屏的形状比例**」——细长条 / 护照形 / 1:1 方屏，
-而现有数据根本没有这个字段。
+**靠 `screen.size` 阈值推导必然误判**。
+
+> ⚠️ **几何判据无法区分 `fold-mid` 与 `fold-wide`（2026-10-14 修订）**
+>
+> 实测：小米 18 Fold 内屏 2364×1672 = **1.414**；Pura X Max 内屏 2584×1828 = **1.414**。
+> **两者展开比例完全相同（都是 √2:1）**，而形态不同。同理 Pura X Max 的合上外屏是 5.4" 1848×1264（1.46:1），
+> **并非初代 Pura X 的 1:1 方屏**——「1:1 方屏外屏」只是初代特征，**不是 `fold-wide` 的必要条件**。
+>
+> → **`fold-wide` 的真正判据是「华为 Pura X 产品线的官方命名『阔折叠』」+ 展开阔型屏，不是几何阈值。**
+> → **任何自动推导/回填规则都必须带一张「产品线显式覆盖表」（`pura-x` → `fold-wide`），纯几何规则必然出错。**
 
 → **决策：`formFactor` 是显式字段（`CompactSeed.ff`），不做运行时推导。**
+
+### 判定优先级（遇冲突时自上而下）
+
+1. **官方产品线命名**（华为 Pura X → `fold-wide`、小米 18 Fold → `fold-mid`）
+2. **官方规格页的几何参数**（分辨率比例、合上态形状）
+3. **官方通稿 / 权威媒体**（新华网、官网）
+4. ❌ **不采信**百科、自媒体、曝光预测
+
+**实例：三星 Galaxy Z Fold8 归 `fold-h`，不是 `fold-wide`。**
+有百科与自媒体稿称其为「安卓首款量产阔折叠」，但：① 该说法仅有百度百科 + 搜狐稿，**无官方通稿**，
+按上述优先级第 4 条不采信（与我们对「Pura X2」的处置标准一致——同样只有曝光信源，已不收录）；
+② 官方分辨率 1848×2448 按竖长解读，与「阔」矛盾；
+③ **保守优先**：误标成 `fold-wide` 会让用户点「阔折叠」看到一台根本不是该形态的机器，
+而误留在 `fold-h` 只是少一个标签，将来三星官宣改一条数据即可。
 
 ### 为什么小米 18 Fold 单列 `fold-mid`，而不是归入 `fold-h` 或 `fold-wide`
 
@@ -315,7 +416,7 @@ export interface FeatureDef {
 |---|---|---|---|---|
 | `small-screen` | 小屏手机 | `category==='phone' && formFactor==='bar' && screen.size ≤ 6.36` | phone | **自动** |
 | `periscope` | 潜望长焦 | `ct` 或 `cz` 匹配 `/潜望\|潜望式\|棱镜\|periscope/i`。**含「棱镜」是因为苹果官方术语为「四重反射棱镜」，不含「潜望」二字** —— 放宽后不再依赖录入措辞 | phone/tablet | **自动** |
-| `long-battery` | 长续航 | phone: `battery.capacity ≥ 6000`；tablet: `≥ 8000` | phone/tablet | **自动** |
+| `long-battery` | 长续航 | phone: `bc ≥ 6000`；tablet: **`bc ≥ 8000 \|\| bcWh ≥ 30`**（双单位，Apple 只公布 Wh；`bcWh` 阈值为暂定值，录入后按分布校准） | phone/tablet | **自动** |
 | `fast-charge` | 快充 | `battery.wiredCharge ≥ 80` | all | **自动** |
 | `wireless-charge` | 无线充电 | `battery.wirelessCharge > 0` | all | **自动**（替代现有 `wirelessOnly` 开关） |
 | `ip68` | IP68 及以上 | `body.ip` 含 `IP68` / `IP69` | all | **自动**（替代现有 `ip68Only` 开关） |
@@ -902,7 +1003,11 @@ classDiagram
 
 | # | 文件 | 做什么 |
 |---|---|---|
-| 3a.1 | `src/data/phones/*.ts`（**只增不改**） | 按 `research/missing-devices.md` 录入 **72 条**（63 手机 + 10 平板）。**用户点名的三款均已确认存在**：iPhone 18 Pro / 18 Pro Max（#1/#2）、荣耀 Magic9 全系（#4/#5/#6）、OPPO Find X10 / X10 Pro Max（#19/#20） |
+| 3a.1 | `src/data/phones/*.ts`（**只增不改**） | 按 `research/missing-devices.md` 录入 **手机 64 条** = B.1–B.9 的 63 条（**剔除 #33 REDMI K90 至尊版**，无参数块）+ **B.11 的 2 条阔折叠**（#75 Pura X / #76 Pura X Max —— **`fold-wide` 的唯一数据来源，必须录**）− 1。终态手机 **455 + 64 = 519**。**用户点名的三款均已确认存在**：iPhone 18 Pro / 18 Pro Max（#1/#2）、荣耀 Magic9 全系（#4/#5/#6）、OPPO Find X10 / X10 Pro Max（#19/#20） |
+| 3a.0 | ⚠️ **口径澄清（易错）** | 调研 C.1 表的「**74 可直接录入**」= 76 总条目 − 2 占位，**横跨手机与 B.10 平板**，**不是手机录入数**。手机录入数是 **64**。以条目实数为准，不要用 74 |
+| 3a.0-bis | ⚠️ **`d` 为空的 4 条，先补后录** | #14 `honor-win-rt`、#15 `honor-power-2`、#26 `xiaomi-17-ultra`、#47 `huawei-mate-80-pro-max-wind` 的 `releaseDate` 为空，照录会让 `validate:data` 掉到 515/519。**处置优先级**：① 调研补到 `YYYY-MM` → ② 只有年份把握时用 `YYYY`（文档标「精度：年」）→ ③ 连年份都拿不准则**剔除**（不编造、不用 `-01` 占位） |
+| 3a.0-ter | 低完整度条目（8 条）**照录，不剔除** | #9/#10/#14/#15/#26/#42/#43/#56 有值字段占比 < 40%。**照录是安全的**：`deriveFeatures` 靠阈值判定，字段缺失 → **漏判**（不误报），方向安全；已发布机型不收录会让用户搜不到，体验更差。仅剔除纯占位的 #26（整块 4 字段仅 1 个有值）。**`validate:data` 输出「低完整度清单」作为 warning（不阻断）**，供后续补数据 |
+| 3a.1-ter | 顺手修 2 处 `mat` 误标 | `huawei-p50-pocket` / `huawei-pocket-2` 的 `mat`「内折」→「竖折」（见 3d 遗留问题） |
 | 3a.1-bis | **录入前必须修正的 3 处口径**（调研已核实） | ① **iPhone 18 标准版与 Air 2 未发布**（苹果推迟到 2027 春），清单里没有，**不要编**；② 荣耀 Magic9 官方只有 **Magic9 / Magic9 Pro Max / Magic9 超能版** 三款，**不存在「Magic9 Pro」「至臻版」**（网传参数来自 smartprix Expected 页）；③ OPPO Find X10 国行只有 **X10 / X10 Pro Max / X10 E**，**X10 Pro 未发** |
 | 3a.2 | 形态标注 | 每条折叠机**必须**带 `ff`：`fold-h` / `fold-mid` / `fold-v` / `fold-wide` / `fold-triple`。本批 8 款折叠机：iPhone Duo、Magic V6、Find N6、Mate X7、Z Fold8、Z Fold8 Ultra 归 `fold-h`；**小米 18 Fold 归 `fold-mid`**；Z Flip8 归 `fold-v` |
 | 3a.3 | `src/data/prices.ts` | 新机同步补渠道价（`isReference: true`，等 T04 抓取后转 false） |
@@ -918,7 +1023,8 @@ classDiagram
 
 | # | 文件 | 做什么 |
 |---|---|---|
-| 3b.1 | `src/data/tablets/*.ts`（用 `cTablet()`） | 平板用品类默认工厂（`cat='tablet'`、`ff='slate'` 自动填，**数据里不必写**）；只有 `detachable` 需显式覆盖。`tb:{...}` 承载平板扩展块。数据量：**113 款**（调研 `research/tablets.md`，2023-2026，Apple 18 / 华为 17 / 小米+REDMI 22 / 荣耀 14 / OPPO+一加 11 / vivo+iQOO 12 / 三星 13 / 联想 6） |
+| 3b.0 | ⚠️ **数据源唯一：只从 `research/tablets.md` 取 113 款** | **不要录取 `missing-devices.md` B.10 的那 10 条** —— 调研 C.1 已注明「B.10 的 10 条**仅作交叉索引**」，它们与 `tablets.md` 的 113 款**按 id 重叠**（如 `ipad-pro-m5-13` 两边都有）。若两处都录会触发 `DUPLICATE_IDS` 硬校验 |
+| 3b.1 | `src/data/tablets/*.ts`（用 `cTablet()`） | 平板用品类默认工厂（`cat='tablet'`、`ff='slate'` 自动填，**数据里不必写**）；只有 `detachable` 需显式覆盖（华为 MatePad Edge X90）。`tb:{...}` 承载平板扩展块。数据量：**113 款**（2023-2026，Apple 18 / 华为 17 / 小米+REDMI 22 / 荣耀 14 / OPPO+一加 11 / vivo+iQOO 12 / 三星 13 / 联想 6） |
 | 3b.2 | `apple.ts` | iPad Pro M5 13/11、iPad Air M4 11/13、iPad A16 11、iPad mini A17 Pro（调研 #64-#67）。`tb.stylus:{supported:true,name:'Apple Pencil Pro',bundled:false}`、`tb.keyboard:{supported:true,name:'妙控键盘',attach:'pogo'}`、`tb.cellular:true`（官方有 Wi-Fi+5G 版） |
 | 3b.3 | `huawei.ts` | MatePad Pro 2026 12"、MatePad Pro Max 13.2"（调研 #71/#72）；`tb.desktopMode:'华为桌面模式'`、`tb.stylus:{name:'HUAWEI M-Pencil'} |
 | 3b.4 | `xiaomi.ts` | 小米平板 9 / 9 Pro / 9 Pro Max（调研 #68-#70）+ **REDMI K Pad（用户点名，当前仍是占位 #74，必须补实）** |
@@ -932,18 +1038,34 @@ classDiagram
 | 3b.11 | `src/data/prices.ts` | 平板渠道价（80-120 款） |
 | 3b.12 | `src/__tests__/device.test.ts`（扩） | 平板 id 唯一、无平板误入手机列表、`tb` 字段展开正确 |
 
-### 3d · 存量折叠机形态回填 `P0`（T01 上线后新发现，**必须在 T02 之前或同期做**）
+### 3d · 存量折叠机形态回填 `P0` —— ✅ **已完成（2026-10-14，工程师在 T02a 落地）**
 
-> **缺口**：T01 后 `FORM_FACTORS_BY_CATEGORY.phone === ['bar']` —— 现有 455 款里
-> `mat` 含「内折/外折/竖折/三折叠」的 **42 款**、`tags` 含「折叠屏」的 **45 款**，
-> **全部拿到工厂默认值 `'bar'`**（Mate XT / X6 / X5 / X3、Magic V3 / V2 / Vs3 / V Flip、Find N5 / N3 Flip / N2、
-> Z Fold6/5/4、Z Flip6/5、razr 全系、Pocket 2 / P50 Pocket、nubia Flip、Phantom V Fold…）。
->
-> **后果：T02 上线后用户点「横折叠 / 竖折叠 / 三折叠」筛选，455 款存量里返回 0 条**——用户会以为筛选坏了。
+> **结果**：`FORM_FACTORS_BY_CATEGORY.phone = ['bar','fold-h','fold-v','fold-triple']`，
+> 实测 **45 款**（`fold-h` 24 / `fold-v` 20 / `fold-triple` 1），**已不再需要 `scripts/backfill-formfactor.mjs`**。
+
+**42 → 45 的差额，是启发式系统性漏判的样本**（保留在此作为教训，不要重蹈）：
+
+| 机型 | 为什么纯启发式会漏 |
+|---|---|
+| `motorola-razr-5g`（2019） | `mat:'OLED'`，无「折」字 |
+| `samsung-galaxy-z-fold3` | `mat:'AMOLED LTPO'`，无「折」字 |
+| `samsung-galaxy-z-flip3` | `mat:'AMOLED LTPO'`，无「折」字 |
+| `honor-magic-vflip` | `mat:'OLED LTPO 竖折'` —— 原启发式表**缺「竖折」分支**，三条规则都不命中 |
+
+**根因：`mat`（屏幕材质）不是一个可靠的形态信号。** 它是自由文本，各品牌写法不一，早期机型甚至不写。
+
+> 📌 **这条反过来印证了 §2.1 的核心决策：形态必须显式标注、不做运行时推导。**
+> 启发式的正确用法是**生成候选清单供人工核对**（工程师正是这么做的：只读扫描 → 候选表 → 逐条人工核对 →
+> 带校验+备份+原子写的迁移脚本 → token 级 diff 证明只新增 `ff`），**不是直接落盘**。
+
+**遗留数据质量问题（T03a 顺手修）**：`huawei-p50-pocket` / `huawei-pocket-2` 的 `mat` 写的是「内折」，
+但 Pocket 系列是上下翻盖的**竖折**小折叠。回填时按实际结构标了 `fold-v`、`mat` 未动。
+**T03a 应把这两条 `mat` 改成「竖折」**，否则将来任何基于 `mat` 的启发式都会误判它们。
+另：`validate:data` 的 `deriveFormFactor` 启发式需补「竖折」与 razr 分支，否则新录入的折叠机不会被告警。
 
 | # | 文件 | 做什么 |
 |---|---|---|
-| 3d.1 | `scripts/backfill-formfactor.mjs`（新，一次性） | 按启发式生成补丁，**默认 `--dry-run` 只输出 diff 供人工复核，不写文件**（禁止盲写 455 条数据）。规则：`mat` 含「三折叠」或 name 含 `mate-xt` → `fold-triple`；`mat` 含「内折/外折」且 `sz ≥ 7.3` → `fold-h`；`mat` 含「内折」且 `sz < 7.3` → `fold-v`；name 含 `flip`/`razr`/`pocket` → `fold-v` |
+| 3d.1 | `scripts/backfill-formfactor.mjs`（新，一次性） | 按启发式生成补丁，**默认 `--dry-run` 只输出 diff 供人工复核，不写文件**（禁止盲写 455 条数据）。**先查「产品线显式覆盖表」，未命中再走几何规则**：覆盖表 `pura-x*` → `fold-wide`（几何无法区分，见 §2.1 警告）；几何规则：`mat` 含「三折叠」或 name 含 `mate-xt` → `fold-triple`；`mat` 含「内折/外折」且 `sz ≥ 7.3` → `fold-h`；`mat` 含「内折」且 `sz < 7.3` → `fold-v`；name 含 `flip`/`razr`/`pocket` → `fold-v` |
 | 3d.2 | 人工复核 | 调研员过一遍 42 条判定结果（重点看 `sz` 在 7.3 附近的边界误判、以及 `mat` 写「内折」实为竖折叠的例外） |
 | 3d.3 | 应用 | 复核通过后应用补丁；**未命中信号的机型一律保持 `bar` 不动** |
 | 3d.4 | 验收 | `FORM_FACTORS_BY_CATEGORY.phone` 至少含 `['bar','fold-h','fold-v','fold-triple']`；`COUNT phone.fold-h ≥ 10` |
@@ -1082,7 +1204,9 @@ T01（4h）→ T03a 补 2025-2026 机型（用户最急）→ T02 筛选（用�
    平板必须写 cat:'tablet' + ff:'slate'（纯平板）或 ff:'detachable'（Surface 类）。
    禁止写 ff:'tablet'——那是品类不是形态。
 7. 【单位归一】重量统一存 g（笔记本 1500 = 1.5kg），展示层用 deviceFormat.formatWeight() 格式化。
-   电池：手机/平板用 mAh，笔记本用 LaptopExtras.batteryWh（Wh），不互相转换。
+   电池双单位共存、**禁止互相换算**：`bc`(mAh，安卓官方值) 与 `bcWh`(Wh，Apple 官方值)，
+   一台设备只填其中一个，另一个留 null。展示层按有值者渲染对应单位。
+   ⚠️ Apple 全系平板只公布 Wh，**禁止用 Wh÷3.82V 反推 mAh 填入 `bc`**——那是制造假精度。
    平板的重量/电池量级与手机差 2-3 倍，**筛选边界必须按品类分开算**（见 BOUNDS_BY_CATEGORY）。
 8. 【所有可空字段】拿不准一律 null，前端渲染为「—」。禁止臆造参数，尤其价格。
    已核实的反面案例：iPhone 18 标准版 / Air 2 / OPPO Find X10 Pro 均未发布，
@@ -1099,7 +1223,30 @@ T01（4h）→ T03a 补 2025-2026 机型（用户最急）→ T02 筛选（用�
 14.【路径含中文】所有 Node 脚本用 fileURLToPath(import.meta.url)，不要用 new URL().pathname
     （会被百分号编码导致 ENOENT）。既有脚本已遵守，新增脚本必须遵守。
 15.【禁止 rm -rf】清理只用明确路径的 rm <file>；备份用 cp，禁用 -rf。
-16.【新增 CompactSeed 短键必须查重】既有键表（**新增前先对照，撞键会直接打穿「455 条零改动」底线**）：
+16.【两个「比例」别混：`sr` 是屏占比，不是屏幕比例】
+     `sr` / `DeviceScreen.ratio` 的语义是**屏占比**（screen-to-body ratio，形如 `'93.5%'`）。
+     屏幕宽高比（16:10、√2:1、21:9 等，aspect ratio）**数据模型里没有这个字段，也不需要**——
+     它由 `res` 分辨率直接算出（2584÷1828 = 1.414），存一份就是冗余且会与分辨率打架。
+     厂商宣传的「16:10 阔型屏」若与实测分辨率折算比例不符（如 Pura X Max 宣传 16:10、
+     ZOL 记 2584×1828 ≈ 1.41:1），**不在任何参数字段里表达**：形态由 `ff` 显式标注（官方产品线命名），
+     分辨率取硬事实，**两者都不依赖那个宣传词，冲突自然消解**。
+     参考：`sr` 在现有 455 款数据里出现 **0 次**，留 null 与现有惯例一致。
+17.【同一条数据的参数尽量同源】`sz` / `res` / `ppi` 应取自同一来源（官方规格页或同一第三方），
+     混采会导致内部不自洽——例如官方尺寸 + 第三方分辨率算出的 ppi 与官方 ppi 对不上。
+     冲突时优先官方；官方缺失则整组取同一第三方，并在调研文档留痕来源。
+18.【`d`（发布日期）是硬必填，且必须在调研阶段就有】
+     `scripts/_qa-validate.mjs` 把 `releaseDate` 列为必填，且它是三处核心功能的依赖：
+     ① 默认排序 `release-desc`；② `YEARS` 年份筛选（取 `slice(0,4)`）；③ 卡片与对比表表头展示。
+     `d` 为空 → 该机型**从年份筛选里消失 + 排序沉底**，属于静默功能缺失（不是显示「—」这么简单）。
+     **工程侧不得编造、不得用「01 月」占位**（`'2026-01'` 暗示 1 月，是假精度）。
+     调研补不到月份时可用**年份粒度** `d: '2026'`，并在调研文档标注「精度：年」；
+     `validate:data` 正则放宽为 `^\d{4}(-\d{2})?$`。**连年份都拿不准的条目 → 剔除，不录。**
+19.【批量录入前必须跑 dry-run 体检，禁止直接写文件】
+     教训：若不做体检，64 条写进 12 个数据文件后才发现 4 条 `d` 违规，**回滚成本远高于录入前排查**。
+     流程固定为：抽取脚本 → **dry-run 输出候选表**（必填项完整性 / 有值字段占比 / id 撞车 / 短键合法性）
+     → 人工核对 → 带校验 + 备份 + 原子写的迁移脚本 → token 级 diff 证明只新增预期字段。
+     这条对回填（3d，45 款）与录入（3a/3b，177 条）同样适用。
+20.【新增 CompactSeed 短键必须查重】既有键表（**新增前先对照，撞键会直接打穿「455 条零改动」底线**）：
      i n d lp(首发价) cp(参考现价) sz res ppi mat rr nit dim hdr sr
      soc sb pr cpu gpu an rt ft ram rom
      cm cw ct ce cz cv fc
@@ -1122,10 +1269,11 @@ T01（4h）→ T03a 补 2025-2026 机型（用户最急）→ T02 筛选（用�
 | **R3** | **品类扩展块设计不当**，将来加笔记本又要改 `Device` 本体 | 中 | 中 | `LaptopExtras` 本期就定义并接线（空壳分组 + `lx` 短键 + 工厂展开），把扩展位真正跑通；禁止往 `Device` 核心加品类专属字段 |
 | **R4** | **脚本重写数据文件导致编译失败白屏**（历史已发生过一次） | 中 | **高** | 五道闸门中的 #4（CI 全绿才提交）+「逻辑与数据物理隔离」原则 + `priceMeta.ts` 模板仅 3 行 |
 | **R5** | **数据规模膨胀**：455 → 700 款，全量打进 JS bundle | 中 | 低 | 每款约 1KB 原始数据，700 款 ≈ 700KB，gzip 后约 150-200KB，可接受。需在 T03 后跑一次 `npm run build` 核对 `dist/assets` 体积；必要时再上路由级懒加载 |
-| **R6** | **数据工作量与数量缺口（已确认）**。① 手机 72 条 + 平板 10 条要录；② **平板调研只到 10 款，用户要 80-120 款，缺口 70-110 款**；③ 平板首批 `res/ppi/nit/bdim/wt/ip/bc/bw` 几乎全 null，对比表会大面积「—」 | **高** | 中 | **先跑通 10 款验证管线，再批量灌量**（避免在错误管线上录 100 条）；平板追加一轮调研，`bc`/`wt` 列为必补项；`validate:data` 出 null 密度告警清单 |
+| **R6** | **数据工作量（已缓解）**。① 手机 72 条 + **平板 113 款**（数量缺口已补齐）；② 平板 `res/ppi/nit/bdim/ip` 仍有 null，`bc` 因 Apple 只公布 Wh 需走双单位字段 | 中 | 中 | **先跑通 2 款样板再批量灌**；`bc`/`wt` 必补；Apple 走 `bcWh` 不换算；`validate:data` 出 null 密度告警清单 |
 | **R9** | **折叠形态持续增殖**。2026 年已出现「中折叠」（小米 18 Fold）这一官方新命名，未来可能还有更多 | 中 | 低 | `FormFactor` 是开放枚举 + `FORM_FACTOR_LABELS` 表驱动，加一个值只需改 2 处；筛选 chips 自动按当前品类已出现的形态渲染（不硬编码列表）；**用测试守卫锁住「枚举新增时标签表与 `FOLD_FORM_FACTORS` 必须同步」，不靠人记** |
 | **R10** | **存量 455 款折叠机形态缺失（已确认 42 款）**。T01 后全部落到工厂默认值 `'bar'`，若不回填，T02 的折叠形态筛选在存量数据里返回 **0 条** | **已确认** | **高**（功能上线即残废） | T03-3d：一次性脚本 `--dry-run` 出 diff → 人工复核 → 应用；**必须在 T02 之前或同期完成** |
-| **R11** | **阔折叠（Pura X）库里 0 条**。用户明确点名该形态，缺数据则筛选按钮点开为空 | **已确认** | 中 | T03-3e：补 Pura X / Pura X Max（`fold-wide` + 外屏 `fsz`/`fres`）；已派给调研员 |
+| ~~R10~~ | ~~存量折叠机形态缺失~~ | — | — | ✅ **已关闭（2026-10-14）**：45 款已回填（fold-h 24 / fold-v 20 / fold-triple 1） |
+| ~~R11~~ | ~~阔折叠（Pura X）库里 0 条~~ | — | — | ⚠️ **调研侧已解决，工程侧待录入**：数据已就位于 **`research/missing-devices.md` B.11（#75 / #76）** —— Pura X（6.3" 16:10 + 外屏 3.5" 1:1 980×980）与 Pura X Max（7.69" √2:1 + 外屏 5.4" 1848×1264）。**代码库 `fold-wide` 仍为 0**，需 T03a 录入。同期其他品牌无已发布阔折叠（小米/OPPO/荣耀均为曝光阶段，vivo 官方明确不做） |
 | **R7** | **GitHub API 逐文件上传**：项目含 `node_modules`（300+ 目录），若不排除会瞬间触发限流 | 中 | 中 | `publish-github.mjs` 严格按 `.gitignore` 过滤；串行上传 + 失败重试；先 dry-run 打印文件清单供人工确认 |
 | **R8** | **「阔折叠」等新形态的判定口径**与官方/用户认知不一致 | 低 | 中 | 形态 chip 加 `title` 说明；参数表加「形态」一行显式展示 |
 

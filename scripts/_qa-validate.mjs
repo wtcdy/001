@@ -30,6 +30,26 @@ const RULES = {
   commonRefreshRates: [60, 90, 120, 144, 165, 185, 240],
 };
 
+/**
+ * 分品类的区间覆盖（平板量级与手机不是一个数量级，混用会把平板全部误判）。
+ *
+ * 只列需要覆盖的键，其余沿用 `RULES`。
+ */
+const CATEGORY_RULES = {
+  tablet: {
+    // 小平板 8.8" ~ 大平板 14.6"（三星 Tab S9 Ultra）
+    screenSize: [7, 15],
+    // 小平板 6550mAh ~ 二合一 12900mAh（华为 MatePad Edge）
+    batteryCapacity: [3000, 15000],
+    // 8.8" 小平板 326g ~ 14.2" 二合一 789g
+    bodyWeight: [200, 900],
+  },
+};
+
+function rulesFor(device) {
+  return { ...RULES, ...(CATEGORY_RULES[device?.category] ?? {}) };
+}
+
 /** 违规记录收集器 */
 const violations = [];
 
@@ -113,27 +133,28 @@ async function loadData() {
 
 async function main() {
   const { mod, cleanup } = await loadData();
-  const { ALL_PHONES, DUPLICATE_IDS, PHONES_BY_BRAND } = mod;
+  const { ALL_PHONES, ALL_DEVICES, DUPLICATE_IDS, PHONES_BY_BRAND, CATEGORY_COUNTS } = mod;
 
-  const total = ALL_PHONES.length;
+  const total = ALL_DEVICES.length;
 
   /* ---------------- 1. 品牌分布 ---------------- */
   const byBrand = new Map();
-  for (const phone of ALL_PHONES) {
+  for (const phone of ALL_DEVICES) {
     byBrand.set(phone.brand, (byBrand.get(phone.brand) ?? 0) + 1);
   }
   const brandLines = [...byBrand.entries()].sort((a, b) => b[1] - a[1]);
 
   /* ---------------- 2. id 唯一性 ---------------- */
   const idCounter = new Map();
-  for (const phone of ALL_PHONES) {
+  for (const phone of ALL_DEVICES) {
     idCounter.set(phone.id, (idCounter.get(phone.id) ?? 0) + 1);
   }
   const dupIds = [...idCounter.entries()].filter(([, n]) => n > 1);
 
   /* ---------------- 3. 逐条字段校验 ---------------- */
   const requiredMissing = [];
-  for (const phone of ALL_PHONES) {
+  for (const phone of ALL_DEVICES) {
+    const rules = rulesFor(phone);
     // 必填字段
     const required = [
       ['id', phone.id],
@@ -160,7 +181,7 @@ async function main() {
     } else {
       const year = Number(rd.slice(0, 4));
       const month = Number(rd.slice(5, 7));
-      if (year < RULES.releaseYearMin || year > RULES.releaseYearMax) {
+      if (year < rules.releaseYearMin || year > rules.releaseYearMax) {
         add(phone, 'releaseDate', rd, `年份不在 ${RULES.releaseYearMin}-${RULES.releaseYearMax}`);
       }
       if (month < 1 || month > 12) {
@@ -168,17 +189,17 @@ async function main() {
       }
     }
 
-    // 数值区间
-    checkRange(phone, 'screen.size', phone.screen?.size ?? null, RULES.screenSize);
-    checkRange(phone, 'battery.capacity', phone.battery?.capacity ?? null, RULES.batteryCapacity);
-    checkRange(phone, 'body.weight', phone.body?.weight ?? null, RULES.bodyWeight);
-    checkRange(phone, 'battery.wiredCharge', phone.battery?.wiredCharge ?? null, RULES.wiredCharge);
+    // 数值区间（按品类取口径）
+    checkRange(phone, 'screen.size', phone.screen?.size ?? null, rules.screenSize);
+    checkRange(phone, 'battery.capacity', phone.battery?.capacity ?? null, rules.batteryCapacity);
+    checkRange(phone, 'body.weight', phone.body?.weight ?? null, rules.bodyWeight);
+    checkRange(phone, 'battery.wiredCharge', phone.battery?.wiredCharge ?? null, rules.wiredCharge);
 
     // 刷新率常见值
     const rr = phone.screen?.refreshRate ?? null;
     if (rr !== null && rr !== undefined) {
-      if (!RULES.commonRefreshRates.includes(rr)) {
-        add(phone, 'screen.refreshRate', rr, `不是常见刷新率 ${RULES.commonRefreshRates.join('/')}`);
+      if (!rules.commonRefreshRates.includes(rr)) {
+        add(phone, 'screen.refreshRate', rr, `不是常见刷新率 ${rules.commonRefreshRates.join('/')}`);
       }
     }
 
@@ -207,7 +228,10 @@ async function main() {
   const out = [];
   out.push('');
   out.push('=============== 数据完整性校验报告 ===============');
-  out.push(`机型总数：${total}`);
+  out.push(`机型总数：${total}（跨品类）`);
+  for (const [category, count] of Object.entries(CATEGORY_COUNTS ?? {})) {
+    if (count > 0) out.push(`  ${category.padEnd(8, ' ')} ${count}`);
+  }
   out.push('');
   out.push('--- 品牌分布（共 ' + byBrand.size + ' 个品牌） ---');
   for (const [brand, count] of brandLines) {

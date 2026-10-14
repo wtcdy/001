@@ -1,8 +1,20 @@
 import { RotateCcw, SlidersHorizontal } from 'lucide-react';
 
-import { BATTERY_BOUNDS, BRANDS, PRICE_BOUNDS, SCREEN_SIZE_BOUNDS, SOC_BRANDS, YEARS } from '../data';
+import {
+  BATTERY_BOUNDS,
+  BRANDS,
+  FORM_FACTORS_BY_CATEGORY,
+  PRICE_BOUNDS,
+  SCREEN_SIZE_BOUNDS,
+  SOC_BRANDS,
+  YEARS,
+} from '../data';
 import type { Filters } from '../hooks/useFilters';
+import { FORM_FACTOR_LABELS } from '../constants';
+import type { DeviceCategory } from '../types/device';
 import type { SortKey } from '../types/phone';
+
+import { FEATURE_DEFS } from '../utils/features';
 
 export interface FilterPanelProps {
   /** 当前筛选条件 */
@@ -10,13 +22,15 @@ export interface FilterPanelProps {
   /** 更新单个字段 */
   update: <K extends keyof Filters>(key: K, value: Filters[K]) => void;
   /** 多选字段开关 */
-  toggleInArray: (key: 'brands' | 'years' | 'socBrands', value: string) => void;
+  toggleInArray: (key: 'brands' | 'years' | 'socBrands' | 'formFactors' | 'features', value: string) => void;
   /** 重置全部筛选 */
   reset: () => void;
   /** 当前排序 */
   sortKey: SortKey;
   /** 修改排序 */
   setSortKey: (key: SortKey) => void;
+  /** 当前品类：决定形态 / 特性 chips 展示哪些（只展示该品类下实际有数据的选项） */
+  category: DeviceCategory;
 }
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
@@ -149,7 +163,14 @@ export function FilterPanel({
   reset,
   sortKey,
   setSortKey,
+  category,
 }: FilterPanelProps) {
+  // 形态：只展示当前品类下实际有机型的形态（读派生索引，不硬编码），按数量降序
+  const formFactorOptions = FORM_FACTORS_BY_CATEGORY[category] ?? [];
+
+  // 特性：只展示 categories 含当前品类的特性，按 FEATURE_DEFS 的既定顺序
+  const featureOptions = FEATURE_DEFS.filter((def) => def.categories.includes(category));
+
   return (
     <div className="psc-card p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -239,6 +260,20 @@ export function FilterPanel({
           />
         </Section>
 
+        <Section title="形态">
+          <Chips
+            items={formFactorOptions.map((ff) => FORM_FACTOR_LABELS[ff] ?? ff)}
+            active={filters.formFactors.map((ff) => FORM_FACTOR_LABELS[ff] ?? ff)}
+            onToggle={(label) => {
+              const ff = formFactorOptions.find((item) => (FORM_FACTOR_LABELS[item] ?? item) === label);
+              if (ff) toggleInArray('formFactors', ff);
+            }}
+          />
+          {formFactorOptions.length === 0 ? (
+            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">该品类暂无机型数据</p>
+          ) : null}
+        </Section>
+
         <Section title="特性">
           <div className="space-y-0.5">
             <Toggle
@@ -252,6 +287,22 @@ export function FilterPanel({
               onChange={(next) => update('ip68Only', next)}
             />
             <Toggle label="支持 NFC" checked={filters.nfcOnly} onChange={(next) => update('nfcOnly', next)} />
+          </div>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {featureOptions.map((def) => {
+              const on = filters.features.includes(def.id);
+              return (
+                <button
+                  key={def.id}
+                  type="button"
+                  onClick={() => toggleInArray('features', def.id)}
+                  className={`psc-chip ${on ? 'psc-chip-on' : 'psc-chip-off'}`}
+                  aria-pressed={on}
+                >
+                  {def.label}
+                </button>
+              );
+            })}
           </div>
         </Section>
       </div>

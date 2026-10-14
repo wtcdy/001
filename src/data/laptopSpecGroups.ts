@@ -57,9 +57,9 @@ export const LAPTOP_SPEC_GROUPS: SpecGroup[] = [
       },
       {
         key: 'laptop.batteryWh',
-        // 笔记本行业惯例用 Wh，不做 Wh→mAh 换算（需要电压，无法反推）
+        // 笔记本行业惯例用 Wh，与 mAh（battery.capacity）二选一，不做换算（需要电压，无法反推）
         label: '电池容量',
-        get: (device: Device) => device.laptop?.batteryWh ?? null,
+        get: (device: Device) => device.battery?.batteryWh ?? null,
         unit: 'Wh',
         better: 'higher',
         numeric: true,

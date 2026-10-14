@@ -30,7 +30,7 @@ export const DATA_UPDATED_AT = '2026-10-13';
  */
 export const DATA_UPDATED_BY_CATEGORY: Record<DeviceCategory, string> = {
   phone: DATA_UPDATED_AT,
-  tablet: DATA_UPDATED_AT,
+  tablet: '2026-10-14',
   laptop: DATA_UPDATED_AT,
 };
 
