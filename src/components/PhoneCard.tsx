@@ -4,7 +4,8 @@ import BrandAvatar from './BrandAvatar';
 import { SUBSIDY_POLICY } from '../constants';
 import { dealOfPhone } from '../data';
 import { MAX_COMPARE } from '../hooks/useCompare';
-import { formatYuan, specLabel } from '../utils/price';
+import { formatYuan } from '../utils/price';
+import { storageSpecOf } from '../utils/storageSpec';
 import type { Phone } from '../types/phone';
 
 export interface PhoneCardProps {
@@ -42,17 +43,20 @@ function InfoItem({
 /**
  * 渠道报价块：主视觉是渠道价本身，有价时高亮并打「更低」角标。
  * `tag` 是渠道性质角标（京东自营 = 自营），与渠道名分开展示。
+ * `spec` 是该价格对应的内存配置（如 '12+256'），跟在价格后以全角括号展示；null 时不追加。
  */
 function ChannelPrice({
   label,
   tag,
   price,
   best,
+  spec,
 }: {
   label: string;
   tag: string;
   price: number | null;
   best: boolean;
+  spec: string | null;
 }) {
   return (
     <div
@@ -81,16 +85,26 @@ function ChannelPrice({
           best ? 'text-brand-600 dark:text-brand-400' : 'text-slate-700 dark:text-slate-200'
         }`}
       >
-        {price !== null ? `¥${formatYuan(price)}` : '—'}
+        {price !== null ? (
+          <>
+            ¥{formatYuan(price)}
+            {spec ? <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400">（{spec}）</span> : null}
+          </>
+        ) : (
+          '—'
+        )}
       </div>
     </div>
   );
 }
 
-/** 机型卡片：展示核心参数 + 京东/拼多多渠道价（含配置）+ 加入对比按钮 */
+/** 机型卡片：展示核心参数 + 京东自营渠道价（含配置）+ 加入对比按钮 */
 export function PhoneCard({ phone, selected, onToggle, disabled = false }: PhoneCardProps) {
   const deal = dealOfPhone(phone);
-  const specText = specLabel(deal.spec);
+  /** 渠道价对应的最低配配置（如 12+256），来自 PRICES[id].spec */
+  const channelSpec = deal.hasPrice ? deal.spec.trim() || null : null;
+  /** 官网价对应的最低配配置，来自机型 ram/rom 数组 */
+  const officialSpec = storageSpecOf(phone);
   const launchPrice = phone.launchPrice ?? null;
   /** 对比栏已满且本卡未选中 —— 此时「加入对比」不可用，但按钮仍可点击 */
   const limitReached = disabled && !selected;
@@ -113,7 +127,7 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
 
       {/*
         价格区：主视觉是京东自营价（单渠道口径，拼多多已下线），
-        配置（如 12+256 · 最低配）紧跟价格，国补后到手价作辅助信息。
+        价格后直接带内存配置（如 ¥5999（12+256）），国补后到手价作辅助信息。
         没有渠道报价的机型（不在 PRICES 表里）回落到官网售价——
         官网价是真实可买的价格，目的是给出能买到的最低价；
         只有官网下架且渠道也无货时才显示「暂无报价」。
@@ -126,14 +140,10 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
               tag="自营"
               price={deal.jd}
               best={deal.bestChannel === 'jd'}
+              spec={channelSpec}
             />
 
             <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-              {specText ? (
-                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
-                  {specText}
-                </span>
-              ) : null}
               {deal.eligible ? (
                 <span className="text-[11px] text-slate-500 dark:text-slate-400">
                   国补后 ¥{formatYuan(deal.finalPrice)}（省 ¥{formatYuan(deal.subsidy)}）
@@ -168,6 +178,7 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
               <>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   官网价 ¥{formatYuan(phone.currentPrice)}
+                  {officialSpec ? `（${officialSpec}）` : ''}
                 </span>
                 <span className="text-xs text-slate-400 dark:text-slate-500">暂无渠道报价</span>
               </>
@@ -175,6 +186,7 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
               <>
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   官网价 ¥{launchPrice.toLocaleString('zh-CN')}
+                  {officialSpec ? `（${officialSpec}）` : ''}
                 </span>
                 <span className="text-xs text-slate-400 dark:text-slate-500">首发价 · 暂无渠道报价</span>
               </>

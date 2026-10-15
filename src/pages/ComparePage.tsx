@@ -11,19 +11,22 @@ import { PRICE_DISCLAIMER } from '../constants';
 // 用手机专属索引会把平板静默丢掉（对比栏少一列且无提示）。
 import { ALL_DEVICES, dealOfPhone, getDevicesByIds } from '../data';
 import { MAX_COMPARE, useCompare } from '../hooks/useCompare';
-import { formatYuan, specLabel } from '../utils/price';
+import { formatYuan } from '../utils/price';
+import { storageSpecOf } from '../utils/storageSpec';
 
-/** 对比页渠道价一行：渠道名 + 渠道性质角标 + 渠道价（价低者高亮） */
+/** 对比页渠道价一行：渠道名 + 渠道性质角标 + 渠道价 + 配置后缀（价低者高亮） */
 function ChannelRow({
   label,
   tag,
   price,
   best,
+  spec,
 }: {
   label: string;
   tag: string;
   price: number | null;
   best: boolean;
+  spec: string | null;
 }) {
   return (
     <div
@@ -42,7 +45,14 @@ function ChannelRow({
           best ? 'text-brand-600 dark:text-brand-400' : 'text-slate-700 dark:text-slate-200'
         }`}
       >
-        {price !== null ? `¥${formatYuan(price)}` : '—'}
+        {price !== null ? (
+          <>
+            ¥{formatYuan(price)}
+            {spec ? <span className="text-xs font-normal text-slate-500 dark:text-slate-400">（{spec}）</span> : null}
+          </>
+        ) : (
+          '—'
+        )}
       </span>
       {best ? (
         <span className="shrink-0 rounded bg-brand-500 px-1 text-[10px] leading-tight font-medium text-white">
@@ -139,7 +149,10 @@ export function ComparePage() {
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {phones.map((phone, index) => {
           const deal = dealOfPhone(phone);
-          const specText = specLabel(deal.spec);
+          /** 渠道价对应的最低配配置（如 12+256），来自 PRICES[id].spec */
+          const channelSpec = deal.hasPrice ? deal.spec.trim() || null : null;
+          /** 官网价对应的最低配配置，来自机型 ram/rom 数组 */
+          const officialSpec = storageSpecOf(phone);
           return (
             <div key={phone.id} className="psc-card relative p-3">
               <button
@@ -165,7 +178,7 @@ export function ComparePage() {
 
               {/*
                 价格区：与机型库卡片口径一致 —— 主视觉是京东自营价（单渠道，拼多多已下线），
-                配置（12+256 · 最低配）作为辅助信息。
+                价格后直接带内存配置（如 ¥5999（12+256））。
                 无渠道报价时回落到官网售价，只有官网下架且渠道也无货才「暂无报价」。
               */}
               <div className="mt-2">
@@ -177,14 +190,10 @@ export function ComparePage() {
                         tag="自营"
                         price={deal.jd}
                         best={deal.bestChannel === 'jd'}
+                        spec={channelSpec}
                       />
                     </div>
                     <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
-                      {specText ? (
-                        <span className="rounded bg-slate-100 px-1 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
-                          {specText}
-                        </span>
-                      ) : null}
                       {deal.eligible ? (
                         <span className="text-[11px] text-slate-500 dark:text-slate-400">
                           国补后 ¥{formatYuan(deal.finalPrice)}
@@ -208,6 +217,7 @@ export function ComparePage() {
                   <div className="flex flex-wrap items-baseline gap-1.5">
                     <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                       官网价 ¥{formatYuan(phone.currentPrice)}
+                      {officialSpec ? `（${officialSpec}）` : ''}
                     </span>
                     <span className="text-xs text-slate-400 dark:text-slate-500">暂无渠道报价</span>
                   </div>
@@ -215,6 +225,7 @@ export function ComparePage() {
                   <div className="flex flex-wrap items-baseline gap-1.5">
                     <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                       官网价 ¥{phone.launchPrice.toLocaleString('zh-CN')}
+                      {officialSpec ? `（${officialSpec}）` : ''}
                     </span>
                     <span className="text-xs text-slate-400 dark:text-slate-500">首发价 · 暂无渠道报价</span>
                   </div>

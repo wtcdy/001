@@ -7,6 +7,7 @@ import type { RowDiffResult } from '../data';
 import type { Phone } from '../types/phone';
 
 import { positioningOf } from '../utils/positioning';
+import { priceRowSpecSuffix } from '../utils/storageSpec';
 
 export interface SpecTableProps {
   /** 参与对比的机型（2-4 款） */
@@ -156,6 +157,8 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
                             const isBest = diff.bestIndexes.includes(index);
                             const isWorst = diff.worstIndexes.includes(index);
                             const isDiff = diff.diffIndexes.includes(index);
+                            // 价格行追加内存配置后缀（如 5999元（12+256））；非价格行或无配置时为 null
+                            const specSuffix = priceRowSpecSuffix(row.key, phone);
 
                             let cellClass = 'text-slate-800 dark:text-slate-100';
                             if (isBest) cellClass = 'psc-cell-better font-semibold';
@@ -168,6 +171,11 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
                                 className={`${columnWidth} px-3 py-2.5 align-top ${cellClass}`}
                               >
                                 {value ?? <span className="text-slate-400 dark:text-slate-600">—</span>}
+                                {value != null && specSuffix ? (
+                                  <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400">
+                                    （{specSuffix}）
+                                  </span>
+                                ) : null}
                                 {isBest ? (
                                   <span className="ml-1 text-[10px] font-bold">优</span>
                                 ) : null}
