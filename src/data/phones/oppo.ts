@@ -40,6 +40,16 @@ import { c, type CompactSeed } from './_factory';
  *     - Find X8s：`10 W 无线反向充电` → `br:'10W无线反向'`（原 `'10W反向'` 未区分无线）
  *     - Find X7 Ultra / Find X6 Pro / Find X8 Ultra：官网原文确证，保留（详见报告表格）。
  *
+ * **价格口径（2026-10-15 由 team-lead 裁决，全库统一）**：
+ *  - `cp` = **官网/商城在售价（商城标价）**，取**最低配**（如 12GB+256GB 官方标配）。
+ *    商城商详页 `priceTag.price` 即商城价（页面标签「商城价」）；`buyPrice`（「到手价」）是券后价，
+ *    依赖领券动作、随时变化、不可复现，**一律不采用**。
+ *  - `lp` = 发布会/上市**首发价**，只在有 OPPO 官方出处（官网新闻稿、OPPO 社区官方帖）时才填，
+ *    媒体/第三方报价不采信；无官方出处就保持 null。
+ *  - ⚠️ **OPPO 商城标价整体高于发布会首发价 200~300 元**（例：Find X9 12+256 发布会 4399 → 商城 4599；
+ *    16+256 发布会 4699 → 商城 4999；12+512 发布会 4999 → 商城 5299；16+512 发布会 5299 → 商城 5599）。
+ *    因此 **`cp > lp` 是 OPPO 的真实情况，不是录错，不要「改回」成 lp**。
+ *
  * **官网未公布故保持 null 的字段**：Find X9 系列 / X10 系列的 `an`（安兔兔）、`gpu`；
  * Find X10 / X10 Pro Max 的 `os`（官网只写 ColorOS 17，未标 Android 版本）；X9 Pro / X10 Pro Max 的 `col` 等。
  */
@@ -78,7 +88,11 @@ const SEEDS: CompactSeed[] = [
   // OPPO 官网 find-x9/specs：3 倍光学 / 120 倍数码；三围 156.98×73.93×7.99mm / 203g（「尺寸与重量」段原文）
   // nit = 官网规格页「全局激发最高亮度 1800 尼特典型值」（2026-10-15 全品牌口径统一为规格页全局激发亮度）
   // OPPO 自 Find X9 起参数页不再标注反向充电（只有「OTG 数据传输 支持」），br 保持 null
-  { i:'oppo-find-x9', n:'OPPO Find X9', d:'2025-10', lp:4399, cp:4399, ff:'bar', sz:6.59, res:'2760x1256', ppi:460, mat:'AMOLED 柔性直屏', rr:120, nit:1800, dim:'3840Hz PWM', hdr:'HDR10+ / 杜比视界', soc:'天玑9500', sb:'联发科', pr:'3nm', cpu:'8核全大核 最高4.21GHz', gpu:'Arm Mali Drage MC12', an:null, rt:'LPDDR5X', ft:'UFS 4.1', ram:[12,16], rom:[256,512,1024], cm:'5000万像素 索尼LYT-808 主摄', cw:'5000万像素超广角', ct:'5000万像素潜望长焦', ce:'200万像素黑白 + 丹霞色彩还原镜头', cz:'3倍光学/120倍数码', cv:'4K120 杜比视界', fc:'3200万像素', bc:7025, bw:80, bwl:50, br:null, os:'Android 16', ui:'ColorOS 16', net:'5G', wf:'Wi-Fi 7', bt:'5.4', nfc:true, ir:false, sat:null, bdim:'156.98x73.93x7.99mm', wt:203, bm:null, ip:'IP66/IP68/IP69', bio:'超声波屏下指纹 + 面部识别', spk:null, port:'USB 2.0 Type-C', col:'追光红,绒光钛,霜白,雾黑', tags:['旗舰','影像旗舰','长续航','潜望长焦'] },
+  // lp 4399 = 2025-10-16 发布会公布的首发价（12GB+256GB）；cp 4599 = OPPO 商城在售价（商城价），
+  //   SKU「OPPO Find X9 绒光钛 12GB+256GB 官方标配」https://www.opposhop.cn/cn/web/products/36847.html
+  //   （霜白 36848 / 雾黑 36849 / 追光红 36846 同价 4599，四配色交叉验证一致）
+  //   ⚠️ OPPO 商城标价整体高于发布会首发价 200~300 元，cp > lp 属真实情况，勿当作错误改回
+  { i:'oppo-find-x9', n:'OPPO Find X9', d:'2025-10', lp:4399, cp:4599, ff:'bar', sz:6.59, res:'2760x1256', ppi:460, mat:'AMOLED 柔性直屏', rr:120, nit:1800, dim:'3840Hz PWM', hdr:'HDR10+ / 杜比视界', soc:'天玑9500', sb:'联发科', pr:'3nm', cpu:'8核全大核 最高4.21GHz', gpu:'Arm Mali Drage MC12', an:null, rt:'LPDDR5X', ft:'UFS 4.1', ram:[12,16], rom:[256,512,1024], cm:'5000万像素 索尼LYT-808 主摄', cw:'5000万像素超广角', ct:'5000万像素潜望长焦', ce:'200万像素黑白 + 丹霞色彩还原镜头', cz:'3倍光学/120倍数码', cv:'4K120 杜比视界', fc:'3200万像素', bc:7025, bw:80, bwl:50, br:null, os:'Android 16', ui:'ColorOS 16', net:'5G', wf:'Wi-Fi 7', bt:'5.4', nfc:true, ir:false, sat:null, bdim:'156.98x73.93x7.99mm', wt:203, bm:null, ip:'IP66/IP68/IP69', bio:'超声波屏下指纹 + 面部识别', spk:null, port:'USB 2.0 Type-C', col:'追光红,绒光钛,霜白,雾黑', tags:['旗舰','影像旗舰','长续航','潜望长焦'] },
   // OPPO 官网 find-x9-pro/specs：3 倍光学 / 120 倍数码；三围 161.26×76.46×8.25mm / 224g；前置 5000 万像素 f/2.0
   // nit = 官网规格页「全局激发最高亮度 1800 尼特典型值」（口径已统一，勿再填产品页 3600 局部峰值）
   // 官网未标反向充电（仅「OTG 数据传输 支持」），br 保持 null
