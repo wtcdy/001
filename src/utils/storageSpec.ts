@@ -14,10 +14,31 @@ import type { Device } from '../types/device';
  */
 
 /**
+ * 已知「在售最低配 SKU ≠ min(ramOptions)×min(romOptions)」的机型，人工核实后覆盖。
+ *
+ * 数据陷阱：`ramOptions`/`romOptions` 是该机型**出现过的所有版本**的并集，
+ * 但官网商城实际在售 SKU 未必包含 min×min 那一档。例如荣耀 Magic8 Pro / Pro Air
+ * 官网「选择版本」从 12+512 起，根本没有 12+256 —— 按 min×min 会推导出一个
+ * 官网不存在的 SKU，标注即错。这类机型在此表按 `id -> 官网在售最低配` 覆盖。
+ *
+ * 规律备忘：荣耀高端线（Magic8 Pro / Magic8 Pro Air）在售最低配从 512 起，不出 256。
+ * 若推导结果出现荣耀 Magic 系列的 `12+256`，基本可怀疑是错的。
+ *
+ * 只覆盖**官网口径**（`storageSpecOf` 用）；渠道价配置仍走 `PRICES[id].spec`，两者不混。
+ * 条目变长（>20 条）后再考虑挪去独立文件。
+ */
+const STORAGE_SPEC_OVERRIDE: Record<string, string> = {
+  'honor-magic8-pro-air': '12+512', // 官网商城无 12+256，最低配就是 12+512
+  'honor-magic8-pro': '12+512', // 同上，官网无 12+256
+};
+
+/**
  * 从机型的 ram/rom 数组取「最低配组合」，返回 `"12+256"` 格式。
- * ramOptions 或 romOptions 缺失 / 为空 → null。
+ * 命中 override 表时直接返回覆盖值；ram/rom 缺失 / 为空 → null。
  */
 export function storageSpecOf(device: Device): string | null {
+  const override = STORAGE_SPEC_OVERRIDE[device.id];
+  if (override) return override;
   const ram = device.storage?.ramOptions;
   const rom = device.storage?.romOptions;
   if (!ram || ram.length === 0 || !rom || rom.length === 0) return null;
