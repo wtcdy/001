@@ -91,7 +91,6 @@ function printHelp() {
       '列名别名（大小写不敏感）：',
       '  id      ：机型ID / id / phoneId / 机型id',
       '  jd      ：京东自营价 / jd / 京东价 / jdPrice',
-      '  pdd     ：拼多多百亿补贴价 / pdd / 百亿补贴价 / 拼多多价 / pddPrice',
       '  可选列  ：更新日期 / updatedAt / date、是否参考价 / isReference',
       '',
       '安全策略：src/data/prices.ts 已存在时默认不覆盖，改为写入 src/data/prices-imported.ts，',
@@ -178,7 +177,6 @@ function parseJson(text) {
 const ALIASES = {
   id: ['机型id', '机型编号', 'id', 'phoneid', '机型ID'],
   jd: ['京东自营价', '京东价', '京东自营', 'jd', 'jdprice'],
-  pdd: ['拼多多百亿补贴价', '百亿补贴价', '拼多多价', '拼多多百亿补贴', 'pdd', 'pddprice'],
   updatedAt: ['更新日期', '采集日期', 'updatedat', 'date'],
   isReference: ['是否参考价', 'isreference', '参考价'],
 };
@@ -234,11 +232,9 @@ function normalizeRecords(rows, phoneIds, defaultUpdatedAt, defaultIsReference) 
     }
 
     const jd = toPrice(mapped.jd);
-    const pdd = toPrice(mapped.pdd);
     if (jd.error) skipped.push(`${id}：京东价 ${jd.error}，已置空`);
-    if (pdd.error) skipped.push(`${id}：拼多多价 ${pdd.error}，已置空`);
-    if (jd.value === null && pdd.value === null) {
-      skipped.push(`${id}：两个渠道均无有效价格，整条跳过`);
+    if (jd.value === null) {
+      skipped.push(`${id}：京东无有效价格，整条跳过`);
       return;
     }
 
@@ -260,7 +256,7 @@ function normalizeRecords(rows, phoneIds, defaultUpdatedAt, defaultIsReference) 
       else if (['false', '0', 'no', 'n', '否'].includes(text)) isReference = false;
     }
 
-    records.push({ id, jd: jd.value, pdd: pdd.value, updatedAt, isReference });
+    records.push({ id, jd: jd.value, updatedAt, isReference });
   });
 
   return { records, skipped };
@@ -271,21 +267,21 @@ function renderModule(records, isReferenceDefault) {
   const lines = records.map((record) => {
     const flags = [`updatedAt: '${record.updatedAt}'`];
     if (record.isReference) flags.push('isReference: true');
-    return `  '${record.id}': { jd: ${record.jd ?? 'null'}, pdd: ${record.pdd ?? 'null'}, ${flags.join(
-      ', ',
-    )} },`;
+    return `  '${record.id}': { jd: ${record.jd ?? 'null'}, ${flags.join(', ')} },`;
   });
 
   return `import { computeDeal } from '../utils/price';
-import type { DealResult } from '../utils/price';
-import type { Phone, PriceRecord } from '../types/phone';
+import type { DealResult, PriceRecordWithSpec } from '../utils/price';
+import type { Phone } from '../types/phone';
 
 /**
  * 渠道价格数据（与参数数据解耦，可独立更新）。
  *
  * 数据来源与口径：
- *  - \`jd\`  ：京东自营价（元）
- *  - \`pdd\` ：拼多多百亿补贴价（元）
+ *  - \`spec\`：该报价对应的配置，形如 '12+256'（最低配组合）。
+ *             CSV 导入不产出该字段，由 \`node scripts/fill-price-spec.mjs\`
+ *             从机型参数数据推导回填，故此处类型必须留 \`PriceRecordWithSpec\`。
+ *  - \`jd\`  ：京东自营价（元）；当前唯一渠道（拼多多已下线）
  *  - \`updatedAt\`：该条报价的采集日期
  *  - \`isReference\`：true 表示参考价，非平台实时抓取值
  *
@@ -302,7 +298,7 @@ import type { Phone, PriceRecord } from '../types/phone';
  */
 
 /** 机型 id -> 渠道报价 */
-export const PRICES: Record<string, PriceRecord> = {
+export const PRICES: Record<string, PriceRecordWithSpec> = {
 ${lines.join('\n')}
 };
 
@@ -310,7 +306,7 @@ ${lines.join('\n')}
 export const PRICE_COUNT: number = Object.keys(PRICES).length;
 
 /** 取某一机型的渠道报价（未收录返回 undefined） */
-export function getPriceRecord(phoneId: string | undefined): PriceRecord | undefined {
+export function getPriceRecord(phoneId: string | undefined): PriceRecordWithSpec | undefined {
   if (!phoneId) return undefined;
   return PRICES[phoneId];
 }
@@ -320,7 +316,7 @@ export function dealOfPhone(phone: Phone): DealResult {
   return computeDeal(getPriceRecord(phone.id));
 }
 
-export type { PriceRecord };
+export type { PriceRecordWithSpec };
 `;
 }
 

@@ -14,9 +14,9 @@ import type { PriceRecord } from '../types/phone';
 
 import { makePhone } from './fixtures';
 
-/** 构造报价记录；未传的渠道为 null */
-function record(jd: number | null, pdd: number | null, extra: Partial<PriceRecord> = {}): PriceRecord {
-  return { jd, pdd, updatedAt: '2026-10-13', ...extra };
+/** 构造报价记录；单渠道口径，只认京东自营价 */
+function record(jd: number | null, extra: Partial<PriceRecord> = {}): PriceRecord {
+  return { jd, updatedAt: '2026-10-13', ...extra };
 }
 
 describe('国补政策常量', () => {
@@ -32,7 +32,7 @@ describe('国补政策常量', () => {
 
 describe('computeDeal 边界值', () => {
   it('5999 元：未超上限，但补贴被 500 元封顶', () => {
-    const deal = computeDeal(record(5999, null));
+    const deal = computeDeal(record(5999));
     expect(deal.bestPrice).toBe(5999);
     expect(deal.eligible).toBe(true);
     expect(deal.subsidy).toBe(500); // 5999 × 15% = 899.85 → 封顶 500
@@ -42,14 +42,14 @@ describe('computeDeal 边界值', () => {
   });
 
   it('6000 元：恰好等于上限，仍享受补贴', () => {
-    const deal = computeDeal(record(null, 6000));
+    const deal = computeDeal(record(6000));
     expect(deal.eligible).toBe(true);
     expect(deal.subsidy).toBe(500);
     expect(deal.finalPrice).toBe(5500);
   });
 
   it('6001 元：超出上限，不享受补贴', () => {
-    const deal = computeDeal(record(6001, null));
+    const deal = computeDeal(record(6001));
     expect(deal.eligible).toBe(false);
     expect(deal.subsidy).toBe(0);
     expect(deal.finalPrice).toBe(6001);
@@ -58,56 +58,36 @@ describe('computeDeal 边界值', () => {
   });
 
   it('5000 元：15% = 750 元，被封顶到 500 元', () => {
-    const deal = computeDeal(record(5000, 5200));
+    const deal = computeDeal(record(5000));
     expect(deal.bestPrice).toBe(5000);
     expect(deal.subsidy).toBe(500);
     expect(deal.finalPrice).toBe(4500);
   });
 
   it('3333 元：15% = 499.95 元，精确到分不被封顶', () => {
-    const deal = computeDeal(record(3333, null));
+    const deal = computeDeal(record(3333));
     expect(deal.subsidy).toBe(499.95);
     expect(deal.finalPrice).toBe(2833.05);
   });
 });
 
 describe('computeDeal 渠道取值', () => {
-  it('两渠道都有价：取低价（jd 4299 / pdd 3999 → pdd）', () => {
-    const deal = computeDeal(record(4299, 3999));
-    expect(deal.bestChannel).toBe('pdd');
-    expect(deal.bestPrice).toBe(3999);
-    expect(deal.hasPrice).toBe(true);
-  });
-
-  it('两渠道都有价：京东更低时取京东', () => {
-    const deal = computeDeal(record(3899, 3999));
+  it('有京东自营价：bestChannel 为 jd，bestPrice 取京东价', () => {
+    const deal = computeDeal(record(4299));
     expect(deal.bestChannel).toBe('jd');
-    expect(deal.bestPrice).toBe(3899);
-  });
-
-  it('价格相等时优先拼多多百亿补贴', () => {
-    const deal = computeDeal(record(3999, 3999));
-    expect(deal.bestChannel).toBe('pdd');
-    expect(deal.bestPrice).toBe(3999);
+    expect(deal.bestPrice).toBe(4299);
+    expect(deal.hasPrice).toBe(true);
   });
 
   it('仅京东有价', () => {
-    const deal = computeDeal(record(4599, null));
+    const deal = computeDeal(record(4599));
     expect(deal.bestChannel).toBe('jd');
     expect(deal.bestPrice).toBe(4599);
-    expect(deal.pdd).toBeNull();
     expect(deal.hasPrice).toBe(true);
   });
 
-  it('仅拼多多有价', () => {
-    const deal = computeDeal(record(null, 4299));
-    expect(deal.bestChannel).toBe('pdd');
-    expect(deal.bestPrice).toBe(4299);
-    expect(deal.jd).toBeNull();
-  });
-
-  it('两渠道都无价：hasPrice 为 false，前端显示「暂无报价」', () => {
-    const deal = computeDeal(record(null, null));
+  it('京东无价：hasPrice 为 false，前端回落到官网售价', () => {
+    const deal = computeDeal(record(null));
     expect(deal.hasPrice).toBe(false);
     expect(deal.bestPrice).toBeNull();
     expect(deal.finalPrice).toBeNull();
@@ -124,15 +104,11 @@ describe('computeDeal 渠道取值', () => {
 
 describe('computeDeal 脏数据', () => {
   it('0 / 负数 / NaN 都视为缺失', () => {
-    expect(computeDeal(record(0, 3999)).jd).toBeNull();
-    expect(computeDeal(record(0, 3999)).bestChannel).toBe('pdd');
-    expect(computeDeal(record(-100, null)).hasPrice).toBe(false);
-    expect(computeDeal(record(Number.NaN, null)).hasPrice).toBe(false);
-    expect(computeDeal(record(Number.POSITIVE_INFINITY, null)).hasPrice).toBe(false);
-  });
-
-  it('两渠道都是脏数据时整条无报价', () => {
-    expect(computeDeal(record(0, -1)).hasPrice).toBe(false);
+    expect(computeDeal(record(0)).jd).toBeNull();
+    expect(computeDeal(record(0)).hasPrice).toBe(false);
+    expect(computeDeal(record(-100)).hasPrice).toBe(false);
+    expect(computeDeal(record(Number.NaN)).hasPrice).toBe(false);
+    expect(computeDeal(record(Number.POSITIVE_INFINITY)).hasPrice).toBe(false);
   });
 
   it('normalizePrice 只放行正的有效数字', () => {
@@ -160,7 +136,7 @@ describe('formatYuan 展示', () => {
   });
 
   it('展示值与计算值一致（不会出现展示 499.95、计算按 500）', () => {
-    const deal = computeDeal(record(3333, null));
+    const deal = computeDeal(record(3333));
     expect(formatYuan(deal.subsidy)).toBe('499.95');
     expect(3333 - Number(formatYuan(deal.finalPrice))).toBeCloseTo(deal.subsidy, 6);
   });
@@ -173,18 +149,14 @@ describe('报价数据自检', () => {
     expect(unknown).toEqual([]);
   });
 
-  it('价格均为 300~20000 的整数，且至少有一个渠道有价', () => {
+  it('价格均为 300~20000 的整数，且京东有价', () => {
     for (const [id, item] of Object.entries(PRICES)) {
-      const values = [item.jd, item.pdd];
-      expect(values.some((value) => typeof value === 'number' && value > 0), `${id} 无有效报价`).toBe(
-        true,
-      );
-      for (const value of values) {
-        if (value === null) continue;
-        expect(Number.isInteger(value), `${id} 价格非整数：${value}`).toBe(true);
-        expect(value).toBeGreaterThanOrEqual(300);
-        expect(value).toBeLessThanOrEqual(20000);
-      }
+      const value = item.jd;
+      expect(typeof value === 'number' && value > 0, `${id} 无有效报价`).toBe(true);
+      if (value === null) continue;
+      expect(Number.isInteger(value), `${id} 价格非整数：${value}`).toBe(true);
+      expect(value).toBeGreaterThanOrEqual(300);
+      expect(value).toBeLessThanOrEqual(20000);
       expect(item.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     }
   });

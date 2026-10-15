@@ -2,6 +2,7 @@ import type { Device, FormFactor } from '../types/device';
 import type { SpecGroup, SpecRow, SpecValue } from '../types/phone';
 
 import { dealOfPhone } from './prices';
+import { effectivePriceOf } from '../utils/effectivePrice';
 
 /** 把可能的空值统一转换成可展示字符串；null / undefined / 空串 返回 null */
 function v(value: SpecValue): SpecValue {
@@ -90,16 +91,18 @@ export const SPEC_GROUPS: SpecGroup[] = [
       },
       {
         key: 'currentPrice',
-        // 明确标注「未计国补」：与下面的渠道价 / 国补后到手价区分开，避免两个「参考价」混淆
-        label: '参考现价（未计国补）',
+        // 官网售价（未计国补）：与渠道价区分开，作为无渠道报价时的回落价
+        label: '官网售价',
         get: (device: Device) => v(device.currentPrice ?? null),
         unit: '元',
         better: 'lower',
         numeric: true,
         crossComparable: true,
       },
-      // 渠道价与国补后到手价：价格类一律「越低越优」，参与差异高亮与最优/最弱标记；
-      // 且跨品类可比——「同预算买手机还是平板」是真实决策场景
+      // 渠道价与最低可购价：价格类一律「越低越优」，参与差异高亮与最优/最弱标记；
+      // 且跨品类可比——「同预算买手机还是平板」是真实决策场景。
+      // 价格可能来自「官网价 × 折扣模型」推导的参考估算值（非平台实时抓取），
+      // 因此统一带 `title` 说明，在对比表标签旁打出「参考」角标 + 悬浮提示。
       {
         key: 'price.jd',
         label: '京东自营价',
@@ -108,24 +111,21 @@ export const SPEC_GROUPS: SpecGroup[] = [
         better: 'lower',
         numeric: true,
         crossComparable: true,
+        title: '该价格可能为参考估算（官网价 × 折扣模型推导），非京东平台实时抓取，实际购买请以平台页面结算价为准。',
       },
       {
-        key: 'price.pdd',
-        label: '拼多多百亿补贴价',
-        get: (device: Device) => v(dealOfPhone(device).pdd),
+        key: 'price.best',
+        // 最低可购价：京东自营价优先 → 无京东价时回落官网售价 → 首发价；
+        // 口径与 effectivePriceOf 一致，给用户「能买到的最低价」。
+        // 单渠道口径下（仅京东自营）有京东价时本行与「京东自营价」相同，
+        // 无京东价时回落到官网售价 / 首发价，仍与相邻行区分。
+        label: '最低可购价',
+        get: (device: Device) => v(effectivePriceOf(device)),
         unit: '元',
         better: 'lower',
         numeric: true,
         crossComparable: true,
-      },
-      {
-        key: 'price.final',
-        label: '国补后到手价',
-        get: (device: Device) => v(dealOfPhone(device).finalPrice),
-        unit: '元',
-        better: 'lower',
-        numeric: true,
-        crossComparable: true,
+        title: '京东自营价优先，无京东价时回落官网售价 / 首发价；其中渠道价可能为参考估算，非平台实时抓取，实际购买请以平台页面结算价为准。',
       },
       {
         key: 'tags',
@@ -147,7 +147,9 @@ export const SPEC_GROUPS: SpecGroup[] = [
         get: (device: Device) => v(device.screen?.size ?? null),
         unit: '英寸',
         numeric: true,
-        // 6.7" vs 11" 无优劣，跨品类硬比会误导
+        better: 'higher',
+        // 同品类内（手机 vs 手机、平板 vs 平板）尺寸越大越优；跨品类仍不可比
+        // （6.7" vs 11" 无优劣），由 crossComparable: false 屏蔽跨品类优劣判定
         crossComparable: false,
       },
       {
@@ -578,8 +580,9 @@ function formatValue(value: SpecValue, row: SpecRow): string | null {
  * 「A 有潜望长焦、B 没有」必须算差异，否则「只看不同」会把这类用户最关心的差异藏掉。
  * 只有当所有机型的取值（含缺失状态）完全一致时，allSame 才为 true。
  *
- * 注意：中国用户习惯「更优 = 红/橙系，更差 = 绿/灰系」，本函数只负责算出下标，
- * 配色由 UI 层决定（better.* 与 worse.* Tailwind 色板）。
+ * 注意：差异高亮配色遵循国际通用直觉——**绿色 = 更优，红色 = 更差**
+ * （与交通信号灯一致）。本函数只负责算出下标，配色由 UI 层决定
+ * （better.* 与 worse.* Tailwind 色板，见 tailwind.config.js）。
  */
 export function computeRowDiff(row: SpecRow, devices: Device[]): RowDiffResult {
   const rawValues: SpecValue[] = devices.map((device) => {
@@ -619,7 +622,12 @@ export function computeRowDiff(row: SpecRow, devices: Device[]): RowDiffResult {
 
   const bestIndexes: number[] = [];
   const worstIndexes: number[] = [];
-  if (row.numeric && row.better && devices.length > 1) {
+  // 跨品类对比时 `crossComparable` 是白名单（缺省 false）：6.7" 手机与 11" 平板之间
+  // 不存在「越大越优」，5000mAh 手机与 10000mAh 平板同理，这类行不做优劣判定。
+  // 单品类对比不受影响，仍按 better 方向判定。
+  const crossCategory = new Set(devices.map((device) => device.category)).size > 1;
+  const comparable = !crossCategory || row.crossComparable === true;
+  if (row.numeric && row.better && comparable && devices.length > 1) {
     // 直接用下标取 rawValues，避免 devices.indexOf(device) 造成的 O(n²)
     const numericValues: number[] = rawValues.map((raw) =>
       typeof raw === 'number' && Number.isFinite(raw) ? raw : Number.NaN,

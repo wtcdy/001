@@ -7,9 +7,51 @@ import BrandAvatar from '../components/BrandAvatar';
 import EmptyState from '../components/EmptyState';
 import SpecTable from '../components/SpecTable';
 import { PRICE_DISCLAIMER } from '../constants';
-import { ALL_PHONES, dealOfPhone, getPhonesByIds } from '../data';
+// 对比页走跨品类索引：机型库可以在「平板」品类下把平板加进对比，
+// 用手机专属索引会把平板静默丢掉（对比栏少一列且无提示）。
+import { ALL_DEVICES, dealOfPhone, getDevicesByIds } from '../data';
 import { MAX_COMPARE, useCompare } from '../hooks/useCompare';
-import { formatYuan } from '../utils/price';
+import { formatYuan, specLabel } from '../utils/price';
+
+/** 对比页渠道价一行：渠道名 + 渠道性质角标 + 渠道价（价低者高亮） */
+function ChannelRow({
+  label,
+  tag,
+  price,
+  best,
+}: {
+  label: string;
+  tag: string;
+  price: number | null;
+  best: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center gap-1.5 rounded-lg border px-2 py-1 ${
+        best
+          ? 'border-brand-500 bg-brand-50 dark:border-brand-400 dark:bg-brand-500/10'
+          : 'border-slate-200 dark:border-slate-700'
+      }`}
+    >
+      <span className="shrink-0 text-[11px] text-slate-500 dark:text-slate-400">{label}</span>
+      <span className="shrink-0 rounded bg-slate-100 px-1 text-[10px] leading-tight text-slate-500 dark:bg-slate-700/60 dark:text-slate-400">
+        {tag}
+      </span>
+      <span
+        className={`ml-auto text-sm font-semibold ${
+          best ? 'text-brand-600 dark:text-brand-400' : 'text-slate-700 dark:text-slate-200'
+        }`}
+      >
+        {price !== null ? `¥${formatYuan(price)}` : '—'}
+      </span>
+      {best ? (
+        <span className="shrink-0 rounded bg-brand-500 px-1 text-[10px] leading-tight font-medium text-white">
+          更低
+        </span>
+      ) : null}
+    </div>
+  );
+}
 
 /** 对比页：顶部机型卡 + 参数表（只看不同 / 差异高亮 / 分享链接） */
 export function ComparePage() {
@@ -20,12 +62,12 @@ export function ComparePage() {
   const [keyword, setKeyword] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const phones = useMemo(() => getPhonesByIds(compare.ids), [compare.ids]);
+  const phones = useMemo(() => getDevicesByIds(compare.ids), [compare.ids]);
 
   /** 换机型/添加机型的可选列表 */
   const candidates = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
-    return ALL_PHONES.filter((phone) => {
+    return ALL_DEVICES.filter((phone) => {
       if (compare.ids.includes(phone.id)) return false;
       if (kw === '') return true;
       return `${phone.name} ${phone.brand} ${phone.performance?.soc ?? ''}`.toLowerCase().includes(kw);
@@ -97,6 +139,7 @@ export function ComparePage() {
       <div className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {phones.map((phone, index) => {
           const deal = dealOfPhone(phone);
+          const specText = specLabel(deal.spec);
           return (
             <div key={phone.id} className="psc-card relative p-3">
               <button
@@ -120,25 +163,61 @@ export function ComparePage() {
                 </div>
               </div>
 
-              {/* 价格区：与机型库卡片口径一致 —— 渠道低价 + 国补后到手价 */}
+              {/*
+                价格区：与机型库卡片口径一致 —— 主视觉是京东自营价（单渠道，拼多多已下线），
+                配置（12+256 · 最低配）作为辅助信息。
+                无渠道报价时回落到官网售价，只有官网下架且渠道也无货才「暂无报价」。
+              */}
               <div className="mt-2">
                 {deal.hasPrice ? (
                   <>
-                    <div className="text-sm font-bold text-brand-600 dark:text-brand-400">
-                      国补后 ¥{formatYuan(deal.finalPrice)}
+                    <div className="space-y-1">
+                      <ChannelRow
+                        label="京东自营"
+                        tag="自营"
+                        price={deal.jd}
+                        best={deal.bestChannel === 'jd'}
+                      />
                     </div>
-                    <div className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                      {deal.bestChannel === 'jd' ? '京东自营' : '拼多多百亿补贴'} ¥
-                      {formatYuan(deal.bestPrice)}
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-1">
+                      {specText ? (
+                        <span className="rounded bg-slate-100 px-1 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
+                          {specText}
+                        </span>
+                      ) : null}
                       {deal.eligible ? (
-                        <span className="ml-1 text-red-600 dark:text-red-400">
-                          省 ¥{formatYuan(deal.subsidy)}
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                          国补后 ¥{formatYuan(deal.finalPrice)}
                         </span>
                       ) : (
-                        <span className="ml-1">超出国补范围</span>
+                        <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                          超出国补范围
+                        </span>
                       )}
+                      {deal.isReference ? (
+                        <span
+                          className="cursor-help rounded bg-amber-50 px-1 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                          title="该价格为参考估算（官网价 × 折扣模型推导），非平台实时抓取，实际购买请以平台页面结算价为准。"
+                        >
+                          参考价 · 非实时抓取
+                        </span>
+                      ) : null}
                     </div>
                   </>
+                ) : phone.currentPrice != null ? (
+                  <div className="flex flex-wrap items-baseline gap-1.5">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      官网价 ¥{formatYuan(phone.currentPrice)}
+                    </span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">暂无渠道报价</span>
+                  </div>
+                ) : phone.launchPrice != null ? (
+                  <div className="flex flex-wrap items-baseline gap-1.5">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      官网价 ¥{phone.launchPrice.toLocaleString('zh-CN')}
+                    </span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">首发价 · 暂无渠道报价</span>
+                  </div>
                 ) : (
                   <div className="text-sm font-bold text-slate-400 dark:text-slate-500">暂无报价</div>
                 )}

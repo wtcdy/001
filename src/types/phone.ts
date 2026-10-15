@@ -41,8 +41,6 @@ export type {
 export interface PriceRecord {
   /** 京东自营价（元）；无报价为 null */
   jd: number | null;
-  /** 拼多多百亿补贴价（元）；无报价为 null */
-  pdd: number | null;
   /** 报价采集日期，形如 "2026-10-13" */
   updatedAt: string;
   /** 是否为内置兜底参考价（true 表示非平台实时抓取值） */
@@ -97,6 +95,13 @@ export interface SpecRow {
    * 6.7" vs 11"、5000mAh vs 10000mAh、200g vs 682g 硬比会误导用户。
    */
   crossComparable?: boolean;
+  /**
+   * 行标签的补充说明（可选），渲染为标签旁的「参考」角标 + 悬浮提示。
+   *
+   * 用于价格行：渠道价可能是「官网价 × 折扣模型」推导的参考估算值，
+   * 而非平台实时抓取，需要在对比表里让用户一眼看出并说明口径。
+   */
+  title?: string;
 }
 
 /** 参数分组定义 */

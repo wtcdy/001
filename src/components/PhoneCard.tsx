@@ -4,7 +4,7 @@ import BrandAvatar from './BrandAvatar';
 import { SUBSIDY_POLICY } from '../constants';
 import { dealOfPhone } from '../data';
 import { MAX_COMPARE } from '../hooks/useCompare';
-import { formatYuan } from '../utils/price';
+import { formatYuan, specLabel } from '../utils/price';
 import type { Phone } from '../types/phone';
 
 export interface PhoneCardProps {
@@ -39,13 +39,18 @@ function InfoItem({
   );
 }
 
-/** 单个渠道报价块：价低渠道高亮 */
+/**
+ * 渠道报价块：主视觉是渠道价本身，有价时高亮并打「更低」角标。
+ * `tag` 是渠道性质角标（京东自营 = 自营），与渠道名分开展示。
+ */
 function ChannelPrice({
   label,
+  tag,
   price,
   best,
 }: {
   label: string;
+  tag: string;
   price: number | null;
   best: boolean;
 }) {
@@ -58,11 +63,21 @@ function ChannelPrice({
       }`}
       title={best ? '两渠道中的低价渠道' : undefined}
     >
-      <div className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
-        {label}
+      <div className="flex items-center gap-1">
+        <span className="truncate text-[11px] leading-tight text-slate-500 dark:text-slate-400">
+          {label}
+        </span>
+        <span className="shrink-0 rounded bg-slate-100 px-1 text-[10px] leading-tight text-slate-500 dark:bg-slate-700/60 dark:text-slate-400">
+          {tag}
+        </span>
+        {best ? (
+          <span className="ml-auto shrink-0 rounded bg-brand-500 px-1 text-[10px] leading-tight font-medium text-white">
+            更低
+          </span>
+        ) : null}
       </div>
       <div
-        className={`text-sm font-semibold ${
+        className={`text-base font-semibold ${
           best ? 'text-brand-600 dark:text-brand-400' : 'text-slate-700 dark:text-slate-200'
         }`}
       >
@@ -72,9 +87,10 @@ function ChannelPrice({
   );
 }
 
-/** 机型卡片：展示核心参数 + 渠道价 / 国补后到手价 + 加入对比按钮 */
+/** 机型卡片：展示核心参数 + 京东/拼多多渠道价（含配置）+ 加入对比按钮 */
 export function PhoneCard({ phone, selected, onToggle, disabled = false }: PhoneCardProps) {
   const deal = dealOfPhone(phone);
+  const specText = specLabel(deal.spec);
   const launchPrice = phone.launchPrice ?? null;
   /** 对比栏已满且本卡未选中 —— 此时「加入对比」不可用，但按钮仍可点击 */
   const limitReached = disabled && !selected;
@@ -96,29 +112,31 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
       </div>
 
       {/*
-        价格区：渠道价（价低者高亮） + 国补后到手价。
-        没有渠道报价的机型（不在 PRICES 表里）显示「暂无报价」，不臆造价格。
+        价格区：主视觉是京东自营价（单渠道口径，拼多多已下线），
+        配置（如 12+256 · 最低配）紧跟价格，国补后到手价作辅助信息。
+        没有渠道报价的机型（不在 PRICES 表里）回落到官网售价——
+        官网价是真实可买的价格，目的是给出能买到的最低价；
+        只有官网下架且渠道也无货时才显示「暂无报价」。
       */}
       <div className="mt-3">
         {deal.hasPrice ? (
           <>
-            <div className="grid grid-cols-2 gap-2">
-              <ChannelPrice label="京东自营" price={deal.jd} best={deal.bestChannel === 'jd'} />
-              <ChannelPrice
-                label="拼多多百亿补贴"
-                price={deal.pdd}
-                best={deal.bestChannel === 'pdd'}
-              />
-            </div>
+            <ChannelPrice
+              label="京东自营"
+              tag="自营"
+              price={deal.jd}
+              best={deal.bestChannel === 'jd'}
+            />
 
-            <div className="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-              <span className="text-xs text-slate-500 dark:text-slate-400">国补后到手价</span>
-              <span className="text-xl font-bold text-brand-600 dark:text-brand-400">
-                ¥{formatYuan(deal.finalPrice)}
-              </span>
+            <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+              {specText ? (
+                <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600 dark:bg-slate-700/60 dark:text-slate-300">
+                  {specText}
+                </span>
+              ) : null}
               {deal.eligible ? (
-                <span className="rounded bg-red-50 px-1.5 py-0.5 text-[11px] font-medium text-red-600 dark:bg-red-500/10 dark:text-red-400">
-                  省 ¥{formatYuan(deal.subsidy)}
+                <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                  国补后 ¥{formatYuan(deal.finalPrice)}（省 ¥{formatYuan(deal.subsidy)}）
                 </span>
               ) : (
                 <span
@@ -130,19 +148,39 @@ export function PhoneCard({ phone, selected, onToggle, disabled = false }: Phone
               )}
             </div>
 
-            <p className="mt-1 text-[11px] text-slate-400 dark:text-slate-500">
-              {deal.updatedAt ? `报价更新 ${deal.updatedAt}` : '报价日期未知'}
-              {deal.isReference ? ' · 渠道参考价' : ''}
-            </p>
+            <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+              <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                {deal.updatedAt ? `报价更新 ${deal.updatedAt}` : '报价日期未知'}
+              </span>
+              {deal.isReference ? (
+                <span
+                  className="cursor-help rounded bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                  title="该价格为参考估算（官网价 × 折扣模型推导），非平台实时抓取，实际购买请以平台页面结算价为准。"
+                >
+                  参考价 · 非实时抓取
+                </span>
+              ) : null}
+            </div>
           </>
         ) : (
           <div className="flex flex-wrap items-baseline gap-2">
-            <span className="text-sm text-slate-400 dark:text-slate-500">暂无报价</span>
-            {launchPrice ? (
-              <span className="text-xs text-slate-400 line-through dark:text-slate-500">
-                首发价 ¥{launchPrice.toLocaleString('zh-CN')}
-              </span>
-            ) : null}
+            {phone.currentPrice != null ? (
+              <>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  官网价 ¥{formatYuan(phone.currentPrice)}
+                </span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">暂无渠道报价</span>
+              </>
+            ) : launchPrice ? (
+              <>
+                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  官网价 ¥{launchPrice.toLocaleString('zh-CN')}
+                </span>
+                <span className="text-xs text-slate-400 dark:text-slate-500">首发价 · 暂无渠道报价</span>
+              </>
+            ) : (
+              <span className="text-sm text-slate-400 dark:text-slate-500">暂无报价</span>
+            )}
           </div>
         )}
       </div>
