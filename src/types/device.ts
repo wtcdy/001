@@ -150,6 +150,15 @@ export interface DeviceBattery {
   batteryBenchSystemVersion?: string | null;
   /** 实测续航全程录像（B 站），用于溯源 */
   batteryBenchVideoUrl?: string | null;
+  /**
+   * 第三方实测充满耗时（分钟）：极客湾充电测试，原装充电头 0→100%，非官方口径。
+   * 与 `wiredCharge`（官方标称充电功率 W）是两回事：一个是实测耗时，一个是厂商标称功率。
+   */
+  chargeFullMin?: number | null;
+  /** 该次充电测试所用充电头功率（W，官网标称值），用于说明测试条件 */
+  chargeChargerW?: number | null;
+  /** 充满全程累计充入能量（Wh，电源端口径，含电路损耗，不等于电池容量） */
+  chargeTotalEnergyWh?: number | null;
 }
 
 /** 系统与网络 */

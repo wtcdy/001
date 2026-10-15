@@ -94,9 +94,10 @@ export const ALL_PHONES: Device[] = [
 /**
  * 全部设备（跨品类总表，含第三方实测续航注入）。
  *
- * 实测续航是第三方数据（极客湾 socpk.com），不写进 `src/data/phones/*.ts` 的品牌参数文件——
- * 那里只放官方口径参数。注入不动原对象，map 产出新 Device；没有实测数据的机型
- * （平板 / 笔记本 / 未被极客湾测到的手机）保持 undefined，界面显示「—」。
+ * 实测续航 / 实测充满是第三方数据（极客湾 socpk.com），不写进 `src/data/phones/*.ts`
+ * 的品牌参数文件——那里只放官方口径参数。注入不动原对象，map 产出新 Device；
+ * 没有实测数据的机型（平板 / 笔记本 / 未被极客湾测到的手机）保持 undefined，界面显示「—」。
+ * 续航与充电两张榜单覆盖的机型不同，按 id 各自独立取，缺哪个就是 null。
  */
 export const ALL_DEVICES: Device[] = [...ALL_PHONES, ...ALL_TABLETS].map((device) => {
   const bench = BATTERY_BENCH[device.id];
@@ -108,6 +109,9 @@ export const ALL_DEVICES: Device[] = [...ALL_PHONES, ...ALL_TABLETS].map((device
       batteryLifeMin: bench.batteryLifeMin,
       batteryBenchSystemVersion: bench.systemVersion,
       batteryBenchVideoUrl: bench.videoUrl,
+      chargeFullMin: bench.chargeFullMin,
+      chargeChargerW: bench.chargeChargerW,
+      chargeTotalEnergyWh: bench.chargeTotalEnergyWh,
     },
   };
 });

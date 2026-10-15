@@ -392,6 +392,8 @@ export const SPEC_GROUPS: SpecGroup[] = [
         // 手机 12 小时 vs 平板续航口径不同，跨品类不可比
         crossComparable: false,
         title: '极客湾续航测试 5.0（socpk.com）· 零售机满电连续测试至关机 · 非官方口径',
+        // 第三方**实测**值，不是估算值，角标打「实测」而不是默认的「参考」
+        titleBadge: '实测',
       },
       {
         key: 'battery.wiredCharge',
@@ -400,6 +402,25 @@ export const SPEC_GROUPS: SpecGroup[] = [
         unit: 'W',
         better: 'higher',
         numeric: true,
+      },
+      {
+        // 第三方实测充满耗时（极客湾 socpk.com）。上面「有线充电」是厂商标称功率（W），
+        // 这里是原装充电头实测 0→100% 的耗时，两者口径不同，不可互相推导。
+        key: 'battery.chargeFullMin',
+        label: '实测充满',
+        get: (device: Device) => v(device.battery?.chargeFullMin ?? null),
+        format: (value: SpecValue) => {
+          if (typeof value !== 'number') return null;
+          return `${value.toFixed(1)} 分钟`;
+        },
+        // 充满耗时越短越好
+        better: 'lower',
+        numeric: true,
+        // 手机与平板电池规模差数倍，跨品类不可比
+        crossComparable: false,
+        title:
+          '极客湾充电测试（socpk.com）· 原装充电头实测 0→100% · 电源端口径含电路损耗 · 非官方口径',
+        titleBadge: '实测',
       },
       {
         key: 'battery.wirelessCharge',

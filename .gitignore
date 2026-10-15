@@ -48,7 +48,9 @@ scripts/.cache/
 scripts/tmp/
 
 # 价格抓取产物（含自检假数据，由 fetch-jd-union.mjs 生成，不进仓库）
-data/
+# 只忽略**根目录**的 data/：写成 `data/` 会连带屏蔽 src/data/ 下的新建文件，
+# 导致新参数文件被静默忽略、git add -A 也捡不到。
+/data/
 
 # 本地单文件预览产物（standalone.html 是内联打包的大文件，不进仓库）
 preview/

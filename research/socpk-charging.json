@@ -1,0 +1,2431 @@
+{
+  "source": "https://www.socpk.com/chart/charge-curves",
+  "api": [
+    "https://www.socpk.com/api/pages/charge-curves",
+    "https://www.socpk.com/api/pages/charge-curves/data"
+  ],
+  "fetchedAt": "2026-10-15",
+  "dataVersion": "1c39dfc8d314",
+  "title": "手机充电曲线 / Charge Curves",
+  "subtitle": "纵轴为充入能量，横轴为充电时间，均使用原装充电器，充电功率为官网标识值，计算电源端的输入能量，含电路损耗。",
+  "subtitleEn": "The vertical axis represents the energy charged, and the horizontal axis represents the charging time. All tests were conducted using the original chargers, with the charging power set to the values listed on the official website. The input energy at the power supply end was calculated, including circuit losses.",
+  "testOrg": "极客湾 Geekerwan（SOCPK 为其官方数据库网站）",
+  "matched": 52,
+  "total": 74,
+  "matchRate": "52/74 = 70.3%",
+  "derived": {
+    "_readme": "本文件的曲线语义与派生指标定义说明。所有数值均由 research/socpk-raw/charge-curves.json 原始 1001 点曲线计算，无任何估算填充。",
+    "curve": {
+      "sampleCount": "1001 点/条（小米 15 Ultra、小米 17 Max 两条为 1000 点），等间隔重采样",
+      "xAxis": {
+        "rawUnit": "秒（s）",
+        "declaredUnit": "页面 config.xUnit 写作 \"min\"，但原始点实为秒",
+        "proof": "全部 74 条曲线的末端 x 值 ÷ 60 与 meta.fullDurationMinutes 完全吻合（最大偏差 < 0.2 min）",
+        "range": "0 → 充满时刻（42.9 ~ 153.8 min，即 2574 ~ 9226 s）",
+        "step": "每条不同，= fullDuration*60/(n-1)，实测 2.575 ~ 9.226 s/点"
+      },
+      "yAxis": {
+        "rawUnit": "Wh",
+        "semantic": "从 0 时刻起【累计】充入的能量",
+        "CRITICAL": "是【电源端输入】能量，含充电器/线材/机内电路损耗 —— 不是电池电量百分比，也不是电池实际吸收的能量",
+        "proof": "全部 74 条曲线 y 从 0 单调上升到 meta.energyWh（末端值吻合误差 < 0.05 Wh）；且 meta.energyWh / 电池额定能量（取自同站续航榜 ratedEnergyWh，60 款交集）比值区间 1.057 ~ 1.286，中位数 1.181 —— 系统性高出额定电池能量 18% 左右，正是电路损耗 + 待机耗电的证据"
+      },
+      "isMonotonic": true,
+      "endsAtFull": "是。全部 74 条曲线末端 5% 区间的平均功率已衰减到全程平均功率的 2.2% ~ 33.1%（中位约 10%），即充电电流已收敛到涓流/截止，不存在「充到 80% 就截断」的情况。",
+      "startSoC": "默认视作 0%（耗尽关机起充）。站点未文字明示起点，但全部 60 款可交叉验证机型的总充入能量均 > 额定电池能量（最小 1.057×），与 0→100% 一致。"
+    },
+    "metrics": {
+      "fullDurationMin": {
+        "definition": "充满耗时（分钟）= 曲线末端 x 值 ÷ 60，与 meta.fullDurationMinutes 一致",
+        "usable": true,
+        "confidence": "high",
+        "note": "这是 0→100% 的真实充满耗时，不是「到 X%」。可用，建议直接入库。"
+      },
+      "totalEnergyWh": {
+        "definition": "充满全程的电源端输入能量（Wh），= meta.energyWh = 曲线末端 y",
+        "usable": true,
+        "confidence": "high",
+        "note": "含电路损耗，不等于电池容量。"
+      },
+      "energy15MinWh": {
+        "definition": "充电第 15 分钟（t=900s）时的累计输入能量（Wh），线性插值取得",
+        "usable": true,
+        "confidence": "high",
+        "note": "单一数值、口径清晰，可作为「15 分钟充入能量」展示。"
+      },
+      "energy15MinSharePct": {
+        "definition": "15 分钟累计输入能量 ÷ 充满总输入能量 × 100%",
+        "usable": "conditional",
+        "confidence": "medium",
+        "WARNING": "这是【能量占比】，不是【电量百分比】。因高功率阶段损耗更大，该数值通常【高于】真实电量百分比（估计高 5~15 个百分点）。若对外展示，必须标注为「15 分钟充入能量占比」而非「15 分钟充至 X%」。"
+      },
+      "halfEnergyMin": {
+        "definition": "累计输入能量达到全程一半所需的分钟数（半程充电时间）",
+        "usable": true,
+        "confidence": "high"
+      },
+      "peakPowerW": {
+        "definition": "曲线滑动窗口（±10 点）中心差分得到的最大瞬时功率（W）",
+        "usable": true,
+        "confidence": "medium",
+        "note": "受重采样平滑影响，略低于真实瞬时峰值；可与 meta.chargerPowerW（官网标称）交叉参考。"
+      },
+      "avgPowerW": {
+        "definition": "全程平均功率（W），直接取自 meta.averagePowerW",
+        "usable": true,
+        "confidence": "high"
+      }
+    },
+    "cannotDerive": {
+      "15分钟充入电量百分比": {
+        "answer": "算不出（不可用）",
+        "reason": [
+          "曲线 y 轴是【电源端输入累计能量 Wh】，不是电量百分比，也没有任何 SoC/电量刻度。",
+          "要换算成电量百分比必须引入外部数据（电池额定能量 Wh）做除法，且分子是含损耗的输入能量 —— 已实测该偏差：总输入能量 / 额定电池能量 = 1.057 ~ 1.286（中位 1.181）。",
+          "充电前段功率最高、损耗占比最大，因此 15 分钟处的偏差比全程偏差更大，直接除以额定能量会系统性高估真实电量百分比（量级约 +5~15 个百分点，随机型而异）。"
+        ],
+        "conclusion": "在本项目「宁可 null 绝不编造」的原则下，不提供伪「15 分钟充入百分比」字段。若确实需要该指标，应改向品牌官方口径（如「30 分钟充至 X%」）取数，而非从本曲线换算。"
+      }
+    },
+    "recommendedForUptake": [
+      "fullDurationMin（充满耗时）",
+      "energy15MinWh（15 分钟充入能量）",
+      "avgPowerW / peakPowerW（充电功率实测）"
+    ]
+  },
+  "rows": [
+    {
+      "rank": 1,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 Ace 5 Pro",
+        "nameEn": "OnePlus Ace 5 Pro",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 42.9,
+        "fullDurationHuman": "42.9min",
+        "totalEnergyWh": 25.45,
+        "avgPowerW": 35.58,
+        "peakPowerW": 73.8,
+        "energy15MinWh": 11.91,
+        "energy15MinSharePct": 46.8,
+        "halfEnergyMin": 16.4,
+        "ratedEnergyWhFromBatteryLife": 22.76,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.575,
+          "endMin": 42.91,
+          "endEnergyWh": 25.45,
+          "tailPowerW": 8.7
+        }
+      },
+      "ours": {
+        "id": "oneplus-ace-5-pro",
+        "brand": "一加",
+        "name": "一加 Ace 5 Pro",
+        "releaseDate": "2024-12"
+      }
+    },
+    {
+      "rank": 2,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 13",
+        "nameEn": "OnePlus 13",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 43.6,
+        "fullDurationHuman": "43.6min",
+        "totalEnergyWh": 23.59,
+        "avgPowerW": 32.49,
+        "peakPowerW": 67.3,
+        "energy15MinWh": 12.88,
+        "energy15MinSharePct": 54.6,
+        "halfEnergyMin": 13.5,
+        "ratedEnergyWhFromBatteryLife": 22.31,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.613,
+          "endMin": 43.56,
+          "endEnergyWh": 23.59,
+          "tailPowerW": 0.69
+        }
+      },
+      "ours": {
+        "id": "oneplus-13",
+        "brand": "一加",
+        "name": "一加 13",
+        "releaseDate": "2024-10"
+      }
+    },
+    {
+      "rank": 3,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17 Pro",
+        "nameEn": "Xiaomi 17 Pro",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 44.5,
+        "fullDurationHuman": "44.5min",
+        "totalEnergyWh": 24.78,
+        "avgPowerW": 33.44,
+        "peakPowerW": 65.81,
+        "energy15MinWh": 10.53,
+        "energy15MinSharePct": 42.5,
+        "halfEnergyMin": 18.5,
+        "ratedEnergyWhFromBatteryLife": 23.13,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.668,
+          "endMin": 44.46,
+          "endEnergyWh": 24.78,
+          "tailPowerW": 0.73
+        }
+      },
+      "ours": {
+        "id": "xiaomi-17-pro",
+        "brand": "小米",
+        "name": "小米 17 Pro",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 4,
+      "socpk": {
+        "brand": "OPPO",
+        "name": "OPPO Find X8 Ultra",
+        "nameEn": "OPPO Find X8 Ultra",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 47,
+        "fullDurationHuman": "47min",
+        "totalEnergyWh": 26.16,
+        "avgPowerW": 33.42,
+        "peakPowerW": 74.8,
+        "energy15MinWh": 10.78,
+        "energy15MinSharePct": 41.2,
+        "halfEnergyMin": 18.6,
+        "ratedEnergyWhFromBatteryLife": 22.87,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.817,
+          "endMin": 46.96,
+          "endEnergyWh": 26.16,
+          "tailPowerW": 11.05
+        }
+      },
+      "ours": {
+        "id": "oppo-find-x8-ultra",
+        "brand": "OPPO",
+        "name": "OPPO Find X8 Ultra",
+        "releaseDate": "2025-04"
+      }
+    },
+    {
+      "rank": 5,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO Neo10 Pro+",
+        "nameEn": "iQOO Neo10 Pro+",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 120,
+        "fullDurationMin": 47.9,
+        "fullDurationHuman": "47.9min",
+        "totalEnergyWh": 29.89,
+        "avgPowerW": 37.43,
+        "peakPowerW": 73.82,
+        "energy15MinWh": 11.36,
+        "energy15MinSharePct": 38,
+        "halfEnergyMin": 19.9,
+        "ratedEnergyWhFromBatteryLife": 25.26,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.874,
+          "endMin": 47.9,
+          "endEnergyWh": 29.89,
+          "tailPowerW": 3.19
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 6,
+      "socpk": {
+        "brand": "真我",
+        "name": "真我 GT8",
+        "nameEn": "realme GT8",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 48.4,
+        "fullDurationHuman": "48.4min",
+        "totalEnergyWh": 31.3,
+        "avgPowerW": 38.77,
+        "peakPowerW": 85.6,
+        "energy15MinWh": 12.99,
+        "energy15MinSharePct": 41.5,
+        "halfEnergyMin": 19,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 2.906,
+          "endMin": 48.43,
+          "endEnergyWh": 31.3,
+          "tailPowerW": 4.25
+        }
+      },
+      "ours": {
+        "id": "realme-gt8",
+        "brand": "realme",
+        "name": "realme GT8",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 7,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 Ace 5 至尊版",
+        "nameEn": "OnePlus Ace 5 Ultra",
+        "soc": "天玑 9400+",
+        "socEn": "Dimensity 9400+",
+        "chargerPowerW": 100,
+        "fullDurationMin": 50.5,
+        "fullDurationHuman": "50.5min",
+        "totalEnergyWh": 29.6,
+        "avgPowerW": 35.18,
+        "peakPowerW": 78.24,
+        "energy15MinWh": 12.19,
+        "energy15MinSharePct": 41.2,
+        "halfEnergyMin": 19,
+        "ratedEnergyWhFromBatteryLife": 25.28,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.029,
+          "endMin": 50.49,
+          "endEnergyWh": 29.6,
+          "tailPowerW": 5.88
+        }
+      },
+      "ours": {
+        "id": "oneplus-ace-5-ultra",
+        "brand": "一加",
+        "name": "一加 Ace 5 至尊版",
+        "releaseDate": "2025-05"
+      }
+    },
+    {
+      "rank": 8,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO 13",
+        "nameEn": "iQOO 13",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 120,
+        "fullDurationMin": 53.5,
+        "fullDurationHuman": "53.5min",
+        "totalEnergyWh": 27.23,
+        "avgPowerW": 30.56,
+        "peakPowerW": 68.26,
+        "energy15MinWh": 13.83,
+        "energy15MinSharePct": 50.8,
+        "halfEnergyMin": 14.7,
+        "ratedEnergyWhFromBatteryLife": 22.97,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.208,
+          "endMin": 53.47,
+          "endEnergyWh": 27.23,
+          "tailPowerW": 1.35
+        }
+      },
+      "ours": {
+        "id": "iqoo-13",
+        "brand": "iQOO",
+        "name": "iQOO 13",
+        "releaseDate": "2024-10"
+      }
+    },
+    {
+      "rank": 9,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 15",
+        "nameEn": "OnePlus 15",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 120,
+        "fullDurationMin": 56.3,
+        "fullDurationHuman": "56.3min",
+        "totalEnergyWh": 31.42,
+        "avgPowerW": 33.5,
+        "peakPowerW": 81.61,
+        "energy15MinWh": 12.83,
+        "energy15MinSharePct": 40.8,
+        "halfEnergyMin": 18.9,
+        "ratedEnergyWhFromBatteryLife": 27.03,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.376,
+          "endMin": 56.27,
+          "endEnergyWh": 31.42,
+          "tailPowerW": 1.29
+        }
+      },
+      "ours": {
+        "id": "oneplus-15",
+        "brand": "一加",
+        "name": "一加 15",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 10,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 Ace 6",
+        "nameEn": "OnePlus Ace 6",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 120,
+        "fullDurationMin": 60.8,
+        "fullDurationHuman": "60.8min",
+        "totalEnergyWh": 34.37,
+        "avgPowerW": 33.9,
+        "peakPowerW": 83.24,
+        "energy15MinWh": 11.24,
+        "energy15MinSharePct": 32.7,
+        "halfEnergyMin": 23.3,
+        "ratedEnergyWhFromBatteryLife": 28.66,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.65,
+          "endMin": 60.83,
+          "endEnergyWh": 34.37,
+          "tailPowerW": 8.75
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 11,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 70 Ultra",
+        "nameEn": "HUAWEI Pura 70 Ultra",
+        "soc": "麒麟 9010",
+        "socEn": "Kirin 9010",
+        "chargerPowerW": 100,
+        "fullDurationMin": 61.8,
+        "fullDurationHuman": "61.8min",
+        "totalEnergyWh": 24.32,
+        "avgPowerW": 23.63,
+        "peakPowerW": 74.69,
+        "energy15MinWh": 10.99,
+        "energy15MinSharePct": 45.2,
+        "halfEnergyMin": 17,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.706,
+          "endMin": 61.76,
+          "endEnergyWh": 24.32,
+          "tailPowerW": 4.25
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-70-ultra",
+        "brand": "华为",
+        "name": "华为 Pura 70 Ultra",
+        "releaseDate": "2024-04"
+      }
+    },
+    {
+      "rank": 12,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 Ace 6 至尊版",
+        "nameEn": "OnePlus Ace 6 Ultra",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 120,
+        "fullDurationMin": 62.7,
+        "fullDurationHuman": "62.7min",
+        "totalEnergyWh": 36.29,
+        "avgPowerW": 34.73,
+        "peakPowerW": 81.47,
+        "energy15MinWh": 11.9,
+        "energy15MinSharePct": 32.8,
+        "halfEnergyMin": 24.1,
+        "ratedEnergyWhFromBatteryLife": 31.6,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.762,
+          "endMin": 62.71,
+          "endEnergyWh": 36.29,
+          "tailPowerW": 9.83
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 13,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 80",
+        "nameEn": "HUAWEI Pura 80",
+        "soc": "麒麟 9010S",
+        "socEn": "Kirin 9010S",
+        "chargerPowerW": 66,
+        "fullDurationMin": 64.2,
+        "fullDurationHuman": "64.2min",
+        "totalEnergyWh": 24.74,
+        "avgPowerW": 23.1,
+        "peakPowerW": 55.83,
+        "energy15MinWh": 9.16,
+        "energy15MinSharePct": 37,
+        "halfEnergyMin": 21.1,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.854,
+          "endMin": 64.24,
+          "endEnergyWh": 24.74,
+          "tailPowerW": 1.36
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-80",
+        "brand": "华为",
+        "name": "华为 Pura 80",
+        "releaseDate": "2025-07"
+      }
+    },
+    {
+      "rank": 14,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 80 Ultra",
+        "nameEn": "HUAWEI Pura 80 Ultra",
+        "soc": "麒麟 9020",
+        "socEn": "Kirin 9020",
+        "chargerPowerW": 100,
+        "fullDurationMin": 64.4,
+        "fullDurationHuman": "64.4min",
+        "totalEnergyWh": 24.74,
+        "avgPowerW": 23.05,
+        "peakPowerW": 75.82,
+        "energy15MinWh": 9.04,
+        "energy15MinSharePct": 36.6,
+        "halfEnergyMin": 21.7,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.864,
+          "endMin": 64.4,
+          "endEnergyWh": 24.74,
+          "tailPowerW": 1.57
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-80-ultra",
+        "brand": "华为",
+        "name": "华为 Pura 80 Ultra",
+        "releaseDate": "2025-06"
+      }
+    },
+    {
+      "rank": 15,
+      "socpk": {
+        "brand": "真我",
+        "name": "真我 GT8 Pro",
+        "nameEn": "realme GT8 Pro",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 120,
+        "fullDurationMin": 64.6,
+        "fullDurationHuman": "64.6min",
+        "totalEnergyWh": 31.55,
+        "avgPowerW": 29.31,
+        "peakPowerW": 83.3,
+        "energy15MinWh": 12.45,
+        "energy15MinSharePct": 39.5,
+        "halfEnergyMin": 20.3,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.875,
+          "endMin": 64.59,
+          "endEnergyWh": 31.55,
+          "tailPowerW": 1.63
+        }
+      },
+      "ours": {
+        "id": "realme-gt8-pro",
+        "brand": "realme",
+        "name": "realme GT8 Pro",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 16,
+      "socpk": {
+        "brand": "OPPO",
+        "name": "OPPO Find X9 Ultra",
+        "nameEn": "OPPO Find X9 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 65.5,
+        "fullDurationHuman": "65.5min",
+        "totalEnergyWh": 32.39,
+        "avgPowerW": 29.68,
+        "peakPowerW": 69.09,
+        "energy15MinWh": 9.88,
+        "energy15MinSharePct": 30.5,
+        "halfEnergyMin": 26.1,
+        "ratedEnergyWhFromBatteryLife": 25.64,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.928,
+          "endMin": 65.47,
+          "endEnergyWh": 32.39,
+          "tailPowerW": 4.32
+        }
+      },
+      "ours": {
+        "id": "oppo-find-x9-ultra",
+        "brand": "OPPO",
+        "name": "OPPO Find X9 Ultra",
+        "releaseDate": "2026-04"
+      }
+    },
+    {
+      "rank": 17,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 90 Pro Max",
+        "nameEn": "HUAWEI Pura 90 Pro Max",
+        "soc": "麒麟 9030S",
+        "socEn": "Kirin 9030S",
+        "chargerPowerW": 100,
+        "fullDurationMin": 65.7,
+        "fullDurationHuman": "65.7min",
+        "totalEnergyWh": 25.94,
+        "avgPowerW": 23.7,
+        "peakPowerW": 78.92,
+        "energy15MinWh": 10.64,
+        "energy15MinSharePct": 41,
+        "halfEnergyMin": 18.9,
+        "ratedEnergyWhFromBatteryLife": 22.35,
+        "curve": {
+          "points": 1001,
+          "stepSec": 3.939,
+          "endMin": 65.66,
+          "endEnergyWh": 25.94,
+          "tailPowerW": 0.79
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-90-pro-max",
+        "brand": "华为",
+        "name": "华为 Pura 90 Pro Max",
+        "releaseDate": "2026-04"
+      }
+    },
+    {
+      "rank": 18,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Mate 80 Pro",
+        "nameEn": "HUAWEI Mate 80 Pro",
+        "soc": "麒麟 9030",
+        "socEn": "Kirin 9030",
+        "chargerPowerW": 100,
+        "fullDurationMin": 66.9,
+        "fullDurationHuman": "66.9min",
+        "totalEnergyWh": 25.37,
+        "avgPowerW": 22.74,
+        "peakPowerW": 70.31,
+        "energy15MinWh": 9.99,
+        "energy15MinSharePct": 39.4,
+        "halfEnergyMin": 20.8,
+        "ratedEnergyWhFromBatteryLife": 21.36,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.016,
+          "endMin": 66.93,
+          "endEnergyWh": 25.37,
+          "tailPowerW": 2.17
+        }
+      },
+      "ours": {
+        "id": "huawei-mate-80-pro",
+        "brand": "华为",
+        "name": "华为 Mate 80 Pro",
+        "releaseDate": "2025-11"
+      }
+    },
+    {
+      "rank": 19,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17T Pro",
+        "nameEn": "Xiaomi 17T Pro",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 100,
+        "fullDurationMin": 67.7,
+        "fullDurationHuman": "67.7min",
+        "totalEnergyWh": 29.79,
+        "avgPowerW": 26.4,
+        "peakPowerW": 60.75,
+        "energy15MinWh": 9.17,
+        "energy15MinSharePct": 30.8,
+        "halfEnergyMin": 25.6,
+        "ratedEnergyWhFromBatteryLife": 25.82,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.063,
+          "endMin": 67.71,
+          "endEnergyWh": 29.79,
+          "tailPowerW": 3.49
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 20,
+      "socpk": {
+        "brand": "三星",
+        "name": "三星 Galaxy S26 Ultra",
+        "nameEn": "Samsung Galaxy S26 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 60,
+        "fullDurationMin": 68.1,
+        "fullDurationHuman": "68.1min",
+        "totalEnergyWh": 23.47,
+        "avgPowerW": 20.67,
+        "peakPowerW": 44.89,
+        "energy15MinWh": 8.85,
+        "energy15MinSharePct": 37.7,
+        "halfEnergyMin": 20.4,
+        "ratedEnergyWhFromBatteryLife": 18.94,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.088,
+          "endMin": 68.13,
+          "endEnergyWh": 23.47,
+          "tailPowerW": 1.82
+        }
+      },
+      "ours": {
+        "id": "samsung-galaxy-s26-ultra",
+        "brand": "三星",
+        "name": "三星 Galaxy S26 Ultra",
+        "releaseDate": "2026-02"
+      }
+    },
+    {
+      "rank": 21,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17 Pro Max",
+        "nameEn": "Xiaomi 17 Pro Max",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 68.6,
+        "fullDurationHuman": "68.6min",
+        "totalEnergyWh": 31.91,
+        "avgPowerW": 27.9,
+        "peakPowerW": 72.44,
+        "energy15MinWh": 11.44,
+        "energy15MinSharePct": 35.8,
+        "halfEnergyMin": 21.7,
+        "ratedEnergyWhFromBatteryLife": 27.64,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.118,
+          "endMin": 68.63,
+          "endEnergyWh": 31.91,
+          "tailPowerW": 1.7
+        }
+      },
+      "ours": {
+        "id": "xiaomi-17-pro-max",
+        "brand": "小米",
+        "name": "小米 17 Pro Max",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 22,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 nova 16 Pro",
+        "nameEn": "HUAWEI nova 16 Pro",
+        "soc": "麒麟 9010S",
+        "socEn": "Kirin 9010S",
+        "chargerPowerW": 100,
+        "fullDurationMin": 69.9,
+        "fullDurationHuman": "69.9min",
+        "totalEnergyWh": 30.55,
+        "avgPowerW": 26.23,
+        "peakPowerW": 49.69,
+        "energy15MinWh": 8.4,
+        "energy15MinSharePct": 27.5,
+        "halfEnergyMin": 28.5,
+        "ratedEnergyWhFromBatteryLife": 25.98,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.193,
+          "endMin": 69.89,
+          "endEnergyWh": 30.55,
+          "tailPowerW": 1.91
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 23,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Mate 70 Pro+",
+        "nameEn": "HUAWEI Mate 70 Pro+",
+        "soc": "麒麟 9020",
+        "socEn": "Kirin 9020",
+        "chargerPowerW": 100,
+        "fullDurationMin": 70.3,
+        "fullDurationHuman": "70.3min",
+        "totalEnergyWh": 24.68,
+        "avgPowerW": 21.06,
+        "peakPowerW": 69.4,
+        "energy15MinWh": 9.14,
+        "energy15MinSharePct": 37,
+        "halfEnergyMin": 21.4,
+        "ratedEnergyWhFromBatteryLife": 21.34,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.22,
+          "endMin": 70.33,
+          "endEnergyWh": 24.68,
+          "tailPowerW": 2.23
+        }
+      },
+      "ours": {
+        "id": "huawei-mate-70-pro-plus",
+        "brand": "华为",
+        "name": "华为 Mate 70 Pro+",
+        "releaseDate": "2024-11"
+      }
+    },
+    {
+      "rank": 24,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Mate 80",
+        "nameEn": "HUAWEI Mate 80",
+        "soc": "麒麟 9020",
+        "socEn": "Kirin 9020",
+        "chargerPowerW": 66,
+        "fullDurationMin": 70.3,
+        "fullDurationHuman": "70.3min",
+        "totalEnergyWh": 25.49,
+        "avgPowerW": 21.75,
+        "peakPowerW": 49.54,
+        "energy15MinWh": 8.59,
+        "energy15MinSharePct": 33.7,
+        "halfEnergyMin": 22.6,
+        "ratedEnergyWhFromBatteryLife": 21.36,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.219,
+          "endMin": 70.31,
+          "endEnergyWh": 25.49,
+          "tailPowerW": 1.92
+        }
+      },
+      "ours": {
+        "id": "huawei-mate-80",
+        "brand": "华为",
+        "name": "华为 Mate 80",
+        "releaseDate": "2025-11"
+      }
+    },
+    {
+      "rank": 25,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 90 Pro",
+        "nameEn": "HUAWEI Pura 90 Pro",
+        "soc": "麒麟 9030S",
+        "socEn": "Kirin 9030S",
+        "chargerPowerW": 66,
+        "fullDurationMin": 70.9,
+        "fullDurationHuman": "70.9min",
+        "totalEnergyWh": 26.03,
+        "avgPowerW": 22.04,
+        "peakPowerW": 52,
+        "energy15MinWh": 9.15,
+        "energy15MinSharePct": 35.2,
+        "halfEnergyMin": 22.6,
+        "ratedEnergyWhFromBatteryLife": 22.35,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.252,
+          "endMin": 70.86,
+          "endEnergyWh": 26.03,
+          "tailPowerW": 1.06
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-90-pro",
+        "brand": "华为",
+        "name": "华为 Pura 90 Pro",
+        "releaseDate": "2026-04"
+      }
+    },
+    {
+      "rank": 26,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 13T",
+        "nameEn": "OnePlus 13T",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 80,
+        "fullDurationMin": 71.5,
+        "fullDurationHuman": "71.5min",
+        "totalEnergyWh": 27.6,
+        "avgPowerW": 23.15,
+        "peakPowerW": 58.44,
+        "energy15MinWh": 8.43,
+        "energy15MinSharePct": 30.5,
+        "halfEnergyMin": 26.6,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.291,
+          "endMin": 71.52,
+          "endEnergyWh": 27.6,
+          "tailPowerW": 3.57
+        }
+      },
+      "ours": {
+        "id": "oneplus-13t",
+        "brand": "一加",
+        "name": "一加 13T",
+        "releaseDate": "2025-04"
+      }
+    },
+    {
+      "rank": 27,
+      "socpk": {
+        "brand": "努比亚",
+        "name": "努比亚Z80 Ultra",
+        "nameEn": "nubia Z80 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 80,
+        "fullDurationMin": 71.9,
+        "fullDurationHuman": "71.9min",
+        "totalEnergyWh": 30.78,
+        "avgPowerW": 25.7,
+        "peakPowerW": 61.22,
+        "energy15MinWh": 9.48,
+        "energy15MinSharePct": 30.8,
+        "halfEnergyMin": 26.5,
+        "ratedEnergyWhFromBatteryLife": 26.67,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.312,
+          "endMin": 71.87,
+          "endEnergyWh": 30.78,
+          "tailPowerW": 5.87
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 28,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO Neo11",
+        "nameEn": "iQOO Neo11",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 73.1,
+        "fullDurationHuman": "73.1min",
+        "totalEnergyWh": 34.69,
+        "avgPowerW": 28.46,
+        "peakPowerW": 57.29,
+        "energy15MinWh": 9.41,
+        "energy15MinSharePct": 27.1,
+        "halfEnergyMin": 29.5,
+        "ratedEnergyWhFromBatteryLife": 27.59,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.388,
+          "endMin": 73.13,
+          "endEnergyWh": 34.69,
+          "tailPowerW": 7.58
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 29,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 K80 至尊版",
+        "nameEn": "REDMI K80 Ultra",
+        "soc": "天玑 9400+",
+        "socEn": "Dimensity 9400+",
+        "chargerPowerW": 100,
+        "fullDurationMin": 73.3,
+        "fullDurationHuman": "73.3min",
+        "totalEnergyWh": 33.44,
+        "avgPowerW": 27.38,
+        "peakPowerW": 70.24,
+        "energy15MinWh": 11.03,
+        "energy15MinSharePct": 33,
+        "halfEnergyMin": 24.4,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.396,
+          "endMin": 73.27,
+          "endEnergyWh": 33.44,
+          "tailPowerW": 1.96
+        }
+      },
+      "ours": {
+        "id": "redmi-k80-ultra",
+        "brand": "Redmi",
+        "name": "Redmi K80 至尊版",
+        "releaseDate": "2025-06"
+      }
+    },
+    {
+      "rank": 30,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 15T",
+        "nameEn": "OnePlus 15T",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 73.3,
+        "fullDurationHuman": "73.3min",
+        "totalEnergyWh": 33.97,
+        "avgPowerW": 27.81,
+        "peakPowerW": 59.79,
+        "energy15MinWh": 9.04,
+        "energy15MinSharePct": 26.6,
+        "halfEnergyMin": 30.3,
+        "ratedEnergyWhFromBatteryLife": 27.05,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.397,
+          "endMin": 73.28,
+          "endEnergyWh": 33.97,
+          "tailPowerW": 5.9
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 31,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 nova 14 Pro",
+        "nameEn": "HUAWEI nova 14 Pro",
+        "soc": "麒麟 8020",
+        "socEn": "Kirin 8020",
+        "chargerPowerW": 100,
+        "fullDurationMin": 73.9,
+        "fullDurationHuman": "73.9min",
+        "totalEnergyWh": 24.68,
+        "avgPowerW": 20.05,
+        "peakPowerW": 63.44,
+        "energy15MinWh": 9.74,
+        "energy15MinSharePct": 39.4,
+        "halfEnergyMin": 20.7,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.432,
+          "endMin": 73.87,
+          "endEnergyWh": 24.68,
+          "tailPowerW": 1.71
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 32,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO Z11 Turbo",
+        "nameEn": "iQOO Z11 Turbo",
+        "soc": "骁龙 8 Gen5",
+        "socEn": "Snapdragon 8 Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 74.4,
+        "fullDurationHuman": "74.4min",
+        "totalEnergyWh": 34.51,
+        "avgPowerW": 27.84,
+        "peakPowerW": 54.82,
+        "energy15MinWh": 8.64,
+        "energy15MinSharePct": 25,
+        "halfEnergyMin": 31.9,
+        "ratedEnergyWhFromBatteryLife": 27.83,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.463,
+          "endMin": 74.38,
+          "endEnergyWh": 34.51,
+          "tailPowerW": 8.28
+        }
+      },
+      "ours": {
+        "id": "iqoo-z11-turbo",
+        "brand": "iQOO",
+        "name": "iQOO Z11 Turbo",
+        "releaseDate": "2026-01"
+      }
+    },
+    {
+      "rank": 33,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Mate 80 Pro Max",
+        "nameEn": "HUAWEI Mate 80 Pro Max",
+        "soc": "麒麟 9030 Pro",
+        "socEn": "Kirin 9030 Pro",
+        "chargerPowerW": 100,
+        "fullDurationMin": 75.7,
+        "fullDurationHuman": "75.7min",
+        "totalEnergyWh": 26.35,
+        "avgPowerW": 20.88,
+        "peakPowerW": 68.46,
+        "energy15MinWh": 9.92,
+        "energy15MinSharePct": 37.6,
+        "halfEnergyMin": 21,
+        "ratedEnergyWhFromBatteryLife": 22.31,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.542,
+          "endMin": 75.7,
+          "endEnergyWh": 26.35,
+          "tailPowerW": 1.49
+        }
+      },
+      "ours": {
+        "id": "huawei-mate-80-pro-max",
+        "brand": "华为",
+        "name": "华为 Mate 80 Pro Max",
+        "releaseDate": "2025-11"
+      }
+    },
+    {
+      "rank": 34,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 15 Ultra",
+        "nameEn": "Xiaomi 15 Ultra",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 90,
+        "fullDurationMin": 75.7,
+        "fullDurationHuman": "75.7min",
+        "totalEnergyWh": 25.42,
+        "avgPowerW": 20.14,
+        "peakPowerW": 68.51,
+        "energy15MinWh": 9.57,
+        "energy15MinSharePct": 37.7,
+        "halfEnergyMin": 21.6,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1000,
+          "stepSec": 4.548,
+          "endMin": 75.73,
+          "endEnergyWh": 25.42,
+          "tailPowerW": 1.73
+        }
+      },
+      "ours": {
+        "id": "xiaomi-15-ultra",
+        "brand": "小米",
+        "name": "小米 15 Ultra",
+        "releaseDate": "2025-03"
+      }
+    },
+    {
+      "rank": 35,
+      "socpk": {
+        "brand": "红魔",
+        "name": "红魔11 Pro",
+        "nameEn": "REDMAGIC 11 Pro",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 80,
+        "fullDurationMin": 75.8,
+        "fullDurationHuman": "75.8min",
+        "totalEnergyWh": 34.9,
+        "avgPowerW": 27.61,
+        "peakPowerW": 58.17,
+        "energy15MinWh": 10.65,
+        "energy15MinSharePct": 30.5,
+        "halfEnergyMin": 26.5,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.55,
+          "endMin": 75.84,
+          "endEnergyWh": 34.9,
+          "tailPowerW": 4.75
+        }
+      },
+      "ours": {
+        "id": "nubia-redmagic-11-pro",
+        "brand": "努比亚",
+        "name": "红魔 11 Pro",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 36,
+      "socpk": {
+        "brand": "vivo",
+        "name": "vivo X200 Ultra",
+        "nameEn": "vivo X200 Ultra",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 90,
+        "fullDurationMin": 75.9,
+        "fullDurationHuman": "75.9min",
+        "totalEnergyWh": 25.65,
+        "avgPowerW": 20.27,
+        "peakPowerW": 53.58,
+        "energy15MinWh": 8.78,
+        "energy15MinSharePct": 34.2,
+        "halfEnergyMin": 22.7,
+        "ratedEnergyWhFromBatteryLife": 22.35,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.557,
+          "endMin": 75.94,
+          "endEnergyWh": 25.65,
+          "tailPowerW": 1.14
+        }
+      },
+      "ours": {
+        "id": "vivo-x200-ultra",
+        "brand": "vivo",
+        "name": "vivo X200 Ultra",
+        "releaseDate": "2025-04"
+      }
+    },
+    {
+      "rank": 37,
+      "socpk": {
+        "brand": "一加",
+        "name": "一加 Ace 6T",
+        "nameEn": "OnePlus Ace 6T",
+        "soc": "骁龙 8 Gen5",
+        "socEn": "Snapdragon 8 Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 78.3,
+        "fullDurationHuman": "78.3min",
+        "totalEnergyWh": 37.1,
+        "avgPowerW": 28.42,
+        "peakPowerW": 64.43,
+        "energy15MinWh": 8.92,
+        "energy15MinSharePct": 24,
+        "halfEnergyMin": 33.3,
+        "ratedEnergyWhFromBatteryLife": 30.88,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.7,
+          "endMin": 78.34,
+          "endEnergyWh": 37.1,
+          "tailPowerW": 6.55
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 38,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀Magic8 Pro",
+        "nameEn": "HONOR Magic8 Pro",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 79.6,
+        "fullDurationHuman": "79.6min",
+        "totalEnergyWh": 29.42,
+        "avgPowerW": 22.19,
+        "peakPowerW": 66.21,
+        "energy15MinWh": 10.3,
+        "energy15MinSharePct": 35,
+        "halfEnergyMin": 23.3,
+        "ratedEnergyWhFromBatteryLife": 26.54,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.774,
+          "endMin": 79.56,
+          "endEnergyWh": 29.42,
+          "tailPowerW": 1.24
+        }
+      },
+      "ours": {
+        "id": "honor-magic8-pro",
+        "brand": "荣耀",
+        "name": "荣耀 Magic8 Pro",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 39,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 Pura 90",
+        "nameEn": "HUAWEI Pura 90",
+        "soc": "麒麟 9010S",
+        "socEn": "Kirin 9010S",
+        "chargerPowerW": 100,
+        "fullDurationMin": 80.1,
+        "fullDurationHuman": "80.1min",
+        "totalEnergyWh": 29.25,
+        "avgPowerW": 21.9,
+        "peakPowerW": 65.57,
+        "energy15MinWh": 9.43,
+        "energy15MinSharePct": 32.3,
+        "halfEnergyMin": 25.1,
+        "ratedEnergyWhFromBatteryLife": 24.21,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.807,
+          "endMin": 80.12,
+          "endEnergyWh": 29.25,
+          "tailPowerW": 1.95
+        }
+      },
+      "ours": {
+        "id": "huawei-pura-90",
+        "brand": "华为",
+        "name": "华为 Pura 90",
+        "releaseDate": "2026-04"
+      }
+    },
+    {
+      "rank": 40,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO Z10 Turbo+",
+        "nameEn": "iQOO Z10 Turbo+",
+        "soc": "天玑 9400+",
+        "socEn": "Dimensity 9400+",
+        "chargerPowerW": 90,
+        "fullDurationMin": 80.3,
+        "fullDurationHuman": "80.3min",
+        "totalEnergyWh": 35.67,
+        "avgPowerW": 26.64,
+        "peakPowerW": 59.36,
+        "energy15MinWh": 8.18,
+        "energy15MinSharePct": 22.9,
+        "halfEnergyMin": 35,
+        "ratedEnergyWhFromBatteryLife": 29.72,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.82,
+          "endMin": 80.34,
+          "endEnergyWh": 35.67,
+          "tailPowerW": 6.25
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 41,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 K90 至尊版",
+        "nameEn": "REDMI K90 Ultra",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 80.5,
+        "fullDurationHuman": "80.5min",
+        "totalEnergyWh": 34.55,
+        "avgPowerW": 25.76,
+        "peakPowerW": 78.48,
+        "energy15MinWh": 10.11,
+        "energy15MinSharePct": 29.3,
+        "halfEnergyMin": 28,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.828,
+          "endMin": 80.46,
+          "endEnergyWh": 34.55,
+          "tailPowerW": 2.3
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 42,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17",
+        "nameEn": "Xiaomi 17",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 80.9,
+        "fullDurationHuman": "80.9min",
+        "totalEnergyWh": 29.54,
+        "avgPowerW": 21.91,
+        "peakPowerW": 75.71,
+        "energy15MinWh": 9,
+        "energy15MinSharePct": 30.5,
+        "halfEnergyMin": 27,
+        "ratedEnergyWhFromBatteryLife": 25.94,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.854,
+          "endMin": 80.9,
+          "endEnergyWh": 29.54,
+          "tailPowerW": 2.08
+        }
+      },
+      "ours": {
+        "id": "xiaomi-17",
+        "brand": "小米",
+        "name": "小米 17",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 43,
+      "socpk": {
+        "brand": "OPPO",
+        "name": "OPPO Find X9",
+        "nameEn": "OPPO Find X9",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 80,
+        "fullDurationMin": 81,
+        "fullDurationHuman": "81min",
+        "totalEnergyWh": 32.55,
+        "avgPowerW": 24.11,
+        "peakPowerW": 61.86,
+        "energy15MinWh": 8.33,
+        "energy15MinSharePct": 25.6,
+        "halfEnergyMin": 31.6,
+        "ratedEnergyWhFromBatteryLife": 25.65,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.86,
+          "endMin": 81,
+          "endEnergyWh": 32.55,
+          "tailPowerW": 3.8
+        }
+      },
+      "ours": {
+        "id": "oppo-find-x9",
+        "brand": "OPPO",
+        "name": "OPPO Find X9",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 44,
+      "socpk": {
+        "brand": "OPPO",
+        "name": "OPPO Find X9s",
+        "nameEn": "OPPO Find X9s",
+        "soc": "天玑 9500s",
+        "socEn": "Dimensity 9500s",
+        "chargerPowerW": 80,
+        "fullDurationMin": 81,
+        "fullDurationHuman": "81min",
+        "totalEnergyWh": 31.25,
+        "avgPowerW": 23.14,
+        "peakPowerW": 54.13,
+        "energy15MinWh": 7.56,
+        "energy15MinSharePct": 24.2,
+        "halfEnergyMin": 33.1,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.862,
+          "endMin": 81.03,
+          "endEnergyWh": 31.25,
+          "tailPowerW": 5.1
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 45,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 K90",
+        "nameEn": "REDMI K90",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 81.3,
+        "fullDurationHuman": "81.3min",
+        "totalEnergyWh": 31.61,
+        "avgPowerW": 23.33,
+        "peakPowerW": 69.13,
+        "energy15MinWh": 9.4,
+        "energy15MinSharePct": 29.7,
+        "halfEnergyMin": 30.2,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.877,
+          "endMin": 81.28,
+          "endEnergyWh": 31.61,
+          "tailPowerW": 1.66
+        }
+      },
+      "ours": {
+        "id": "redmi-k90",
+        "brand": "Redmi",
+        "name": "REDMI K90",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 46,
+      "socpk": {
+        "brand": "vivo",
+        "name": "vivo X300 Ultra",
+        "nameEn": "vivo X300 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 90,
+        "fullDurationMin": 81.9,
+        "fullDurationHuman": "81.9min",
+        "totalEnergyWh": 27.5,
+        "avgPowerW": 20.15,
+        "peakPowerW": 52.63,
+        "energy15MinWh": 9.05,
+        "energy15MinSharePct": 32.9,
+        "halfEnergyMin": 24.1,
+        "ratedEnergyWhFromBatteryLife": 23.92,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.911,
+          "endMin": 81.85,
+          "endEnergyWh": 27.5,
+          "tailPowerW": 1.2
+        }
+      },
+      "ours": {
+        "id": "vivo-x300-ultra",
+        "brand": "vivo",
+        "name": "vivo X300 Ultra",
+        "releaseDate": "2026-03"
+      }
+    },
+    {
+      "rank": 47,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 K90 Pro Max",
+        "nameEn": "REDMI K90 Pro Max",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 82.4,
+        "fullDurationHuman": "82.4min",
+        "totalEnergyWh": 32.3,
+        "avgPowerW": 23.51,
+        "peakPowerW": 66.55,
+        "energy15MinWh": 9.63,
+        "energy15MinSharePct": 29.8,
+        "halfEnergyMin": 27,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 4.946,
+          "endMin": 82.43,
+          "endEnergyWh": 32.3,
+          "tailPowerW": 1.86
+        }
+      },
+      "ours": {
+        "id": "redmi-k90-pro-max",
+        "brand": "Redmi",
+        "name": "REDMI K90 Pro Max",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 48,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17 Max",
+        "nameEn": "Xiaomi 17 Max",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 83.2,
+        "fullDurationHuman": "83.2min",
+        "totalEnergyWh": 35.72,
+        "avgPowerW": 25.75,
+        "peakPowerW": 83.49,
+        "energy15MinWh": 8.02,
+        "energy15MinSharePct": 22.4,
+        "halfEnergyMin": 36.4,
+        "ratedEnergyWhFromBatteryLife": 29.84,
+        "curve": {
+          "points": 1000,
+          "stepSec": 4.999,
+          "endMin": 83.23,
+          "endEnergyWh": 35.72,
+          "tailPowerW": 7.3
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 49,
+      "socpk": {
+        "brand": "真我",
+        "name": "真我 Neo8",
+        "nameEn": "realme Neo8",
+        "soc": "骁龙 8 Gen5",
+        "socEn": "Snapdragon 8 Gen 5",
+        "chargerPowerW": 80,
+        "fullDurationMin": 83.9,
+        "fullDurationHuman": "83.9min",
+        "totalEnergyWh": 36.4,
+        "avgPowerW": 26.04,
+        "peakPowerW": 55.5,
+        "energy15MinWh": 9.08,
+        "energy15MinSharePct": 24.9,
+        "halfEnergyMin": 32.4,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.033,
+          "endMin": 83.89,
+          "endEnergyWh": 36.4,
+          "tailPowerW": 4.75
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 50,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO 15 Ultra",
+        "nameEn": "iQOO 15 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 85,
+        "fullDurationHuman": "85min",
+        "totalEnergyWh": 30.86,
+        "avgPowerW": 21.78,
+        "peakPowerW": 57.02,
+        "energy15MinWh": 10.21,
+        "energy15MinSharePct": 33.1,
+        "halfEnergyMin": 24.3,
+        "ratedEnergyWhFromBatteryLife": 27.08,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.1,
+          "endMin": 85,
+          "endEnergyWh": 30.86,
+          "tailPowerW": 1.43
+        }
+      },
+      "ours": {
+        "id": "iqoo-15-ultra",
+        "brand": "iQOO",
+        "name": "iQOO 15 Ultra",
+        "releaseDate": "2026-02"
+      }
+    },
+    {
+      "rank": 51,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO 15",
+        "nameEn": "iQOO 15",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 85.5,
+        "fullDurationHuman": "85.5min",
+        "totalEnergyWh": 29.33,
+        "avgPowerW": 20.58,
+        "peakPowerW": 54.27,
+        "energy15MinWh": 9.85,
+        "energy15MinSharePct": 33.6,
+        "halfEnergyMin": 24.1,
+        "ratedEnergyWhFromBatteryLife": 25.62,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.131,
+          "endMin": 85.51,
+          "endEnergyWh": 29.33,
+          "tailPowerW": 1.43
+        }
+      },
+      "ours": {
+        "id": "iqoo-15",
+        "brand": "iQOO",
+        "name": "iQOO 15",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 52,
+      "socpk": {
+        "brand": "iQOO",
+        "name": "iQOO 15T",
+        "nameEn": "iQOO 15T",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 100,
+        "fullDurationMin": 86.1,
+        "fullDurationHuman": "86.1min",
+        "totalEnergyWh": 33.73,
+        "avgPowerW": 23.5,
+        "peakPowerW": 59.95,
+        "energy15MinWh": 10.48,
+        "energy15MinSharePct": 31.1,
+        "halfEnergyMin": 25.7,
+        "ratedEnergyWhFromBatteryLife": 29.35,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.168,
+          "endMin": 86.14,
+          "endEnergyWh": 33.73,
+          "tailPowerW": 1.82
+        }
+      },
+      "ours": {
+        "id": "iqoo-15t",
+        "brand": "iQOO",
+        "name": "iQOO 15T",
+        "releaseDate": "2026-05"
+      }
+    },
+    {
+      "rank": 53,
+      "socpk": {
+        "brand": "OPPO",
+        "name": "OPPO Find X9 Pro",
+        "nameEn": "OPPO Find X9 Pro",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 80,
+        "fullDurationMin": 86.5,
+        "fullDurationHuman": "86.5min",
+        "totalEnergyWh": 35.17,
+        "avgPowerW": 24.39,
+        "peakPowerW": 53.69,
+        "energy15MinWh": 8.3,
+        "energy15MinSharePct": 23.6,
+        "halfEnergyMin": 34.1,
+        "ratedEnergyWhFromBatteryLife": 27.34,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.19,
+          "endMin": 86.5,
+          "endEnergyWh": 35.17,
+          "tailPowerW": 4.97
+        }
+      },
+      "ours": {
+        "id": "oppo-find-x9-pro",
+        "brand": "OPPO",
+        "name": "OPPO Find X9 Pro",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 54,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17 Ultra",
+        "nameEn": "Xiaomi 17 Ultra",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 90,
+        "fullDurationMin": 86.8,
+        "fullDurationHuman": "86.8min",
+        "totalEnergyWh": 29.45,
+        "avgPowerW": 20.36,
+        "peakPowerW": 69.34,
+        "energy15MinWh": 8.3,
+        "energy15MinSharePct": 28.2,
+        "halfEnergyMin": 29.4,
+        "ratedEnergyWhFromBatteryLife": 25.11,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.208,
+          "endMin": 86.81,
+          "endEnergyWh": 29.45,
+          "tailPowerW": 2.04
+        }
+      },
+      "ours": {
+        "id": "xiaomi-17-ultra",
+        "brand": "小米",
+        "name": "小米 17 Ultra",
+        "releaseDate": "2025-12"
+      }
+    },
+    {
+      "rank": 55,
+      "socpk": {
+        "brand": "vivo",
+        "name": "vivo X300",
+        "nameEn": "vivo X300",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 90,
+        "fullDurationMin": 87.7,
+        "fullDurationHuman": "87.7min",
+        "totalEnergyWh": 28.19,
+        "avgPowerW": 19.28,
+        "peakPowerW": 55.55,
+        "energy15MinWh": 7.73,
+        "energy15MinSharePct": 27.4,
+        "halfEnergyMin": 28,
+        "ratedEnergyWhFromBatteryLife": 22.34,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.263,
+          "endMin": 87.72,
+          "endEnergyWh": 28.19,
+          "tailPowerW": 1.1
+        }
+      },
+      "ours": {
+        "id": "vivo-x300",
+        "brand": "vivo",
+        "name": "vivo X300",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 56,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 K90 Max",
+        "nameEn": "REDMI K90 Max",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 100,
+        "fullDurationMin": 89.9,
+        "fullDurationHuman": "89.9min",
+        "totalEnergyWh": 37.67,
+        "avgPowerW": 25.15,
+        "peakPowerW": 65.28,
+        "energy15MinWh": 9.39,
+        "energy15MinSharePct": 24.9,
+        "halfEnergyMin": 32.3,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.393,
+          "endMin": 89.89,
+          "endEnergyWh": 37.67,
+          "tailPowerW": 2.36
+        }
+      },
+      "ours": {
+        "id": "redmi-k90-max",
+        "brand": "Redmi",
+        "name": "REDMI K90 Max",
+        "releaseDate": "2026-04"
+      }
+    },
+    {
+      "rank": 57,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 nova 15 Pro",
+        "nameEn": "HUAWEI nova 15 Pro",
+        "soc": "麒麟 9010S",
+        "socEn": "Kirin 9010S",
+        "chargerPowerW": 100,
+        "fullDurationMin": 90.3,
+        "fullDurationHuman": "90.3min",
+        "totalEnergyWh": 29.09,
+        "avgPowerW": 19.33,
+        "peakPowerW": 57.34,
+        "energy15MinWh": 9.04,
+        "energy15MinSharePct": 31.1,
+        "halfEnergyMin": 26.4,
+        "ratedEnergyWhFromBatteryLife": 24.21,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.419,
+          "endMin": 90.31,
+          "endEnergyWh": 29.09,
+          "tailPowerW": 1.59
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 58,
+      "socpk": {
+        "brand": "红米",
+        "name": "红米 Turbo 5 Max",
+        "nameEn": "REDMI Turbo 5 Max",
+        "soc": "天玑 9500s",
+        "socEn": "Dimensity 9500s",
+        "chargerPowerW": 100,
+        "fullDurationMin": 90.9,
+        "fullDurationHuman": "90.9min",
+        "totalEnergyWh": 41.38,
+        "avgPowerW": 27.33,
+        "peakPowerW": 68.63,
+        "energy15MinWh": 10.05,
+        "energy15MinSharePct": 24.3,
+        "halfEnergyMin": 33.2,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.451,
+          "endMin": 90.86,
+          "endEnergyWh": 41.38,
+          "tailPowerW": 1.63
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 59,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀Magic8",
+        "nameEn": "HONOR Magic8",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 90,
+        "fullDurationMin": 91.5,
+        "fullDurationHuman": "91.5min",
+        "totalEnergyWh": 27.36,
+        "avgPowerW": 17.94,
+        "peakPowerW": 55.79,
+        "energy15MinWh": 9.6,
+        "energy15MinSharePct": 35.1,
+        "halfEnergyMin": 22.9,
+        "ratedEnergyWhFromBatteryLife": 25.78,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.488,
+          "endMin": 91.47,
+          "endEnergyWh": 27.36,
+          "tailPowerW": 1.05
+        }
+      },
+      "ours": {
+        "id": "honor-magic8",
+        "brand": "荣耀",
+        "name": "荣耀 Magic8",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 60,
+      "socpk": {
+        "brand": "vivo",
+        "name": "vivo X300s",
+        "nameEn": "vivo X300s",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 90,
+        "fullDurationMin": 91.9,
+        "fullDurationHuman": "91.9min",
+        "totalEnergyWh": 31.51,
+        "avgPowerW": 20.56,
+        "peakPowerW": 46.66,
+        "energy15MinWh": 8.14,
+        "energy15MinSharePct": 25.8,
+        "halfEnergyMin": 30.7,
+        "ratedEnergyWhFromBatteryLife": 25.81,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.517,
+          "endMin": 91.95,
+          "endEnergyWh": 31.51,
+          "tailPowerW": 2.05
+        }
+      },
+      "ours": {
+        "id": "vivo-x300s",
+        "brand": "vivo",
+        "name": "vivo X300s",
+        "releaseDate": "2026-03"
+      }
+    },
+    {
+      "rank": 61,
+      "socpk": {
+        "brand": "vivo",
+        "name": "vivo X300 Pro",
+        "nameEn": "vivo X300 Pro",
+        "soc": "天玑 9500",
+        "socEn": "Dimensity 9500",
+        "chargerPowerW": 90,
+        "fullDurationMin": 95.8,
+        "fullDurationHuman": "95.8min",
+        "totalEnergyWh": 30.64,
+        "avgPowerW": 19.19,
+        "peakPowerW": 57.21,
+        "energy15MinWh": 7.2,
+        "energy15MinSharePct": 23.5,
+        "halfEnergyMin": 33.5,
+        "ratedEnergyWhFromBatteryLife": 24.55,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.747,
+          "endMin": 95.78,
+          "endEnergyWh": 30.64,
+          "tailPowerW": 1.87
+        }
+      },
+      "ours": {
+        "id": "vivo-x300-pro",
+        "brand": "vivo",
+        "name": "vivo X300 Pro",
+        "releaseDate": "2025-10"
+      }
+    },
+    {
+      "rank": 62,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀WIN",
+        "nameEn": "HONOR WIN",
+        "soc": "骁龙 8 Elite Gen5",
+        "socEn": "Snapdragon 8 Elite Gen 5",
+        "chargerPowerW": 100,
+        "fullDurationMin": 99.1,
+        "fullDurationHuman": "99.1min",
+        "totalEnergyWh": 42.61,
+        "avgPowerW": 25.79,
+        "peakPowerW": 68.86,
+        "energy15MinWh": 11.3,
+        "energy15MinSharePct": 26.5,
+        "halfEnergyMin": 31,
+        "ratedEnergyWhFromBatteryLife": 36.88,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.946,
+          "endMin": 99.11,
+          "endEnergyWh": 42.61,
+          "tailPowerW": 1.3
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 63,
+      "socpk": {
+        "brand": "小米",
+        "name": "小米 17T",
+        "nameEn": "Xiaomi 17T",
+        "soc": "天玑 8500-Ultra",
+        "socEn": "Dimensity 8500 Ultra",
+        "chargerPowerW": 67,
+        "fullDurationMin": 99.5,
+        "fullDurationHuman": "99.5min",
+        "totalEnergyWh": 31.57,
+        "avgPowerW": 19.04,
+        "peakPowerW": 49.99,
+        "energy15MinWh": 6.45,
+        "energy15MinSharePct": 20.4,
+        "halfEnergyMin": 38.7,
+        "ratedEnergyWhFromBatteryLife": 25.82,
+        "curve": {
+          "points": 1001,
+          "stepSec": 5.969,
+          "endMin": 99.48,
+          "endEnergyWh": 31.57,
+          "tailPowerW": 2.3
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 64,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀WIN RT",
+        "nameEn": "HONOR WIN RT",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 100.4,
+        "fullDurationHuman": "100.4min",
+        "totalEnergyWh": 42.98,
+        "avgPowerW": 25.68,
+        "peakPowerW": 67.01,
+        "energy15MinWh": 11.54,
+        "energy15MinSharePct": 26.8,
+        "halfEnergyMin": 29.7,
+        "ratedEnergyWhFromBatteryLife": 36.88,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.027,
+          "endMin": 100.45,
+          "endEnergyWh": 42.98,
+          "tailPowerW": 1.36
+        }
+      },
+      "ours": {
+        "id": "honor-win-rt",
+        "brand": "荣耀",
+        "name": "荣耀 WIN RT",
+        "releaseDate": "2025-12"
+      }
+    },
+    {
+      "rank": 65,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀500 Pro",
+        "nameEn": "HONOR 500 Pro",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 80,
+        "fullDurationMin": 101.5,
+        "fullDurationHuman": "101.5min",
+        "totalEnergyWh": 32.67,
+        "avgPowerW": 19.31,
+        "peakPowerW": 53.16,
+        "energy15MinWh": 8.57,
+        "energy15MinSharePct": 26.2,
+        "halfEnergyMin": 31.1,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.09,
+          "endMin": 101.5,
+          "endEnergyWh": 32.67,
+          "tailPowerW": 1.4
+        }
+      },
+      "ours": {
+        "id": "honor-500-pro",
+        "brand": "荣耀",
+        "name": "荣耀 500 Pro",
+        "releaseDate": "2025-11"
+      }
+    },
+    {
+      "rank": 66,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为 nova 16",
+        "nameEn": "HUAWEI nova 16",
+        "soc": "麒麟 9010S",
+        "socEn": "Kirin 9010S",
+        "chargerPowerW": 100,
+        "fullDurationMin": 101.9,
+        "fullDurationHuman": "101.9min",
+        "totalEnergyWh": 30.6,
+        "avgPowerW": 18.02,
+        "peakPowerW": 43.48,
+        "energy15MinWh": 5.77,
+        "energy15MinSharePct": 18.9,
+        "halfEnergyMin": 42.5,
+        "ratedEnergyWhFromBatteryLife": 25.98,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.113,
+          "endMin": 101.88,
+          "endEnergyWh": 30.6,
+          "tailPowerW": 2.05
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 67,
+      "socpk": {
+        "brand": "苹果",
+        "name": "iPhone 17",
+        "nameEn": "iPhone 17",
+        "soc": "A19",
+        "socEn": "A19",
+        "chargerPowerW": 40,
+        "fullDurationMin": 106.9,
+        "fullDurationHuman": "106.9min",
+        "totalEnergyWh": 18.29,
+        "avgPowerW": 10.27,
+        "peakPowerW": 29.48,
+        "energy15MinWh": 6.2,
+        "energy15MinSharePct": 33.9,
+        "halfEnergyMin": 23.9,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.414,
+          "endMin": 106.9,
+          "endEnergyWh": 18.29,
+          "tailPowerW": 0.65
+        }
+      },
+      "ours": {
+        "id": "iphone-17",
+        "brand": "Apple",
+        "name": "iPhone 17",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 68,
+      "socpk": {
+        "brand": "其他",
+        "name": "Google Pixel 10 XL",
+        "nameEn": "Google Pixel 10 XL",
+        "soc": "Tensor G5",
+        "socEn": "Tensor G5",
+        "chargerPowerW": 45,
+        "fullDurationMin": 108,
+        "fullDurationHuman": "108min",
+        "totalEnergyWh": 24.98,
+        "avgPowerW": 13.88,
+        "peakPowerW": 26.36,
+        "energy15MinWh": 5.86,
+        "energy15MinSharePct": 23.5,
+        "halfEnergyMin": 34.8,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.478,
+          "endMin": 107.96,
+          "endEnergyWh": 24.98,
+          "tailPowerW": 2.09
+        }
+      },
+      "ours": null,
+      "matchNote": "socpk 写作「Google Pixel 10 XL」，但 Google 官方 2025 产品线只有 Pixel 10 / 10 Pro / 10 Pro XL / 10 Pro Fold，不存在「Pixel 10 XL」这一型号；极高概率是 Pixel 10 Pro XL 漏写 Pro。按「严禁 fuzzy 匹配」原则未采信，ours 置 null。若 team-lead 确认，可手工补为 google-pixel-10-pro-xl。"
+    },
+    {
+      "rank": 69,
+      "socpk": {
+        "brand": "荣耀",
+        "name": "荣耀GT Pro",
+        "nameEn": "HONOR GT Pro",
+        "soc": "骁龙 8 Elite",
+        "socEn": "Snapdragon 8 Elite",
+        "chargerPowerW": 100,
+        "fullDurationMin": 109,
+        "fullDurationHuman": "109min",
+        "totalEnergyWh": 31.18,
+        "avgPowerW": 17.16,
+        "peakPowerW": 47.79,
+        "energy15MinWh": 9.53,
+        "energy15MinSharePct": 30.6,
+        "halfEnergyMin": 26.5,
+        "ratedEnergyWhFromBatteryLife": 27.51,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.541,
+          "endMin": 109.02,
+          "endEnergyWh": 31.18,
+          "tailPowerW": 1.36
+        }
+      },
+      "ours": {
+        "id": "honor-gt-pro",
+        "brand": "荣耀",
+        "name": "荣耀 GT Pro",
+        "releaseDate": "2025-04"
+      }
+    },
+    {
+      "rank": 70,
+      "socpk": {
+        "brand": "华为",
+        "name": "华为畅享 90 Pro Max",
+        "nameEn": "HUAWEI Enjoy 90 Pro Max",
+        "soc": "麒麟 8000",
+        "socEn": "Kirin 8000",
+        "chargerPowerW": 40,
+        "fullDurationMin": 110.5,
+        "fullDurationHuman": "110.5min",
+        "totalEnergyWh": 38.28,
+        "avgPowerW": 20.79,
+        "peakPowerW": 34.23,
+        "energy15MinWh": 7.76,
+        "energy15MinSharePct": 20.3,
+        "halfEnergyMin": 40.1,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.628,
+          "endMin": 110.46,
+          "endEnergyWh": 38.28,
+          "tailPowerW": 1.61
+        }
+      },
+      "ours": null
+    },
+    {
+      "rank": 71,
+      "socpk": {
+        "brand": "苹果",
+        "name": "iPhone 17 Pro",
+        "nameEn": "iPhone 17 Pro",
+        "soc": "A19 Pro",
+        "socEn": "A19 Pro",
+        "chargerPowerW": 40,
+        "fullDurationMin": 111.3,
+        "fullDurationHuman": "111.3min",
+        "totalEnergyWh": 19.31,
+        "avgPowerW": 10.41,
+        "peakPowerW": 31.16,
+        "energy15MinWh": 6.99,
+        "energy15MinSharePct": 36.2,
+        "halfEnergyMin": 23,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 6.676,
+          "endMin": 111.27,
+          "endEnergyWh": 19.31,
+          "tailPowerW": 0.72
+        }
+      },
+      "ours": {
+        "id": "iphone-17-pro",
+        "brand": "Apple",
+        "name": "iPhone 17 Pro",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 72,
+      "socpk": {
+        "brand": "苹果",
+        "name": "iPhone 17 Pro Max",
+        "nameEn": "iPhone 17 Pro Max",
+        "soc": "A19 Pro",
+        "socEn": "A19 Pro",
+        "chargerPowerW": 40,
+        "fullDurationMin": 118.6,
+        "fullDurationHuman": "118.6min",
+        "totalEnergyWh": 23.86,
+        "avgPowerW": 12.07,
+        "peakPowerW": 37.09,
+        "energy15MinWh": 7.88,
+        "energy15MinSharePct": 33,
+        "halfEnergyMin": 24.7,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 7.115,
+          "endMin": 118.58,
+          "endEnergyWh": 23.86,
+          "tailPowerW": 0.99
+        }
+      },
+      "ours": {
+        "id": "iphone-17-pro-max",
+        "brand": "Apple",
+        "name": "iPhone 17 Pro Max",
+        "releaseDate": "2025-09"
+      }
+    },
+    {
+      "rank": 73,
+      "socpk": {
+        "brand": "其他",
+        "name": "Google Pixel 10",
+        "nameEn": "Google Pixel 10",
+        "soc": "Tensor G5",
+        "socEn": "Tensor G5",
+        "chargerPowerW": 30,
+        "fullDurationMin": 119.6,
+        "fullDurationHuman": "119.6min",
+        "totalEnergyWh": 24.18,
+        "avgPowerW": 12.13,
+        "peakPowerW": 23.95,
+        "energy15MinWh": 5.26,
+        "energy15MinSharePct": 21.7,
+        "halfEnergyMin": 40.1,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 7.176,
+          "endMin": 119.6,
+          "endEnergyWh": 24.18,
+          "tailPowerW": 1.87
+        }
+      },
+      "ours": {
+        "id": "google-pixel-10",
+        "brand": "Google",
+        "name": "Google Pixel 10",
+        "releaseDate": "2025-08"
+      }
+    },
+    {
+      "rank": 74,
+      "socpk": {
+        "brand": "苹果",
+        "name": "iPhone Air",
+        "nameEn": "iPhone Air",
+        "soc": "A19 Pro",
+        "socEn": "A19 Pro",
+        "chargerPowerW": 20,
+        "fullDurationMin": 153.8,
+        "fullDurationHuman": "153.8min",
+        "totalEnergyWh": 14.96,
+        "avgPowerW": 5.84,
+        "peakPowerW": 19.1,
+        "energy15MinWh": 4.2,
+        "energy15MinSharePct": 28.1,
+        "halfEnergyMin": 29,
+        "ratedEnergyWhFromBatteryLife": null,
+        "curve": {
+          "points": 1001,
+          "stepSec": 9.226,
+          "endMin": 153.77,
+          "endEnergyWh": 14.96,
+          "tailPowerW": 0.17
+        }
+      },
+      "ours": {
+        "id": "iphone-air",
+        "brand": "Apple",
+        "name": "iPhone Air",
+        "releaseDate": "2025-09"
+      }
+    }
+  ]
+}

@@ -145,7 +145,7 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
                                   className="cursor-help rounded bg-amber-50 px-1 text-[10px] font-normal text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
                                   title={row.title}
                                 >
-                                  参考
+                                  {row.titleBadge ?? '参考'}
                                 </span>
                               ) : null}
                             </span>
