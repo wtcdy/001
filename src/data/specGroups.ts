@@ -307,6 +307,14 @@ export const SPEC_GROUPS: SpecGroup[] = [
     categories: [...PHONE_AND_TABLET],
     rows: [
       {
+        key: 'camera.coBranding',
+        label: '影像联名',
+        get: (device: Device) => v(device.camera?.coBranding ?? null),
+        // 纯文本行，不做优劣判定：联名是「和谁调教」，不是好坏（不能给徕卡标绿、给其他标红）。
+        // 官方未标注联名的机型该字段为 null，渲染为「—」，与「有联名」形成差异高亮。
+        crossComparable: false,
+      },
+      {
         key: 'camera.main',
         label: '主摄',
         get: (device: Device) => v(device.camera?.main ?? null),

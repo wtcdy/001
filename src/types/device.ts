@@ -115,6 +115,15 @@ export interface DeviceCamera {
   zoom: string | null;
   /** 视频拍摄能力 */
   video: string | null;
+  /**
+   * 影像联名调教，如「徕卡 Leica」「蔡司 ZEISS」「哈苏 Hasselblad」「阿莱 ARRI」「理光 GR」。
+   *
+   * 口径：**只填官方（品牌官网规格页 / 官方发布会）明确标注的联名**，
+   * 自媒体口径一律不采信。官网未标注联名的机型**不填该字段**（undefined），
+   * 严禁填「无」或空串——「没写」和「没有」是两回事。
+   * 华为 XMAGE 属**自研**影像品牌，不算联名，故不填。
+   */
+  coBranding?: string | null;
 }
 
 /**

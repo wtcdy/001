@@ -216,6 +216,8 @@ export function mk(brand: string, seed: PhoneSeed, defaults?: CategoryDefaults):
     extra: seed.cam?.extra ?? null,
     zoom: seed.cam?.zoom ?? null,
     video: seed.cam?.video ?? null,
+    // 影像联名：未标注的机型保留 undefined（不落 null），与「官网没写」语义一致
+    coBranding: seed.cam?.coBranding ?? null,
   };
 
   const battery: DeviceBattery = {
@@ -361,6 +363,11 @@ export interface CompactSeed {
   cz?: string | null;
   /** 视频 */
   cv?: string | null;
+  /**
+   * 影像联名调教（如「徕卡 Leica」「蔡司 ZEISS」）。
+   * 官网未标注联名的机型一律不写本键（undefined），严禁填空串 / 「无」。
+   */
+  cb?: string | null;
   /** 前置 */
   fc?: string | null;
   /** 电池容量（mAh） */
@@ -468,6 +475,7 @@ function fromCompact(brand: string, s: CompactSeed, defaults?: CategoryDefaults)
       extra: s.ce ?? null,
       zoom: s.cz ?? null,
       video: s.cv ?? null,
+      coBranding: s.cb ?? null,
     },
     front: s.fc ?? null,
     bat: {
