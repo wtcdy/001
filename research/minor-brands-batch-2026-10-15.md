@@ -207,7 +207,9 @@ realme 中国官网规格页：`https://www.realme.com/cn/<slug>/specs`
 
 ## 6. others.ts（31 款，Pixel / Nothing / 中兴 / 华硕 / 8848 / 夏普 等）
 
-### 本轮处理：**审计，未改任何数值**
+> **更新**：本节是**第一轮**的结论（只审计、不改值）。同日第二轮已复核 Pixel 与 Nothing 并落值，见 **第 9 节**。
+
+### 第一轮处理：**审计，未改任何数值**
 
 原因：`store.google.com` 的 Pixel 规格页被**地区选择重定向**拦截（返回 "Change your region and language"），Pixel 官方一手证据取不到；Nothing / 华硕 / 中兴 / Tecno 本轮也未逐个取到官方原文。按「不编造、不套用」优先于「看起来补上了」的原则，保持原值。
 
@@ -223,7 +225,7 @@ Pixel 官方术语是 **Battery Share**，Google **从不公布瓦数**。若后
 
 | 品牌 / 机型 | URL | 现象 |
 | --- | --- | --- |
-| Google Pixel 全系 | `https://store.google.com/product/pixel_10_pro_specs?hl=en-US` | 被地区选择重定向拦截（"Change your region and language"），拿不到规格表 |
+| ~~Google Pixel 全系~~ | ~~`https://store.google.com/product/pixel_10_pro_specs?hl=en-US`~~ | ~~被地区选择重定向拦截~~ → **第二轮已用 support.google.com/pixelphone/answer/10107702 绕过，见第 9 节** |
 | 索尼 Xperia 1 VI 规格页 | `https://www.sony.com.tw/zh/.../xperia-1-vi/specifications` | 404（已改用 store.sony.com.tw + helpguide PDF 取证） |
 | 索尼日站 | `https://sony.jp/xperia/products/xperia1m6` | 404 |
 | moto X30 Pro | Motorola Support / motorola.com 各区域 | 无机型参数页（中国区专属机型），已用第三方并标注 |
@@ -241,7 +243,98 @@ Pixel 官方术语是 **Battery Share**，Google **从不公布瓦数**。若后
 | 魅族 | 21 | 3 | 18 | 官网无线充电栏带反充字样才有值 |
 | 索尼 | 16 | 8 | 8 | 统一 `支持无线反向充电（电量共享）`（官网从不给瓦数） |
 | 努比亚/红魔 | 23 | 18 | 5 | 第三方 `支持OTG反向充电`（17 款）+ 官方 `支持反向充电`（11S Pro，1 款） |
-| others | 31 | 26 | 5 | 本轮未动，Pixel 等需复核 |
-| **合计** | **151** | **64** | **87** | |
+| others | 31 | 23 | 8 | 第一轮未动；第二轮（第 9 节）复核后改为 23 有值 / 8 null |
+| **合计** | **151** | **61** | **90** | |
 
-**本轮删除的编造「10W」共 15（realme）+ 11（魅族）+ 8（索尼）+ 19（努比亚/红魔）= 53 款。**
+**删除的编造「10W」共 15（realme）+ 11（魅族）+ 8（索尼）+ 19（努比亚/红魔）+ 9（Pixel）= 62 款。**
+
+---
+
+# 9. 追加复查：Pixel / Nothing 反向充电（第二轮，同日）
+
+- 范围：**只改 `src/data/phones/others.ts` 一个文件**
+- 触发：team-lead 全库扫描发现两处嫌疑 —— (A) Pixel 全系 9 款都是 `10W反向`，而其 `bwl` 分别 25/15/15/23/21/15/23/18/23，无一等于 10，躲过了「br 与 bwl 同值」检查；(B) Nothing 3a Pro / 3a / 2a 的 `bwl=0`（无无线充电）却标了无线反向瓦数，物理上矛盾。
+- 校验：`npx tsc -p tsconfig.app.json --noEmit` → **0 错误**；`node scripts/_qa-validate.mjs` → **558/644（86.65%）**，违规 134，必填缺失 **62**（数字仍随同事并发提交波动）
+
+## 9.1 Google Pixel（9 款）
+
+### 取证路径（绕开了 store.google.com 的地区拦截）
+`store.google.com` 的规格页仍被地区选择重定向拦截，改用 **Google 官方帮助中心**：
+- `https://support.google.com/pixelphone/answer/10107702?hl=en`（"Charge other devices with Pixel"）
+- 中文版 `?hl=zh-Hans`（「使用 Pixel 为其他设备充电」）
+
+### 官方原文
+> Use Battery Share to wirelessly charge Qi-certified phones or accessories, like Pixel Buds by setting your accessory or other phone on the back of your Pixel phone.
+> **Battery Share is available on Pixel 5, Pixel 6, Pixel 6 Pro, Pixel 7, Pixel 7 Pro, Pixel 8, Pixel 8 Pro, Pixel 9, Pixel 9 Pro, Pixel 9 Pro XL.**
+
+两个关键事实：
+1. **整页没有任何瓦数** —— 对全文做 `\d+ W` 正则扫描，命中 **0 次**。所以原库 9 款 `10W反向` 的「10W」是编造的。
+2. **官方名单里没有 Pixel 10 系列**。Google 已就此事公开说明：Pixel 10 采用 Qi2 磁体阵列，「the array of magnets creates a strong connection with the charger but presents a **physical limitation for reverse wireless charging**… Battery Share is **not currently available** on the Pixel 10」（Google 给媒体的官方声明，经 Android Authority / Android Central / 9to5Google 转述）。官方支持页名单不含 Pixel 10 与这条声明互相印证。
+
+### 逐机型最终值
+
+| 机型 | 原值 | 新值 | 依据 |
+| --- | --- | --- | --- |
+| `google-pixel-10-pro-xl` | `10W反向` | **`null`** | 不在官方 Battery Share 名单；官方确认 Pixel 10 无 Battery Share |
+| `google-pixel-10-pro` | `10W反向` | **`null`** | 同上 |
+| `google-pixel-10` | `10W反向` | **`null`** | 同上 |
+| `google-pixel-9-pro-xl` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 在官方名单；官方不给瓦数，照抄功能名 |
+| `google-pixel-9-pro` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 同上 |
+| `google-pixel-9` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 同上 |
+| `google-pixel-8-pro` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 同上 |
+| `google-pixel-8` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 同上 |
+| `google-pixel-7-pro` | `10W反向` | **`支持无线反向充电（Battery Share）`** | 同上 |
+
+> 注：Pixel 10 系列改 `null` 只针对**无线**反向（Battery Share）。Google 官方未公布 Pixel 10 的有线 OTG 反向输出，按「官网没公布就 null」保留。
+
+## 9.2 Nothing（3 款嫌疑 + 2 款未动）
+
+### 取证路径（第一轮没找到，这轮找到了）
+- **官方规格页：`https://intl.nothing.tech/pages/phone-<型号>`**（SPECS 完整参数表；eu / in / sg 等区域站同内容）
+  - 坑 1：`eu.nothing.tech/pages/phone-3a-pro` 是 **404**，要用 `intl.` 域名
+  - 坑 2：连续请求返回 **HTTP 429**，需逐个放慢
+  - 坑 3：页面是 Shopify Hydrogen 的 RSC 编码，HTML 里标签与值分离，需按 `Reverse (wired )?charging` 定位后取相邻字符串
+- **官方支持中心**：`https://support.nothing.tech/hc/zh-cn/sections/32977167969041-产品特色?page=2`（Phone (3a) Pro）、`.../32978102120849-产品特色?page=2`（Phone (3a)）
+
+### 官方原文
+Phone (3a) Pro / Phone (3a) SPECS › Battery：
+> 50% charge time — 19 minutes / 100% charge time — 56 minutes / **Reverse wired charging — 7.5 W** / Charging speed — 50 W / 5,000 mAh
+
+Phone (2a) SPECS › Battery & Charging › Charging：
+> 0 - 100% charge time — 56 minutes / **Reverse charging — 5 W** / Fast charging
+
+官方支持中心（Phone (3a) Pro / (3a)）：
+> 这款手机支持无线充电吗？**这款手机不支持无线充电。**
+> 我可以使用无线充电器给手机充电吗？**不，这款手机不支持无线充电。**
+
+### 结论：team-lead 的「物理矛盾」判断被官方数据推翻，但结论仍要改
+`bwl=0`（无无线充电）与「7.5W 反向」**并不矛盾** —— 官方写的就是 **Reverse _wired_ charging**（有线反向）。所以问题是**原值漏了「有线」限定**，容易被读成无线反充，而不是瓦数编造。
+
+| 机型 | 原值 | 新值 | 依据 |
+| --- | --- | --- | --- |
+| `nothing-phone-3a-pro` | `7.5W反向` | **`7.5W有线反向`** | intl.nothing.tech/pages/phone-3a-pro「Reverse wired charging 7.5 W」 |
+| `nothing-phone-3a` | `7.5W反向` | **`7.5W有线反向`** | intl.nothing.tech/pages/phone-3a「Reverse wired charging 7.5 W」 |
+| `nothing-phone-2a` | `5W反向` | **`5W反向`（保持不动）** | intl.nothing.tech/pages/phone-2a「Reverse charging 5 W」，官方**未写 wired**，照抄原文 |
+| `nothing-phone-2` | `5W反向` | 未动 | bwl=15，官方 5W 无线反向，team-lead 已确认可信 |
+| `nothing-phone-1` | `5W反向` | 未动 | 同上 |
+
+> 第三方 IT之家（`ku.ithome.com/item/46352/canshu.html`）对 Phone (3a) Pro 记「无线充电 不支持 / OTG反向充电 支持」，与官方「无无线充电 + 有线反向」口径一致，可作旁证。
+
+## 9.3 本轮仍未核实、保持原值的
+
+| 项 | 现状 | 原因 |
+| --- | --- | --- |
+| ROG / Zenfone / 拯救者 Y900 / 8848 / 夏普 的 `10W反向` | 未动 | 本轮未逐个取证，按「不编造不套用」保持原值，列为待复核 |
+| zte-axon-30 / zte-nubia-z30-pro / zte-axon-50 / tecno-phantom-v-fold / tecno-camon-30-pro | `br:null` | 中兴 / 传音官网为营销站无机型规格表，第三方亦无明确表述 |
+
+## 9.4 第二轮之后的 `others.ts` br 分布
+
+| 值 | 款数 |
+| --- | --- |
+| `10W反向`（ROG / Zenfone / Y900 / 8848 / 夏普，待复核） | 12 |
+| `支持无线反向充电（Battery Share）` | 6 |
+| `7.5W有线反向` | 2 |
+| `5W反向` | 3 |
+| `null` | 8（5 款中兴/传音 + Pixel 10 三款） |
+
+**第二轮删除的编造「10W」：9 款（Pixel 全系）。**

@@ -251,7 +251,7 @@ node scripts/_qa-tablet-gap.mjs         # 平板必填齐全 93/113 = 82.30%
 | `huawei-matepad-115s-2025` | soc, bat | 麒麟 T92B（柔光版 SLG-W10）/ 麒麟 T92C（灵动款 SLG-W50）；8800mAh | [vmall 商详 prdId=10086518319242](https://www.vmall.com/product/comdetail/index.html?prdId=10086518319242) |
 | `huawei-matepad-115s-lingdong` | soc, bat, cm（+fc, ram, rom, wt） | 麒麟 T92C；8800mAh；后置 1300 万 f/1.8 AF、前置 800 万 f/2.0 | [vmall 商详 prdId=10086693978514](https://www.vmall.com/product/comdetail/index.html?prdId=10086693978514) |
 | `huawei-matepad-115-2026` | soc, cm（+fc, res, ppi, ram, rom, wt） | 麒麟 T82B（标准版）/ 麒麟 T82（柔光版）；后置 1300 万 f/1.8 AF、前置 800 万 f/2.0 | [华为官网规格页](https://consumer.huawei.com/cn/tablets/matepad-11-5-2026/specs) |
-| `huawei-matepad-air-z` | soc, bat, cm（+fc, res, ppi, ram, rom, wt） | 麒麟 T93SD / T93S；10100mAh；后置 5000 万 f/1.8 AF、前置 800 万 f/2.2 | [vmall 商详 prdId=10086966141469](https://www.vmall.com/product/comdetail/index.html?prdId=10086966141469)、[华为官网规格对比](https://consumer.huawei.com/cn/support/content/zh-cn16118536/) |
+| `huawei-matepad-air-z` | soc, bat, cm（+fc, res, ppi, ram, rom, wt） | **麒麟 T93SD**（单值，见下方裁决）；10100mAh；后置 5000 万 f/1.8 AF、前置 800 万 f/2.2 | [vmall 商详 prdId=10086966141469](https://www.vmall.com/product/comdetail/index.html?prdId=10086966141469)、[华为官网规格对比](https://consumer.huawei.com/cn/support/content/zh-cn16118536/) |
 | `huawei-matepad-se-11` | soc, bat, cm（+sb, cpu, gpu, fc, res, ppi, ram, rom, wt） | **骁龙 685（高通，非麒麟）**；7700mAh；后置 800 万 f/2.0 AF、前置 500 万 f/2.2 | [vmall 商详 prdId=10086426290126](https://www.vmall.com/product/comdetail/index.html?prdId=10086426290126) |
 | `huawei-matepad-mini` | soc, bat（+cpu） | 麒麟 9010B 六核；6400mAh（额定 6350mAh） | [vmall 商详 prdId=10086287244006](https://item.vmall.com/product/comdetail/index.html?cid=353007&prdId=10086287244006)、[华为海外官网规格页](https://consumer.huawei.com/za/tablets/matepad-mini/specs/) |
 | `huawei-matepad-12x` | soc, bat（+fc, bdim） | 麒麟 T92B；10100mAh（额定 10000mAh，66W） | [华为官网 HK 规格页](https://consumer.huawei.com/hk/tablets/matepad-12-x-2025/specs/)、[sa-en 规格页](https://consumer.huawei.com/sa-en/tablets/matepad-12-x-2025/specs/) |
@@ -263,8 +263,11 @@ node scripts/_qa-tablet-gap.mjs         # 平板必填齐全 93/113 = 82.30%
    已把 `sb` 改判为 `高通`。这是全库华为平板里唯一的非麒麟款，筛选器按 SoC 品牌过滤时会体现出来。
 2. **`huawei-matepad-air-z` 的芯片分配口径两处官网互相打架**：vmall 商详给「悦享款 = 麒麟 T93SD」，
    华为官网规格对比页给「Air Z = T93SD、Air Z 悦享款 = T93S（比 T93SD 提升 12%）」。
-   两台都说得通但我无法判断谁对，所以 `soc` 写成 `'麒麟 T93SD / 麒麟 T93S'` 并列，
-   没有挑一个版本硬填。
+   ~~初版我写成 `'麒麟 T93SD / 麒麟 T93S'` 并列。~~
+   **2026-10-15 后续裁决（team-lead）**：按来源优先级——`consumer.huawei.com/cn` 品牌官网规格页
+   高于 vmall 商城商品页，且规格对比页给出的是明确映射，本条是 Air Z **本体**（非悦享款），
+   → **`soc` 改为单值 `麒麟 T93SD`**，冲突保留在代码行内注释里。理由：界面显示「麒麟 T93SD / 麒麟 T93S」
+   会被用户读成「两种配置」，可读性比保守并列更差。
 
 ### 顺手更正的 3 处旧错误（同一份官网来源）
 
@@ -282,15 +285,39 @@ node scripts/_qa-tablet-gap.mjs         # 平板必填齐全 93/113 = 82.30%
 | `lenovo-xiaoxin-pad-pro-127-2025` | cm（+fc, bw） | 后置 1300 万、前置 800 万 | **第一档**：[联想官网商品文档页](https://www.lenovo.com.cn/wiki/product-doc-32736.html) + 京东自营规格参数区一致 |
 | `lenovo-xiaoxin-pad-pro-127` | cm（+fc, bw） | 后置 800 万、前置 1300 万超广角 | **第三档**：[IT之家发布会规格报道](https://www.ithome.com/0/709/032.htm)（联想官网该页已下架） |
 | `lenovo-legion-y700-2023` | cm（+fc） | 后置 1300 万（+200 万微距）、前置 800 万 | **第三档**：[GSMArena 机型库](https://mobile.gsmarena.com/lenovo_legion_y700_(2023)-12476.php) + 太平洋科技参数库口径一致 |
-| `lenovo-legion-y700-2024` | soc, cm（+lp, fc, ppi, bw, wt） | 骁龙 8 Gen3；后置 1300 万、前置 800 万 | **第三档**：[腾讯新闻上市报道](https://news.qq.com/rain/a/20241028A080IG00) |
+| ~~`lenovo-legion-y700-2024`~~ | soc, cm（+lp, fc, ppi, bw, wt） | 骁龙 8 Gen3；后置 1300 万、前置 800 万 | **第三档**：[腾讯新闻上市报道](https://news.qq.com/rain/a/20241028A080IG00) —— **该条目已于 2026-10-15 后续去重删除** |
 
-⚠️ **`lenovo-legion-y700-2024` 疑似重复条目，请你拍板**：它与 `lenovo-legion-y700-2025`
-（8.8" 2560×1600 / 骁龙8 Gen3 / 6550mAh / 350g / 2899 元起 / ZUI 16.1）参数完全重合，
-外部资料里「Legion Y700 2024 / 第三代」就是这一台的另一个叫法。
-我按字面把它补齐了（不擅自删条目），但**建议 QA 或你确认后去重**，否则对比页会出现两行一样的机器。
+### `lenovo-legion-y700-2024` 去重：删了，但结论跟预判不一样
 
-顺带把它的 `lp` 从 null 补成 **2899**（腾讯新闻上市报道的官方首发价，12GB+256GB），
-`cp` 仍留空——联想官网该款已下架，渠道只有第三方店报价，不采信。
+删除前按 team-lead 要求做了「四代是否存在」的验证，结果**推翻了原来的假设**：
+
+**联想中国官网同时挂着两台不同的 Y700**（[联想商城活动页](https://mactivity.lenovo.com.cn/xiaofei/ZongHe/jythdp.html) 两行并列）：
+
+| 官方 SKU 名 | SoC | 分辨率 | 电池 | 重量 | 主摄 | 系统 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 「拯救者 Y700 **2025**」 | **骁龙 8 Gen3** | 2560×1600 165Hz | 6550mAh | 350g | 1300 万 | Android 14 |
+| 「拯救者平板 Y700 **四代**」 | **骁龙 8 至尊版（8 Elite）** | 3040×1904 165Hz 408ppi | 7600mAh | 340g | 5000 万 | Android 15 |
+
+即：**「四代」是真实存在的独立机型且 SoC 不同（8 Elite），但它在联想官方命名里叫「四代」、不叫「2025 款」**；
+「2025 款」反而是 Gen3（8 Gen3）那台的官方名字。
+
+由此得出三条处置：
+
+1. **删 `lenovo-legion-y700-2024`** ✅ 已删。判定依据：它与 `lenovo-legion-y700-2025` 同为
+   8.8" 2560×1600 / 骁龙8 Gen3 / 6550mAh / 350g / 1300 万 / 2899 元起，
+   外部资料里的「Legion Y700 2024 / 第三代」就是联想官方「Y700 2025」这台的另一种叫法，确认同一台。
+2. **`lenovo-legion-y700-2025` 的 SoC 不改** —— 它记录骁龙 8 Gen3 是**正确**的，
+   与联想官方 SKU「拯救者 Y700 2025」（骁龙 8 Gen3）吻合。原预判「2025 款 = 四代 = 8 Elite」不成立。
+3. **新增 `lenovo-legion-y700-gen4`** —— 真正的四代（骁龙 8 至尊版）**此前全库根本没有**，
+   是本轮验证顺带发现的真实缺漏。已按联想官方商城商品页补齐录入：
+   8.8" 3040×1904 408ppi 165Hz 600nit / 骁龙 8 至尊版 3nm / 12~16GB + 256GB~1TB UFS 4.1 /
+   后置 5000 万 + 前置 800 万 / 7600mAh 68W（支持旁路充电）/ 340g / 207.6×128.5×7mm /
+   Android 15 / 首发 3299（12+256）、联想商城现参考价 3099。
+   来源：[联想商城商详](https://m.lenovo.com.cn/wiki/product-1050505.html)、
+   [百度百科配置表](https://baike.baidu.com/item/拯救者Y700/59672899)、
+   [GSMArena](https://www.gsmarena.com/lenovo_legion_y700_(gen_4)-13993.php)
+
+**净效果**：平板总数仍是 113，必填齐全仍是 111（98.23%）——删掉 1 条重复的、补进 1 条真实缺失的。
 
 ## 四、小米 / Redmi 4 款 —— 全部突破（含用户点名的 REDMI K Pad）
 
@@ -320,7 +347,7 @@ mi.com/global 规格页（Wi-Fi 版）同为 8MP 1/4" f/2。
 | --- | --- | --- | --- | --- |
 | `lenovo-xiaoxin-pad-pro-127` | `cm` / `fc` | 800 万 / 1300 万 | [IT之家](https://www.ithome.com/0/709/032.htm) | 2023 老款，联想官网商品页已下架 |
 | `lenovo-legion-y700-2023` | `cm` / `fc` | 1300 万 / 800 万 | [GSMArena](https://mobile.gsmarena.com/lenovo_legion_y700_(2023)-12476.php)、[太平洋科技](https://g.pconline.com.cn/product/tabletpc/lenovo/1891327_detail.html) | 2023 老款，联想官网商品页已下架 |
-| `lenovo-legion-y700-2024` | `soc` / `cm` / `fc` / `lp` | 骁龙 8 Gen3 / 1300 万 / 800 万 / 2899 | [腾讯新闻](https://news.qq.com/rain/a/20241028A080IG00) | 联想官网该页已下架 |
+| ~~`lenovo-legion-y700-2024`~~ | `soc` / `cm` / `fc` / `lp` | 骁龙 8 Gen3 / 1300 万 / 800 万 / 2899 | [腾讯新闻](https://news.qq.com/rain/a/20241028A080IG00) | 联想官网该页已下架（**该条目已去重删除，本行仅留档**） |
 | `redmi-pad-2` | `soc` / `cm` / `fc` | Helio G100 Ultra / 8MP f/2.0 / 5MP f/2.2 | mi.com 新加坡站官方规格页（境外区域站）+ 京东自营规格参数区 | 国行 `/prod/redmi-pad-2/specs` 未收录；境外 mi.com 官网站 + 京东自营双向互证 |
 
 **全程未使用中关村在线（ZOL）**——上一批起就把 ZOL 列为本项目禁用源。
@@ -341,6 +368,19 @@ npx tsc -p tsconfig.app.json --noEmit   # ✅ 0 错误
 node scripts/_qa-tablet-gap.mjs         # 平板必填齐全 93 → 111 / 113（82.30% → 98.23%）
 npm run validate:data                   # 必填缺失计数 62（其中平板只剩上面 2 条）
                                         # romOptions 空数组 15 → 10 条（顺带补了 5 款 ram/rom）
+                                        # 违规记录数 145 → 134，通过率 86.49% → 86.65%
+```
+
+## 八、收尾裁决后的复跑（2026-10-15）
+
+- `huawei-matepad-air-z` 的 `soc` 由并列 `'麒麟 T93SD / 麒麟 T93S'` 改为单值 **`麒麟 T93SD`**。
+- 删除重复的 `lenovo-legion-y700-2024`，新增真实缺失的 `lenovo-legion-y700-gen4`（骁龙 8 至尊版）。
+
+```
+npx tsc -p tsconfig.app.json --noEmit   # ✅ 0 错误
+node scripts/_qa-tablet-gap.mjs         # 平板总数 113、必填齐全 111（98.23%），缺 2（同 §六）
+npm run validate:data                   # 违规记录数 145 → 134，通过率 86.49% → 86.65%
+                                        # 联想品牌 6 款，无一进入违规列表
 ```
 
 字段级收敛：soc 11 → 1，bat 8 → 0，cm 11 → 1，sz 0 → 0。
