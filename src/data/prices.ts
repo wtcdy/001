@@ -32,10 +32,10 @@ export const PRICES: Record<string, PriceRecordWithSpec> = {
   'iphone-17-pro-max': { spec: '12+256', jd: 9999, updatedAt: '2026-10-13', isReference: true },
   'iphone-17-pro': { spec: '12+256', jd: 8999, updatedAt: '2026-10-13', isReference: true },
   // 2026-10-14 核：256GB 首发 5999，苹果 10 月官价上调 800 至 6799，但渠道未跟涨 ——
-  // 京东自营活动价 5999，叠加国补后约 5499（拼多多百亿补贴同档）。
+  // 京东自营活动价 5999，叠加国补后约 5499。
   'iphone-17': { spec: '8+256', jd: 5999, updatedAt: '2026-10-14', isReference: true },
   // 2026-10-14 核：苹果官网 256GB 已由首发 7999 上调至 8799，但渠道价反而在跌 ——
-  // 京东自营活动价 5999（领券/国补后可到 5269），拼多多百亿补贴 5199。
+  // 京东自营活动价 5999（领券/国补后可到 5269）。
   'iphone-air': { spec: '12+256', jd: 5999, updatedAt: '2026-10-14', isReference: true },
   'iphone-16e': { spec: '8+128', jd: 4999, updatedAt: '2026-10-13', isReference: true },
   'iphone-16-pro-max': { spec: '8+256', jd: 7999, updatedAt: '2026-10-13', isReference: true },

@@ -1,30 +1,82 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import { Search, Smartphone, X } from 'lucide-react';
 
+import CategoryTabs from '../components/CategoryTabs';
 import CompareBar from '../components/CompareBar';
 import EmptyState from '../components/EmptyState';
 import FilterPanel from '../components/FilterPanel';
 import PhoneCard from '../components/PhoneCard';
-import { ALL_PHONES, getPhonesByIds } from '../data';
+import { ALL_DEVICES, CATEGORY_COUNTS, getDevicesByIds } from '../data';
+import { CATEGORIES } from '../constants';
 import { MAX_COMPARE, useCompare } from '../hooks/useCompare';
 import { useFilters } from '../hooks/useFilters';
+import type { DeviceCategory } from '../types/device';
 
 /** Toast 停留时长（毫秒）：移动端点击被拦下时的即时反馈 */
 const TOAST_DURATION = 2400;
+
+/** URL 里品类参数的键名；`phone` 是默认值，不写进 URL 以免链接变长 */
+const CATEGORY_PARAM = 'cat';
+
+/** 解析 URL 里的品类参数：非法值 / 未上线的品类一律回落到 phone */
+function parseCategory(raw: string | null): DeviceCategory {
+  const hit = CATEGORIES.find((category) => category.id === raw && category.enabled);
+  return hit ? hit.id : 'phone';
+}
 
 /** 机型库首页：搜索 + 筛选 + 卡片网格 + 底部对比栏 */
 export function LibraryPage() {
   const navigate = useNavigate();
   const compare = useCompare();
-  const { filters, update, toggleInArray, reset, sortKey, setSortKey, filtered, total, active } =
-    useFilters(ALL_PHONES);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    filters,
+    update,
+    toggleInArray,
+    reset,
+    setCategory,
+    sortKey,
+    setSortKey,
+    filtered,
+    total,
+    active,
+  } = useFilters(ALL_DEVICES);
   const [showFiltersMobile, setShowFiltersMobile] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
 
-  const selectedPhones = useMemo(() => getPhonesByIds(compare.ids), [compare.ids]);
+  // 对比栏要走跨品类索引：切到平板后选中的是平板，用手机索引会查不到
+  const selectedDevices = useMemo(() => getDevicesByIds(compare.ids), [compare.ids]);
+
+  /** 挂载时用 URL 的 `cat` 初始化品类（后续变更由下面的 effect 反向写回） */
+  useEffect(() => {
+    const fromUrl = parseCategory(searchParams.get(CATEGORY_PARAM));
+    if (fromUrl !== 'phone') setCategory(fromUrl);
+    // 只在挂载时读一次 URL，否则会和写回 effect 互相触发
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** 品类变化写回 URL，便于分享「平板列表」这类链接；默认 phone 不写入 */
+  useEffect(() => {
+    const current = searchParams.get(CATEGORY_PARAM);
+    if (filters.category === 'phone') {
+      if (current !== null) {
+        const next = new URLSearchParams(searchParams);
+        next.delete(CATEGORY_PARAM);
+        setSearchParams(next, { replace: true });
+      }
+      return;
+    }
+    if (current !== filters.category) {
+      const next = new URLSearchParams(searchParams);
+      next.set(CATEGORY_PARAM, filters.category);
+      setSearchParams(next, { replace: true });
+    }
+    // 只依赖品类本身：依赖 searchParams 会与 useCompare 的 ids 同步互相触发
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.category]);
 
   /** 弹出一条会自动消失的提示；重复触发时重置计时，避免连点后提示提前消失 */
   const showToast = useCallback((message: string) => {
@@ -63,6 +115,11 @@ export function LibraryPage() {
     <div className="mx-auto max-w-7xl px-4 pb-28 pt-6">
       {/* 搜索栏 */}
       <div className="psc-card mb-5 p-4">
+        {/* 品类切换：放在搜索框正上方，进入页面第一眼就能看到 */}
+        <div className="mb-3">
+          <CategoryTabs value={filters.category} onChange={setCategory} />
+        </div>
+
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
             <Search
@@ -103,7 +160,12 @@ export function LibraryPage() {
         </div>
 
         <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-          共收录 <span className="font-semibold text-slate-700 dark:text-slate-200">{total}</span> 款机型
+          {/* 品类切换后「共收录」应跟着变，否则切到平板还显示 632 会让人以为没生效 */}
+          当前品类共收录{' '}
+          <span className="font-semibold text-slate-700 dark:text-slate-200">
+            {CATEGORY_COUNTS[filters.category] ?? total}
+          </span>{' '}
+          款
           {active ? (
             <>
               ，当前筛选出{' '}
@@ -159,7 +221,7 @@ export function LibraryPage() {
       </div>
 
       <CompareBar
-        phones={selectedPhones}
+        phones={selectedDevices}
         onRemove={compare.remove}
         onClear={compare.clear}
         onCompare={handleCompare}

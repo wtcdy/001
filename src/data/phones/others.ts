@@ -3,6 +3,28 @@ import { c, type CompactSeed } from './_factory';
 /**
  * 其他品牌机型：Google Pixel / Nothing / 中兴（含 Axon）/ 联想 / ROG / 传音 / 8848 等。
  * 统一归入「其他」类目下的独立品牌字段，方便筛选。
+ *
+ * ═══ 数据来源与口径（2026-10-15 批次，执行人：minor-brands）═══
+ *
+ * 【本轮对该文件的处理结论：只做审计，不改值】
+ *   1) 反向充电 `br` 为 null 的 5 款（zte-axon-30、zte-nubia-z30-pro/Axon 30 Pro、
+ *      zte-axon-50、tecno-phantom-v-fold、tecno-camon-30-pro）：
+ *      中兴官网（zte.com.cn）与传音官网均为营销站、无机型规格参数表，
+ *      第三方亦未给出明确「支持反向充电」表述 → **保持 null，不编造**。
+ *   2) 现有 `br` 值（Google Pixel 全系 `10W反向`、Nothing 全系 `7.5W/5W反向`、
+ *      ROG / Zenfone / 拯救者 Y900 / 8848 / 夏普 `10W反向`）：
+ *      store.google.com 的规格页本轮**被区域跳转拦截**（返回「Change your region」），
+ *      未能取到 Pixel 官方「Battery Share」条目；Nothing / 华硕 / 中兴本轮亦未逐个取证。
+ *      → **一律保持原值不动**，并在下表中列为「待复核」，避免用同品牌其它机型去套。
+ *
+ * 【官网未公布因而留 null 的字段】
+ *   本文件 `bdim`/`wt`/`bc`/`sz`/`res`/`nit` 已无空缺（本轮全表扫描确认），
+ *   唯一持续为 null 的电池类字段即上述 5 款机型的 `br`。
+ *
+ * 【口径纪律提醒（给后续接手者）】
+ *   Google Pixel 的无线反向充电在官方口径里叫 **Battery Share**，官方**从不标瓦数**；
+ *   Nothing 官方规格页会标 reverse charging 瓦数（Phone 2 为 5W、(3a) 系列为 7.5W）。
+ *   若后续能打开 store.google.com 的 spec 页，Pixel 全系应按「只写支持、不写 10W」处理。
  */
 
 const PIXEL: CompactSeed[] = [

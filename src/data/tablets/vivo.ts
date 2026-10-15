@@ -52,7 +52,8 @@ const SEEDS: CompactSeed[] = [
     sz: 13.2, res: '4K', ppi: null, mat: null, rr: 144, nit: null, hdr: '杜比视界',
     soc: '第五代骁龙8至尊版', sb: '高通', pr: '3nm', rt: 'LPDDR5X', ft: 'UFS 4.1',
     ram: [8], rom: [256],
-    cm: null, fc: null,
+    // 2026-10-15 补（vivo 官网参数页）：后置 1300 万像素 / 前置 800 万像素
+    cm: '1300万像素', fc: '800万像素',
     bc: 13000, bw: 66, bwl: 0,
     os: null, ui: 'OriginOS 6 平板定制系统', net: 'Wi-Fi', wf: 'Wi-Fi 7', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -84,7 +85,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // lp 未查到（2024-03 发布）
-    i: 'vivo-pad3-pro', n: 'vivo Pad3 Pro', d: '2024-03', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 2999；官网状态「缺货」→ cp 留空
+    i: 'vivo-pad3-pro', n: 'vivo Pad3 Pro', d: '2024-03', lp: 2999, cp: null,
     sz: 13, res: '3096x2064', ppi: null, mat: 'LCD', rr: 144,
     soc: '天玑9300', sb: '联发科', pr: '4nm', ram: [8, 12, 16], rom: [256, 512],
     cm: '1300万像素', fc: '800万像素',
@@ -101,10 +103,12 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // soc / nit 本轮新补（太平洋产品库）。⚠️ lp：ZOL / 太平洋均报 2499，但是渠道在售价，不是确认的首发价 → null
-    i: 'vivo-pad3', n: 'vivo Pad3', d: '2024-06', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 2499；官网状态「缺货」→ cp 留空
+    i: 'vivo-pad3', n: 'vivo Pad3', d: '2024-06', lp: 2499, cp: null,
     sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144, nit: 600,
     soc: '骁龙8s Gen3', sb: '高通', ram: [8, 12], rom: [128, 256],
-    cm: null, fc: null,
+    // 2026-10-15 补（vivo 官网参数页）：后置 800 万像素主摄 / 前置 500 万像素
+    cm: '800万像素', fc: '500万像素',
     bc: 10000, bw: 44, bwl: 0,
     os: 'Android 14', ui: 'OriginOS 4', net: 'Wi-Fi', nfc: false, ir: false,
     wt: 589, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
@@ -118,7 +122,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // lp 未查到（2023-08 发布）
-    i: 'vivo-pad-air', n: 'vivo Pad Air', d: '2023-08', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 1799；官网状态「缺货」→ cp 留空
+    i: 'vivo-pad-air', n: 'vivo Pad Air', d: '2023-08', lp: 1799, cp: null,
     sz: 11.5, res: '2800x1840', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙870', sb: '高通', pr: '7nm', ram: [8, 12], rom: [128, 256, 512],
     cm: '1300万像素', fc: '500万像素',
@@ -135,7 +140,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // lp 未查到（2023-04 发布）
-    i: 'vivo-pad2', n: 'vivo Pad2', d: '2023-04', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 2499；官网状态「缺货」→ cp 留空
+    i: 'vivo-pad2', n: 'vivo Pad2', d: '2023-04', lp: 2499, cp: null,
     sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144,
     soc: '天玑9000', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
     cm: '1300万像素', fc: '800万像素',

@@ -6,6 +6,8 @@ import { computeRowDiff, shouldRenderRow, SPEC_GROUPS } from '../data';
 import type { RowDiffResult } from '../data';
 import type { Phone } from '../types/phone';
 
+import { positioningOf } from '../utils/positioning';
+
 export interface SpecTableProps {
   /** 参与对比的机型（2-4 款） */
   phones: Phone[];
@@ -20,10 +22,13 @@ interface GroupState {
 /**
  * 参数对比表。
  *
- * 配色遵循国内用户直觉：
- * - 数值更优 → 红 / 橙系（psc-cell-better）
- * - 数值更差 → 绿 / 灰系（psc-cell-worse）
+ * 配色遵循国际通用直觉（与交通信号灯一致）：
+ * - 数值更优 → 绿色系（psc-cell-better）
+ * - 数值更差 → 红色系（psc-cell-worse）
  * - 仅取值不同 → 中性琥珀色底（psc-cell-diff）
+ *
+ * 优劣方向由 `specGroups.ts` 里每行的 `better: 'higher' | 'lower'` 决定，
+ * 本组件只负责把 `computeRowDiff` 算出的 `bestIndexes` / `worstIndexes` 映射到颜色。
  */
 export function SpecTable({ phones, diffOnly }: SpecTableProps) {
   const [openMap, setOpenMap] = useState<GroupState>(() => {
@@ -66,17 +71,26 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
               <th className="sticky left-0 z-20 w-28 min-w-[7rem] border-b border-r border-slate-200 bg-slate-100 px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 参数项
               </th>
-              {phones.map((phone) => (
-                <th
-                  key={phone.id}
-                  className={`${columnWidth} border-b border-slate-200 px-3 py-3 text-left align-top dark:border-slate-700`}
-                >
-                  <div className="text-sm font-semibold text-slate-900 dark:text-slate-50">{phone.name}</div>
-                  <div className="mt-0.5 text-xs font-normal text-slate-500 dark:text-slate-400">
-                    {phone.brand} · {phone.releaseDate}
-                  </div>
-                </th>
-              ))}
+              {phones.map((phone) => {
+                const positioning = positioningOf(phone);
+                return (
+                  <th
+                    key={phone.id}
+                    className={`${columnWidth} border-b border-slate-200 px-3 py-3 text-left align-top dark:border-slate-700`}
+                  >
+                    <div className="text-sm font-semibold text-slate-900 dark:text-slate-50">{phone.name}</div>
+                    <div className="mt-0.5 text-xs font-normal text-slate-500 dark:text-slate-400">
+                      {phone.brand} · {phone.releaseDate}
+                    </div>
+                    {/* 主打方向徽章：派生自参数，不落地数据 */}
+                    <div className="mt-1.5">
+                      <span className="inline-flex items-center rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-200">
+                        {positioning}
+                      </span>
+                    </div>
+                  </th>
+                );
+              })}
             </tr>
           </thead>
 
@@ -124,7 +138,17 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
                             scope="row"
                             className="sticky left-0 z-10 w-28 min-w-[7rem] border-r border-slate-200 bg-white px-3 py-2.5 text-left align-top text-xs font-medium text-slate-500 dark:border-slate-700 dark:bg-[#151822] dark:text-slate-400"
                           >
-                            {row.label}
+                            <span className="inline-flex items-center gap-1">
+                              {row.label}
+                              {row.title ? (
+                                <span
+                                  className="cursor-help rounded bg-amber-50 px-1 text-[10px] font-normal text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                                  title={row.title}
+                                >
+                                  参考
+                                </span>
+                              ) : null}
+                            </span>
                           </th>
 
                           {phones.map((phone, index) => {

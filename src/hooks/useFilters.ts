@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 
-import { BATTERY_BOUNDS, PRICE_BOUNDS, SCREEN_SIZE_BOUNDS } from '../data';
+import { BATTERY_BOUNDS, BOUNDS_BY_CATEGORY, PRICE_BOUNDS, SCREEN_SIZE_BOUNDS } from '../data';
 import type { DeviceCategory, FeatureId, FormFactor } from '../types/device';
 import type { Phone, SortKey } from '../types/phone';
 
@@ -24,6 +24,16 @@ export const DEFAULT_FILTERS = {
   category: 'phone' as DeviceCategory,
   formFactors: [] as FormFactor[],
   features: [] as FeatureId[],
+  /**
+   * 机身厚度区间（mm）；`null` = 不限。
+   *
+   * 与价格 / 屏幕 / 电池不同，厚度和重量**没有全库统一边界**：
+   * 手机 6-10mm / 150-250g，平板 5-8mm / 300-900g，量纲差一个数量级，
+   * 因此默认「不限」，由筛选面板按当前品类给出边界。
+   */
+  thicknessRange: null as [number, number] | null,
+  /** 重量区间（g）；`null` = 不限 */
+  weightRange: null as [number, number] | null,
 };
 
 export type Filters = typeof DEFAULT_FILTERS;
@@ -46,20 +56,38 @@ export function hasActiveFilters(filters: Filters): boolean {
     filters.screenSizeRange[0] !== DEFAULT_FILTERS.screenSizeRange[0] ||
     filters.screenSizeRange[1] !== DEFAULT_FILTERS.screenSizeRange[1] ||
     filters.batteryRange[0] !== DEFAULT_FILTERS.batteryRange[0] ||
-    filters.batteryRange[1] !== DEFAULT_FILTERS.batteryRange[1]
+    filters.batteryRange[1] !== DEFAULT_FILTERS.batteryRange[1] ||
+    filters.thicknessRange !== null ||
+    filters.weightRange !== null
   );
 }
 
 /**
  * 取机型「有效价」，用于价格筛选与排序：
- *  1. 优先取渠道低价经国补后的到手价（最能反映用户实际支出）；
- *  2. 没有渠道报价时，回落到机型自带的参考现价 / 首发价。
+ *  1. 优先取**京东自营价**（当前唯一渠道），与卡片主视觉展示的价格一致；
+ *  2. 没有京东报价时，回落到机型自带的参考现价 / 首发价。
  *
- * 与 `PRICE_BOUNDS` 使用同一口径（见 data/prices.ts 的 effectivePriceOf），
+ * 不取国补后到手价：国补有 6000 元上限，超上限机型补贴为 0，
+ * 用它排序会让高价机型的顺序和展示价对不上。
+ *
+ * 与 `PRICE_BOUNDS` 使用同一口径（见 utils/effectivePrice.ts 的 effectivePriceOf），
  * 避免边界机型被价格滑块误筛掉。
  */
 export function priceOf(phone: Phone): number | null {
   return effectivePriceOf(phone);
+}
+
+/**
+ * 无有效价机型的排序规则：**一律沉底**（升序降序同规则），彼此按机型名稳定排序。
+ *
+ * 为什么不直接拿 `±Infinity` 参与相减：两个都是 null 时 `Infinity - Infinity` 得到 NaN，
+ * 而比较器返回 NaN 时规范按 +0 处理，同一批无价机型之间的先后顺序就成了「看引擎心情」。
+ * 停售机型（如已下架的 iPhone）现在 `currentPrice` 为 null 且可能没有渠道报价，
+ * 这类机型有几十款，顺序飘动在用户眼里就是「每次刷新结果都不一样」。
+ */
+function compareMissingPrice(a: Phone, b: Phone, pa: number | null, pb: number | null): number {
+  if (pa === null && pb === null) return (a.name ?? '').localeCompare(b.name ?? '', 'zh-CN');
+  return pa === null ? 1 : -1;
 }
 
 function matchKeyword(phone: Phone, keyword: string): boolean {
@@ -106,6 +134,32 @@ export function useFilters(phones: Phone[]) {
     setFilters(DEFAULT_FILTERS);
   }, []);
 
+  /**
+   * 切换品类。
+   *
+   * 必须连带重置**按品类派生**的筛选项，否则会静默筛出 0 条：
+   *  - `formFactors`：手机勾的 `fold-h` 在平板里不存在 → 平板列表空
+   *  - `features`：特性是按品类定义的（如「小屏手机」只属于 phone）
+   *  - 三条区间滑块：手机电池边界 2000-8000mAh 会把 10000mAh 的平板全筛掉
+   *  - 品牌 / 年份 / 处理器厂商：平板的年份跨度与手机不同，残留会误筛
+   *
+   * 关键词保留——用户切品类时通常还想继续找同一个词。
+   */
+  const setCategory = useCallback((next: DeviceCategory) => {
+    setFilters((prev) => {
+      if (prev.category === next) return prev;
+      const bounds = BOUNDS_BY_CATEGORY[next];
+      return {
+        ...DEFAULT_FILTERS,
+        keyword: prev.keyword,
+        category: next,
+        priceRange: bounds.price,
+        screenSizeRange: bounds.screenSize,
+        batteryRange: bounds.battery,
+      };
+    });
+  }, []);
+
   const filtered = useMemo(() => {
     const result = phones.filter((phone) => {
       if (!matchKeyword(phone, filters.keyword)) return false;
@@ -146,6 +200,24 @@ export function useFilters(phones: Phone[]) {
 
       if (filters.nfcOnly && phone.system?.nfc !== true) return false;
 
+      // 厚度 / 重量：null 表示不限；无该数值的机型不做排除（数据缺失不该被判为「不符合」）
+      if (filters.thicknessRange) {
+        const thickness = phone.body?.thickness ?? null;
+        if (
+          thickness !== null &&
+          (thickness < filters.thicknessRange[0] || thickness > filters.thicknessRange[1])
+        ) {
+          return false;
+        }
+      }
+
+      if (filters.weightRange) {
+        const weight = phone.body?.weight ?? null;
+        if (weight !== null && (weight < filters.weightRange[0] || weight > filters.weightRange[1])) {
+          return false;
+        }
+      }
+
       // 品类：单选精确匹配
       if (phone.category !== filters.category) return false;
 
@@ -172,13 +244,15 @@ export function useFilters(phones: Phone[]) {
         case 'release-asc':
           return (a.releaseDate ?? '').localeCompare(b.releaseDate ?? '');
         case 'price-asc': {
-          const pa = priceOf(a) ?? Number.POSITIVE_INFINITY;
-          const pb = priceOf(b) ?? Number.POSITIVE_INFINITY;
+          const pa = priceOf(a);
+          const pb = priceOf(b);
+          if (pa === null || pb === null) return compareMissingPrice(a, b, pa, pb);
           return pa - pb;
         }
         case 'price-desc': {
-          const pa = priceOf(a) ?? Number.NEGATIVE_INFINITY;
-          const pb = priceOf(b) ?? Number.NEGATIVE_INFINITY;
+          const pa = priceOf(a);
+          const pb = priceOf(b);
+          if (pa === null || pb === null) return compareMissingPrice(a, b, pa, pb);
           return pb - pa;
         }
         case 'battery-desc':
@@ -198,6 +272,7 @@ export function useFilters(phones: Phone[]) {
     update,
     toggleInArray,
     reset,
+    setCategory,
     sortKey,
     setSortKey,
     filtered,

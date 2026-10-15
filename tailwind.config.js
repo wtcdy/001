@@ -18,17 +18,17 @@ export default {
           800: '#1a2cb6',
           900: '#1c2c8f',
         },
-        // 差异高亮：国内用户习惯 —— 更优=红/橙系，更差=绿/灰系
+        // 差异高亮：绿色 = 更优（国际通用直觉），红色 = 更差
         better: {
-          bg: '#fff1f0',
-          border: '#ffa39e',
-          text: '#cf1322',
-          strong: '#ff4d4f',
-        },
-        worse: {
           bg: '#f0fdf4',
           border: '#95de64',
           text: '#237804',
+          strong: '#16a34a',
+        },
+        worse: {
+          bg: '#fff1f0',
+          border: '#ffa39e',
+          text: '#cf1322',
         },
       },
       fontFamily: {

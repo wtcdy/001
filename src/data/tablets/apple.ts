@@ -241,7 +241,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // ⚠️ d 只有年份，且 lp / wt / bdim 未查到
-    i: 'ipad-air-m4-13', n: 'iPad Air 13（M4，2026）', d: '2026', lp: null, cp: null,
+    // 2026-10-15 核：apple.com/cn 在售 iPad Air 13 英寸（M4）128GB 无线局域网机型官网价 7699
+    i: 'ipad-air-m4-13', n: 'iPad Air 13（M4，2026）', d: '2026', lp: null, cp: 7699,
     sz: 13, res: null, ppi: null, mat: 'Liquid 视网膜显示屏（不支持 ProMotion）', rr: 60,
     soc: 'Apple M4', sb: 'Apple', pr: '3nm', rom: [128, 256, 512, 1024],
     cm: '1200万像素广角', cv: '4K', fc: '1200万像素 Center Stage（横向）',

@@ -108,7 +108,8 @@ const SEEDS: CompactSeed[] = [
     soc: '天玑8350至尊版', sb: '联发科', pr: '4nm', cpu: '1×A715 3.35GHz + 3×A715 3.20GHz + 4×A510 2.2GHz', gpu: 'Mali-G615 MC6',
     ram: [8, 12], rom: [256, 512],
     cm: '1300万像素 f/2.0 AF', fc: '800万像素',
-    bc: null, bwl: 0,
+    // 2026-10-15 补（荣耀官网规格页）：电池典型值 10100mAh
+    bc: 10100, bwl: 0,
     os: 'Android 16', ui: 'MagicOS 10.0', net: 'Wi-Fi', nfc: false, ir: false,
     bdim: '259.1x176.1x6.1mm', wt: 475, spk: '8 扬声器（空间音频）', port: 'USB-C', col: '庐烟紫,玉龙雪,苍山灰',
     tb: {
@@ -120,11 +121,12 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '主流', '轻薄', '学习'],
   },
   {
-    // ⚠️ soc / lp / cm / ram / rom 未查到
-    i: 'honor-pad-10', n: '荣耀平板 10（2025）', d: '2025-05', lp: null, cp: null,
+    // 2026-10-15 核：荣耀官网在售，现价 1899 / 原价 1999 起
+    // 2026-10-15 补（荣耀官网规格页 honor-pad-10/spec/）：第三代骁龙 7 / 后置 800 万
+    i: 'honor-pad-10', n: '荣耀平板 10（2025）', d: '2025-05', lp: 1999, cp: 1899,
     sz: 12.1, res: null, mat: 'LCD', rr: 120,
-    soc: null,
-    cm: null, fc: null,
+    soc: '骁龙7 Gen3', sb: '高通',
+    cm: '800万像素 f/2.0 AF', fc: '800万像素',
     bc: 10100, bwl: 0,
     os: 'Android', ui: 'MagicOS', net: 'Wi-Fi', nfc: false, ir: false,
     spk: '8 扬声器', port: 'USB-C',
@@ -275,10 +277,11 @@ const SEEDS: CompactSeed[] = [
   {
     // ⚠️ 只剩价格，屏幕尺寸 / soc / ram / rom 都未查到（sz 为 null 会直接触发必填缺失）
     i: 'honor-pad-x10', n: '荣耀平板 X10（2026）', d: '2026', lp: 1099, cp: 1299,
-    sz: null, res: null, mat: null,
-    soc: null,
-    cm: null, fc: null,
-    bc: null, bwl: 0,
+    // 2026-10-15 补（荣耀官网规格页 honor-pad-x10/spec/）：11 英寸 / 骁龙 680 / 10100mAh / 后置 500 万
+    sz: 11, res: '1920x1200', mat: 'LCD',
+    soc: '骁龙680', sb: '高通',
+    cm: '500万像素 f/2.2 AF', fc: '500万像素',
+    bc: 10100, bwl: 0,
     os: 'Android', ui: 'MagicOS', net: 'Wi-Fi', nfc: false, ir: false,
     spk: null, port: 'USB-C',
     tb: {
@@ -292,10 +295,11 @@ const SEEDS: CompactSeed[] = [
   {
     // ⚠️ 只剩价格，屏幕尺寸 / soc / ram / rom 都未查到（sz 为 null 会直接触发必填缺失）
     i: 'honor-pad-20', n: '荣耀平板 20（2026）', d: '2026', lp: 2099, cp: 2699,
-    sz: null, res: null, mat: null,
-    soc: null,
-    cm: null, fc: null,
-    bc: null, bwl: 0,
+    // 2026-10-15 补（荣耀官网规格页 honor-pad-20/spec/）：12.1 英寸 / 第三代骁龙 7 / 10100mAh / 后置 800 万
+    sz: 12.1, res: '3000x1872', mat: 'LCD（柔光版可选类纸屏）',
+    soc: '骁龙7 Gen3', sb: '高通',
+    cm: '800万像素 f/2.0 AF', fc: '800万像素',
+    bc: 10100, bwl: 0,
     os: 'Android', ui: 'MagicOS', net: 'Wi-Fi', nfc: false, ir: false,
     spk: null, port: 'USB-C',
     tb: {

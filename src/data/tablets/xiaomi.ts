@@ -111,11 +111,13 @@ const XIAOMI_SEEDS: CompactSeed[] = [
   },
   {
     // 🔴 极稀疏：官方只放出「13.3" 3408x2272 + 玄戒 O3 + 4799 元起」，电池 / 摄像头 / 重量 / 刷新率全部未查到
+    // 2026-10-15 补（www.mi.com/prod/xiaomi-pad-9-pro-max/specs）：整机 12000mAh(typ)/11740mAh(min)、
+    // 主摄 5000 万像素超清主摄、前置 3200 万像素超广镜头；玄戒 O3 AI 旗舰处理器 3nm
     i: 'xiaomi-pad-9-pro-max', n: '小米平板 9 Pro Max', d: '2026-09', lp: 4799, cp: 4799,
     sz: 13.3, res: '3408x2272', ppi: null, mat: 'LCD', rr: null,
-    soc: '玄戒 O3', sb: '小米', // ram / rom 未查到（类型不接受 null，故省略 → 空选项）
-    cm: null, fc: null,
-    bc: null, bw: null, bwl: 0,
+    soc: '玄戒 O3', sb: '小米', pr: '3nm', // ram / rom 未查到（类型不接受 null，故省略 → 空选项）
+    cm: '5000万像素', fc: '3200万像素',
+    bc: 12000, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
     tb: {
@@ -130,7 +132,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-8-pro', n: '小米平板 8 Pro', d: '2025-09-25', lp: 3199, cp: null,
     sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙8至尊版', sb: '高通', pr: '3nm', ram: [8, 12, 16], rom: [128, 256, 512],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-8-pro/specs）：后置 5000 万 1/2.76" ƒ/1.8 PDAF，前置 3200 万
+    cm: '5000万像素 f/1.8', fc: '3200万像素',
     bc: 9200, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -146,7 +149,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-8', n: '小米平板 8', d: '2025-09-25', lp: 2499, cp: null,
     sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙8s Gen4', sb: '高通', ram: [8, 12], rom: [128, 256],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-8/specs）：后置 1300 万 1/3.06" ƒ/2.2 PDAF，前置 800 万
+    cm: '1300万像素 f/2.2', fc: '800万像素',
     bc: 9200, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -163,7 +167,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-7-ultra', n: '小米平板 7 Ultra', d: '2025-05-22', lp: 5699, cp: null,
     sz: 14, res: '3.2K', ppi: null, mat: 'OLED', rr: 120,
     soc: '玄戒 O1', sb: '小米', ram: [12, 16], rom: [256, 512, 1024],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-7-ultra/specs）：后置 5000 万 JN1 1/2.76" ƒ/1.8 PDAF，前置 3200 万
+    cm: '5000万像素 f/1.8', fc: '3200万像素',
     bc: 12000, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -179,7 +184,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-7s-pro', n: '小米平板 7S Pro 12.5', d: '2025-06-26', lp: 3699, cp: 3299,
     sz: 12.5, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
     soc: '玄戒 O1', sb: '小米', ram: [8, 12, 16], rom: [256, 512, 1024],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-7s-pro/specs）：后置 5000 万 JN1 1/2.76" ƒ/1.8 PDAF，前置 3200 万
+    cm: '5000万像素 f/1.8', fc: '3200万像素',
     bc: 10610, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -195,7 +201,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-7-pro', n: '小米平板 7 Pro', d: '2024-10-29', lp: 2699, cp: null,
     sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙8s Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com 规格页）：主摄 50MP JN1 1/2.76" ƒ/1.8 PDAF，前置 3200 万
+    cm: '5000万像素 f/1.8', fc: '3200万像素',
     bc: 8850, bw: null, bwl: 0,
     os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
@@ -211,7 +218,8 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-7', n: '小米平板 7', d: '2024-10-29', lp: 2299, cp: null,
     sz: 11.2, res: '3.2K', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙7+ Gen3', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-7/specs）：主摄 13MP 1/3.06" ƒ/2.2 PDAF，前置 800 万
+    cm: '1300万像素 f/2.2', fc: '800万像素',
     bc: 8850, bw: null, bwl: 0,
     os: null, ui: 'HyperOS 2', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
@@ -225,10 +233,12 @@ const XIAOMI_SEEDS: CompactSeed[] = [
   },
   {
     // lp 未查到（2024-02-22 发布）。120W 快充是本系列独一份
-    i: 'xiaomi-pad-6s-pro', n: '小米平板 6S Pro 12.4', d: '2024-02-22', lp: null, cp: null,
+    // 2026-10-15 核：首发价 8GB+256GB 3299（小米发布会）；cp 留空——小米官网现售 Pad 8/9 系列，已下架
+    i: 'xiaomi-pad-6s-pro', n: '小米平板 6S Pro 12.4', d: '2024-02-22', lp: 3299, cp: null,
     sz: 12.4, res: '3048x2032', ppi: null, mat: 'LCD', rr: 144,
     soc: '骁龙8 Gen2', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/prod/xiaomi-pad-6s-pro/specs）：主摄 5000 万 1/2.76" ƒ/1.8 PDAF，前置 3200 万
+    cm: '5000万像素 f/1.8', fc: '3200万像素',
     bc: 10000, bw: 120, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: '6 扬声器', port: 'USB-C', col: null,
@@ -244,10 +254,12 @@ const XIAOMI_SEEDS: CompactSeed[] = [
     i: 'xiaomi-pad-6-max', n: '小米平板 6 Max', d: '2023-08-14', lp: 3799, cp: null,
     sz: 14, res: '2880x1800', ppi: null, mat: 'LCD', rr: 120,
     soc: '骁龙8+ Gen1', sb: '高通', pr: '4nm', ram: [8, 12, 16], rom: [256, 512, 1024],
-    cm: null, fc: null,
+    // 2026-10-15 补（mi.com/xiaomi-pad-6-max/specs 官方规格页）：主摄 50MP 1/2.76" 1.28μm f/1.8 PDAF，
+    // 副摄景深；前置 2000 万 IMX596 1/3.4" f/2.2；同页给出 318.58x206.1x6.53mm / 750g
+    cm: '5000万像素 f/1.8', cw: '200万像素景深', fc: '2000万像素',
     bc: 10000, bw: null, bwl: 0,
     os: null, ui: 'MIUI Pad 14', net: 'Wi-Fi', nfc: false, ir: false,
-    wt: null, bm: null, ip: null, bio: null, spk: '8 扬声器', port: 'USB-C', col: null,
+    bdim: '318.58x206.1x6.53mm', wt: 750, bm: null, ip: null, bio: null, spk: '8 扬声器', port: 'USB-C', col: null,
     tb: {
       cellular: false,
       stylus: { supported: true, name: '小米焦点触控笔', bundled: false },
@@ -389,10 +401,12 @@ const REDMI_SEEDS: CompactSeed[] = [
   {
     // 🔴 极稀疏 + 日期只有年份：3599 元起、天玑 9500 之外全部未查到
     i: 'redmi-k-pad-2', n: 'REDMI K Pad 2', d: '2026', lp: 3599, cp: null,
-    sz: 8.8, res: null, ppi: null, mat: 'LCD', rr: null,
+    // 2026-10-15 补（www.mi.com/prod/redmi-kpad2/specs + 小米商城 m.mi.com/commodity/detail/23974）：
+    // 8.8" 3008*1880 165Hz / 整机等效 9100mAh(typ) / 后置 1300 万 OV13B 1/3.06" 1.12μm f/2.2 PDAF / 前置 800 万 OV08F
+    sz: 8.8, res: '3008x1880', ppi: null, mat: 'LCD', rr: 165,
     soc: '天玑9500', sb: '联发科', pr: '3nm', // ram / rom 未查到
-    cm: null, fc: null,
-    bc: null, bw: null, bwl: 0,
+    cm: '1300万像素 f/2.2', fc: '800万像素',
+    bc: 9100, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
     tb: {
@@ -407,11 +421,17 @@ const REDMI_SEEDS: CompactSeed[] = [
     // 官方卖点：12000mAh 超大容量电池。SoC / 摄像头 / 重量未查到
     i: 'redmi-pad-2-pro', n: 'REDMI Pad 2 Pro', d: '2026-01-29', lp: 1999, cp: null,
     sz: 12.1, res: null, ppi: null, mat: 'LCD', rr: 120,
-    soc: null, sb: null, // ram / rom 未查到
-    cm: null, fc: null,
-    bc: 12000, bw: null, bwl: 0,
+    // 2026-10-15 补（mi.com 官方规格页 + 京东自营商品参数均指向第四代骁龙 7s）
+    // 2026-10-15 二次核：小米商城官方商详页明确「后置摄像头 800W / 前置摄像头 800W」；
+    // mi.com/global 规格页（Wi-Fi 版）同口径 8MP 1/4" f/2。此前看到的 13MP 是 5G 版口径，
+    // 本条是国行 Wi-Fi 版，取 800 万。12.1" 2560x1600 249ppi 120Hz / 610g / 279.8x181.65x7.5mm
+    // 来源：https://m.mi.com/commodity/detail/22535 、https://www.mi.com/global/product/redmi-pad-2-pro/specs/
+    // 2026-10-15 补（小米商城商详页「运行内存 8GB/12GB、内存容量 128GB/256GB」）
+    soc: '骁龙7s Gen4', sb: '高通', pr: '4nm', ram: [8, 12], rom: [128, 256],
+    cm: '800万像素 f/2.0', fc: '800万像素',
+    bc: 12000, bw: 33, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
-    wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
+    bdim: '279.8x181.65x7.5mm', wt: 610, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
     tb: {
       cellular: false,
       stylus: { supported: false, name: null, bundled: false },
@@ -422,13 +442,15 @@ const REDMI_SEEDS: CompactSeed[] = [
   },
   {
     // 官方卖点：9000mAh 超长续航
+    // 2026-10-15 补（mi.com/sg/product/redmi-pad-2/specs 官方规格页 + 京东自营「小米移动京东自营旗舰店」规格参数区，
+    // 两处口径一致）：联发科 Helio G100-Ultra 6nm、后置 8MP 1/4" f/2.0、前置 5MP f/2.2、11" 2560x1600 274ppi、510g
     i: 'redmi-pad-2', n: 'REDMI Pad 2', d: '2025-08-01', lp: 1399, cp: null,
-    sz: 11, res: null, ppi: null, mat: 'LCD', rr: 90,
-    soc: null, sb: null, // ram / rom 未查到
-    cm: null, fc: null,
+    sz: 11, res: '2560x1600', ppi: 274, mat: 'LCD', rr: 90,
+    soc: 'Helio G100 Ultra', sb: '联发科', pr: '6nm', // ram / rom 未查到
+    cm: '800万像素 f/2.0', fc: '500万像素',
     bc: 9000, bw: null, bwl: 0,
     os: null, ui: 'HyperOS', net: 'Wi-Fi', nfc: false, ir: false,
-    wt: null, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
+    bdim: '254.58x166.04x7.36mm', wt: 510, bm: null, ip: null, bio: null, spk: '4 扬声器', port: 'USB-C', col: null,
     tb: {
       cellular: false,
       stylus: { supported: false, name: null, bundled: false },

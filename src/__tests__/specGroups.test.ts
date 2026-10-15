@@ -201,15 +201,38 @@ describe('computeRowDiff()', () => {
       expect(result.worstIndexes).toEqual([]);
     });
 
-    it('未声明 better 的数值行不参与优劣判定（如屏幕尺寸）', () => {
+    it('同品类内屏幕尺寸越大越优（better: higher）', () => {
       const phones = [
         makePhone({ id: 'a', screen: { size: 6.1 } }),
         makePhone({ id: 'b', screen: { size: 6.7 } }),
       ];
       const result = computeRowDiff(rowOf('screen', 'screen.size'), phones);
       expect(result.allSame).toBe(false);
+      expect(result.bestIndexes).toEqual([1]);
+      expect(result.worstIndexes).toEqual([0]);
+    });
+
+    it('跨品类时 crossComparable: false 的行不参与优劣判定（手机 6.7" vs 平板 11"）', () => {
+      const devices = [
+        makePhone({ id: 'a', category: 'phone', screen: { size: 6.7 } }),
+        makePhone({ id: 'b', category: 'tablet', formFactor: 'slate', screen: { size: 11 } }),
+      ];
+      const row = rowOf('screen', 'screen.size');
+      expect(row.crossComparable).toBe(false);
+      const result = computeRowDiff(row, devices);
+      expect(result.allSame).toBe(false);
       expect(result.bestIndexes).toEqual([]);
       expect(result.worstIndexes).toEqual([]);
+    });
+
+    it('跨品类时 crossComparable: true 的行仍参与优劣判定（如像素密度）', () => {
+      const devices = [
+        makePhone({ id: 'a', category: 'phone', screen: { ppi: 460 } }),
+        makePhone({ id: 'b', category: 'tablet', formFactor: 'slate', screen: { ppi: 264 } }),
+      ];
+      const result = computeRowDiff(rowOf('screen', 'screen.ppi'), devices);
+      expect(result.bestIndexes).toEqual([0]);
+      expect(result.worstIndexes).toEqual([1]);
     });
 
     it('机型数不足 2 款时不判定优劣', () => {

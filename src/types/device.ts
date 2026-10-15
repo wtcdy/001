@@ -164,6 +164,15 @@ export interface DeviceSystem {
 export interface DeviceBody {
   /** 三围尺寸 */
   dimensions: string | null;
+  /**
+   * 机身厚度（mm）。
+   *
+   * 库里原本只有 `dimensions` 这个字符串（形如 `'163.37x76.71x8.13mm'`），
+   * 没有可供筛选的数值字段，因此单独抽出厚度：
+   *  - 种子里显式写了 `th` 就以它为准；
+   *  - 没写则由工厂从 `dimensions` 的第三段解析回填（解析不出来保持 null，绝不猜）。
+   */
+  thickness?: number | null;
   /** 重量（g） */
   weight: number | null;
   /** 机身材质 */

@@ -149,12 +149,16 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '二合一', '生产力', '大屏'],
   },
   {
-    // ⚠️ d 只有年份、soc / lp / bc 未查到
+    // ⚠️ d 只有年份、lp 未查到
+    // 2026-10-15 补（华为商城官方商详页「主要参数」，型号 GEM-W40 悦享款 / GEM-W00）：
+    // CPU 麒麟 T93（悦享款）/ 麒麟 T93 Pro（标准版）；电池 10400mAh（典型值，双电池等效 3.83V / 39.84Wh）
+    // 来源：https://www.vmall.com/product/comdetail/index.html?prdId=10086127502687
+    //      https://www.vmall.com/product/comdetail/index.html?prdId=10086722719405
     i: 'huawei-matepad-pro-max-2026', n: '华为 MatePad Pro Max（13.2，2026 款）', d: '2026', lp: null, cp: 5699,
     sz: 13.2, res: '3000x2000', ppi: 273, mat: '柔性 OLED PaperMatte 云晰柔光屏', rr: 144, hdr: 'HDR Vivid',
-    soc: null, sb: '海思', ram: [12], rom: [512],
+    soc: '麒麟 T93 / 麒麟 T93 Pro', sb: '海思', ram: [12], rom: [512],
     cm: '5000万像素 f/1.8', fc: '1200万像素 f/2.4',
-    bc: null, bwl: 0,
+    bc: 10400, bwl: 0,
     os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: 509, spk: '6 扬声器', port: 'USB-C',
     tb: {
@@ -199,7 +203,9 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // ⚠️ 只缺 lp（首发价未查到）
-    i: 'huawei-matepad-pro-11-2024', n: '华为 MatePad Pro 11（2024）', d: '2024-05', lp: null, cp: null,
+    // 2026-10-15 核：首发价 12GB+256GB 4299（新华社/中国日报发布会报道）；cp 留空——华为官网现售
+    // MatePad Pro 12 英寸 / Pro Max，11 英寸 2024 款官网已下架，渠道仅第三方店报价不采信
+    i: 'huawei-matepad-pro-11-2024', n: '华为 MatePad Pro 11（2024）', d: '2024-05', lp: 4299, cp: null,
     sz: 11, res: '2560x1600', mat: 'OLED', rr: 144, hdr: 'HDR Vivid',
     soc: '麒麟', sb: '海思', ram: [8, 12], rom: [128, 256, 512],
     cm: '1300万像素', cw: '800万像素超广角', fc: '1600万像素',
@@ -249,12 +255,15 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '主流', '大屏'],
   },
   {
-    // ⚠️ d 只有年份、soc / bc 未查到
+    // ⚠️ d 只有年份
+    // 2026-10-15 补（华为商城官方商详页「主要参数」，型号 SLG-W50 灵动款 / SLG-W10 柔光版）：
+    // 灵动款 麒麟 T92C、柔光版 麒麟 T92B；电池 8800mAh（典型值，额定 8700mAh）
+    // 来源：https://www.vmall.com/product/comdetail/index.html?prdId=10086518319242
     i: 'huawei-matepad-115s-2025', n: '华为 MatePad 11.5 S（2025）', d: '2025', lp: 2199, cp: null,
     sz: 11.5, res: '2800x1840', ppi: 291, mat: 'LCD', rr: 144,
-    soc: null, sb: '海思', ram: [12], rom: [256, 512],
+    soc: '麒麟 T92B（柔光版）/ 麒麟 T92C（灵动款）', sb: '海思', ram: [12], rom: [256, 512],
     cm: '1300万像素 f/1.8 AF', cw: '800万像素 f/2.0',
-    bc: null, bwl: 0,
+    bc: 8800, bwl: 0,
     os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: 515, spk: '4 扬声器', port: 'USB-C',
     tb: {
@@ -266,14 +275,17 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '主流', '学习'],
   },
   {
-    // ⚠️ 仅查到价格与屏幕，soc / bc / cm / wt 全缺
+    // 2026-10-15 补（华为商城官方商详页「主要参数」，型号 SLG-W50，2026-06 上市）：
+    // 麒麟 T92C / 8800mAh（典型值）/ 后置 1300 万 f1.8 AF / 前置 800 万 f2.0 / 515g
+    // 来源：https://www.vmall.com/product/comdetail/index.html?prdId=10086693978514
+    // 摄像头口径参照同型号华为海外官网规格页（后置 13MP f/1.8 AF、前置 8MP f/2.0）
     i: 'huawei-matepad-115s-lingdong', n: '华为 MatePad 11.5 S 灵动款（鸿蒙焕新版，2026）', d: '2026', lp: null, cp: 2999,
     sz: 11.5, res: '2800x1840', ppi: 291, mat: 'LCD', rr: 144,
-    soc: null, sb: '海思',
-    cm: null, fc: null,
-    bc: null, bwl: 0,
-    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
-    spk: null, port: 'USB-C',
+    soc: '麒麟 T92C', sb: '海思', ram: [8, 12], rom: [256, 512],
+    cm: '1300万像素 f/1.8 AF', fc: '800万像素',
+    bc: 8800, bwl: 0,
+    os: 'HarmonyOS 6.0', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 515, spk: '4 扬声器', port: 'USB-C',
     tb: {
       cellular: false,
       stylus: { supported: true, name: 'HUAWEI M-Pencil', bundled: false },
@@ -283,14 +295,16 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '主流', '学习'],
   },
   {
-    // ⚠️ d 只有年份、soc / cm / wt 缺（10100mAh 是华为商城口径）
+    // 2026-10-15 补（华为中国官网规格参数页）：标准版 麒麟 T82B、柔光版 麒麟 T82；
+    // 后置 1300 万 f/1.8 AF、前置 800 万 f/2.0；11.5" 2456x1600 256ppi 120Hz；电池 10100mAh
+    // 来源：https://consumer.huawei.com/cn/tablets/matepad-11-5-2026/specs
     i: 'huawei-matepad-115-2026', n: '华为 MatePad 11.5（鸿蒙焕新版，2026）', d: '2026', lp: null, cp: 2199,
-    sz: 11.5, res: null, mat: 'LCD', rr: 120,
-    soc: null, sb: '海思',
-    cm: null, fc: null,
+    sz: 11.5, res: '2456x1600', ppi: 256, mat: 'LCD', rr: 120,
+    soc: '麒麟 T82B（标准版）/ 麒麟 T82（柔光版）', sb: '海思', ram: [8, 12], rom: [128, 256],
+    cm: '1300万像素 f/1.8', fc: '800万像素',
     bc: 10100, bwl: 0,
-    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
-    spk: null, port: 'USB-C',
+    os: 'HarmonyOS 5.1', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 515, spk: null, port: 'USB-C',
     tb: {
       cellular: false,
       stylus: { supported: true, name: null, bundled: false },
@@ -300,14 +314,19 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '入门', '长续航'],
   },
   {
-    // ⚠️ 只剩价格与尺寸，其余全缺
+    // 2026-10-15 补（华为商城官方商详页「主要参数」，型号 AST-W30 悦享款，2026-09 上市）：
+    // 麒麟 T93SD / 10100mAh（典型值）/ 后置 5000 万 f1.8 AF / 前置 800 万 f2.2 / 12" 2800x1840 280ppi 144Hz / 555g
+    // 口径冲突：vmall 商详标「悦享款 = T93SD」，华为官网规格对比页标「Air Z = T93SD、悦享款 = T93S」。
+    // 按来源优先级取官网规格页口径（本条是 Air Z 本体，非悦享款）→ 麒麟 T93SD。若日后官网更新以官网为准。
+    // 来源：https://www.vmall.com/product/comdetail/index.html?prdId=10086966141469
+    //      https://consumer.huawei.com/cn/support/content/zh-cn16118536/
     i: 'huawei-matepad-air-z', n: '华为 MatePad Air Z（12 英寸，2026）', d: '2026', lp: null, cp: 2799,
-    sz: 12, res: null, mat: 'LCD',
-    soc: null,
-    cm: null, fc: null,
-    bc: null, bwl: 0,
-    os: 'HarmonyOS', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
-    spk: null, port: 'USB-C',
+    sz: 12, res: '2800x1840', ppi: 280, mat: 'LCD', rr: 144,
+    soc: '麒麟 T93SD', sb: '海思', ram: [8, 12], rom: [128, 256],
+    cm: '5000万像素 f/1.8 AF', fc: '800万像素',
+    bc: 10100, bwl: 0,
+    os: 'HarmonyOS 7.0', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 555, spk: '6 扬声器', port: 'USB-C',
     tb: {
       cellular: false,
       stylus: { supported: false, name: null, bundled: false },
@@ -317,14 +336,17 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '主流', '学习'],
   },
   {
-    // ⚠️ d 只有年份，soc / bc / cm 缺
+    // 2026-10-15 补（华为商城官方商详页「主要参数」，型号 AGS6-W00）：
+    // ⚠️ 本款是高通平台，不是麒麟——CPU 高通骁龙 685 八核（4×A73@2.8GHz + 4×A53@1.9GHz，Adreno 610）
+    // 电池 7700mAh（典型值）/ 后置 800 万 f2.0 AF / 前置 500 万 f2.2 / 11" 1920x1200 207ppi / 475g
+    // 来源：https://www.vmall.com/product/comdetail/index.html?prdId=10086426290126
     i: 'huawei-matepad-se-11', n: '华为 MatePad SE 11（焕新版）', d: '2025', lp: null, cp: 1799,
-    sz: 11, res: null, mat: 'LCD', rr: 90,
-    soc: null,
-    cm: null, fc: null,
-    bc: null, bwl: 0,
-    os: 'HarmonyOS 4', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
-    bm: '全金属一体机身', spk: null, port: 'USB-C',
+    sz: 11, res: '1920x1200', ppi: 207, mat: 'TFT LCD（IPS）', rr: 90,
+    soc: '骁龙685', sb: '高通', cpu: '八核 2.8GHz', gpu: 'Adreno 610', ram: [8], rom: [256],
+    cm: '800万像素 f/2.0', fc: '500万像素',
+    bc: 7700, bwl: 0,
+    os: 'HarmonyOS 4.2', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
+    wt: 475, bm: '全金属一体机身', spk: null, port: 'USB-C',
     tb: {
       cellular: false,
       stylus: { supported: false, name: null, bundled: false },
@@ -334,12 +356,16 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '入门'],
   },
   {
-    // ⚠️ soc / bc 未查到。华为唯一支持插卡通话 + 北斗卫星消息的平板
+    // 华为唯一支持插卡通话 + 北斗卫星消息的平板
+    // 2026-10-15 补（华为商城官方商详页「主要参数」麒麟 9010B + 华为海外官网规格页 Kirin 9010B）：
+    // 电池 6400mAh（典型值，额定 6350mAh）
+    // 来源：https://item.vmall.com/product/comdetail/index.html?cid=353007&prdId=10086287244006
+    //      https://consumer.huawei.com/za/tablets/matepad-mini/specs/
     i: 'huawei-matepad-mini', n: '华为 MatePad Mini（8.8，2025）', d: '2025-09', lp: 3299, cp: 3799,
     sz: 8.8, res: '2560x1600', ppi: 343, mat: '柔性 OLED（PaperMatte 云晰柔光屏）', rr: 120,
-    soc: null, sb: '海思', ram: [12], rom: [256, 512],
+    soc: '麒麟 9010B', sb: '海思', cpu: '六核', ram: [12], rom: [256, 512],
     cm: '5000万像素 f/1.8', cw: '800万像素广角 f/2.2', fc: '3200万像素 f/2.4',
-    bc: null, bwl: 0,
+    bc: 6400, bwl: 0,
     os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi + 全网通（可插卡通话）', nfc: false, ir: false, sat: '北斗卫星消息',
     wt: 255, spk: '2 扬声器', port: 'USB-C',
     tb: {
@@ -352,6 +378,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // ⚠️ lp 未查到；墨水屏特殊品类，无前后摄像头（cm / fc 为 null）
+    // 2026-10-15 说明：MatePad Paper 是 E-Ink 阅读器，华为官网规格页无摄像头条目，整机不带摄像头，
+    //    属「官网确实不公布」的平板特例，cm 保持 null 而非补 0（见任务 2 的平板特例口径）
     i: 'huawei-matepad-paper', n: '华为 MatePad Paper（10.3 墨水屏）', d: '2022-08', lp: null, cp: 4298,
     sz: 10.3, res: '1872x1404', ppi: 227, mat: '墨水屏（E-Ink）',
     soc: '麒麟 820E', sb: '海思', cpu: '2.4GHz', ram: [6], rom: [128],
@@ -368,14 +396,19 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '墨水屏', '阅读'],
   },
   {
-    // ⚠️ d 只有年份、soc / lp / bc 未查到
+    // ⚠️ d 只有年份、lp 未查到
+    // 2026-10-15 补（华为官网规格参数页）：Kirin T92B 八核 / 电池 10100mAh（典型值，额定 10000mAh，66W）
+    // 来源：https://consumer.huawei.com/hk/tablets/matepad-12-x-2025/specs/
+    //      https://consumer.huawei.com/sa-en/tablets/matepad-12-x-2025/specs/
+    // ⚠️ 同页更正两处旧值：屏幕为 12 英寸（原录 12.2）；重量约 555g（原录 512g）；
+    //    800 万 f/2.2 是前置单摄、本款无后置副摄，故 cw 撤下改记 fc
     i: 'huawei-matepad-12x', n: '华为 MatePad 12 X（2025）', d: '2025', lp: null, cp: null,
-    sz: 12.2, res: '2800x1840', ppi: 280, mat: 'HUAWEI PaperMatte 屏（IPS）', rr: 144,
-    soc: null, ram: [12], rom: [256],
-    cm: '5000万像素 f/1.8 AF', cw: '800万像素 f/2.2',
-    bc: null, bwl: 0,
+    sz: 12, res: '2800x1840', ppi: 280, mat: 'HUAWEI PaperMatte 屏（IPS）', rr: 144,
+    soc: '麒麟 T92B', sb: '海思', cpu: '八核', ram: [12], rom: [256],
+    cm: '5000万像素 f/1.8 AF', fc: '800万像素 f/2.2',
+    bc: 10100, bw: 66, bwl: 0,
     os: 'HarmonyOS 4.3', ui: 'HarmonyOS', net: 'Wi-Fi', nfc: false, ir: false,
-    wt: 512, spk: '6 扬声器', port: 'USB-C',
+    bdim: '270x183x5.9mm', wt: 555, spk: '6 扬声器', port: 'USB-C',
     tb: {
       cellular: false,
       stylus: { supported: true, name: 'HUAWEI M-Pencil Pro', bundled: false },

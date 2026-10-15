@@ -11,11 +11,13 @@ import { cTablet, type CompactSeed } from './_factory';
 const SEEDS: CompactSeed[] = [
   {
     // 🔴 极稀疏：官方只放出「8.8 英寸 OLED + 9020mAh」，SoC / 分辨率 / 刷新率 / 充电 / 重量全部未查到
-    i: 'iqoo-pad-ultra', n: 'iQOO Pad Ultra', d: '2026-09', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」12GB+256GB 6499；vivo 官方商城在售 6499
+    i: 'iqoo-pad-ultra', n: 'iQOO Pad Ultra', d: '2026-09', lp: 6499, cp: 6499,
     sz: 8.8, res: null, ppi: null, mat: 'OLED', rr: null,
     // ram / rom 未查到：`CompactSeed` 的 `ram` / `rom` 不接受 null（缺即 `[]`），故整行省略而非写 null
-    soc: null, sb: null,
-    cm: null, fc: null,
+    // 2026-10-15 补（vivo 官网参数页）：后置 1300 万像素，SoC 第六代骁龙 8 超级至尊版
+    soc: '第六代骁龙8超级至尊版', sb: '高通',
+    cm: '1300万像素', fc: '800万像素',
     bc: 9020, bw: null, bwl: 0,
     os: null, ui: 'OriginOS', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
@@ -49,12 +51,13 @@ const SEEDS: CompactSeed[] = [
     tags: ['平板', '旗舰', '大屏', '游戏', '长续航'],
   },
   {
-    // 🔴 稀疏：与 Pad5 Pro 同期发布（2025-05），但 SoC / 电池 / 摄像头 / 价格全部未查到
-    i: 'iqoo-pad5', n: 'iQOO Pad5', d: '2025-05', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 2499；官网状态「立即购买」在售
+    // 2026-10-15 补（vivo 官网参数页）：SoC 天玑 9300+、后置 800 万像素、电池典型值 10000mAh
+    i: 'iqoo-pad5', n: 'iQOO Pad5', d: '2025-05', lp: 2499, cp: 2499,
     sz: 13, res: null, ppi: null, mat: 'LCD', rr: 144,
-    soc: null, sb: null, ram: [8, 12], rom: [128, 256],
-    cm: null, fc: null,
-    bc: null, bw: null, bwl: 0,
+    soc: '天玑9300+', sb: '联发科', ram: [8, 12], rom: [128, 256],
+    cm: '800万像素', fc: '500万像素',
+    bc: 10000, bw: null, bwl: 0,
     os: null, ui: 'OriginOS 5', net: 'Wi-Fi', nfc: false, ir: false,
     wt: null, bm: null, ip: null, bio: null, spk: null, port: 'USB-C', col: null,
     tb: {
@@ -86,7 +89,8 @@ const SEEDS: CompactSeed[] = [
   },
   {
     // lp 未查到（2023-05 发布）
-    i: 'iqoo-pad', n: 'iQOO Pad', d: '2023-05', lp: null, cp: null,
+    // 2026-10-15 核：vivo 官网参数页「上市价格」8GB+128GB 2599；官网状态「缺货」→ cp 留空
+    i: 'iqoo-pad', n: 'iQOO Pad', d: '2023-05', lp: 2599, cp: null,
     sz: 12.1, res: '2800x1968', ppi: null, mat: 'LCD', rr: 144,
     soc: '天玑9000+', sb: '联发科', pr: '4nm', ram: [8, 12], rom: [128, 256, 512],
     cm: '1300万像素', fc: '800万像素',

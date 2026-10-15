@@ -95,12 +95,12 @@
            dark:bg-slate-800/80 dark:text-slate-300;
   }
 
-  /* 更优（红/橙系，符合国内直觉） */
+  /* 更优（绿色系，国际通用直觉：绿 = 好） */
   .psc-cell-better {
     @apply border-l-2 border-better-strong bg-better-bg text-better-text;
   }
 
-  /* 更差（绿/灰系） */
+  /* 更差（红色系，国际通用直觉：红 = 差） */
   .psc-cell-worse {
     @apply border-l-2 border-worse-border bg-worse-bg text-worse-text;
   }

@@ -112,6 +112,70 @@ export interface CategoryDefaults {
   formFactor?: FormFactor;
 }
 
+/**
+ * 从三围串里解析机身厚度（mm）。
+ *
+ * 支持形态：
+ *  - `'163.37x76.71x8.13mm'` → 8.13
+ *  - `'展开143.2x91.7x7.15mm/折叠91.7x74.3x15.1mm'` → 15.1（折叠态即日常携带厚度）
+ *  - `'—'` / null / 数字不足三段 → null
+ *
+ * 折叠机有个**语义陷阱**：三围串可能只写了「展开156.8x145.3x4.35mm」，
+ * 4.35 是展开态厚度，而用户关心的「机身厚度」（塞进裤兜的那个数）是折叠态（约 9.9mm）。
+ * 拿展开态冒充机身厚度，会让 Magic V3 在「≤7mm」筛选里命中——假精度比缺数据更糟。
+ * 因此优先级为：显式标了折叠态的片段 > 普通三围串 > 「厚7.9mm」纯厚度标注；
+ * **只有展开态数据的折叠机返回 null**（我们确实没有它的折叠厚度）。
+ *
+ * 解析结果必须落在合理区间内，否则视为解析失败返回 null——宁可空着也不给假精度。
+ */
+export function parseThickness(dimensions: string | null | undefined): number | null {
+  if (typeof dimensions !== 'string' || dimensions.trim() === '') return null;
+
+  const plausible = (value: number): boolean => Number.isFinite(value) && value > 0 && value < 30;
+
+  /** 取片段里最后一个数字（三围串的第三段=厚度） */
+  const thirdValue = (segment: string): number | null => {
+    const nums = segment.match(/\d+(?:\.\d+)?/g);
+    if (!nums || nums.length < 3) return null;
+    const value = Number(nums[nums.length - 1]);
+    return plausible(value) ? value : null;
+  };
+
+  // 同时兼容半角 / 全角斜杠分隔
+  const segments = dimensions
+    .split(/[/／]/)
+    .map((segment) => segment.trim())
+    .filter(Boolean);
+  if (segments.length === 0) return null;
+
+  // 1) 折叠态优先：官方口径的「机身厚度」就是它
+  for (const segment of segments) {
+    if (/折叠|闭合|合上/.test(segment)) {
+      const value = thirdValue(segment);
+      if (value !== null) return value;
+    }
+  }
+
+  // 2) 整串只有展开态 → 没有折叠厚度数据，返回 null，不拿展开态冒充
+  if (segments.every((segment) => /展开/.test(segment))) return null;
+
+  // 3) 普通直板机：取最后一个可解析片段
+  let parsed: number | null = null;
+  for (const segment of segments) {
+    const value = thirdValue(segment);
+    if (value !== null) parsed = value;
+  }
+  if (parsed !== null) return parsed;
+
+  // 4) 兜底：只写了「厚7.9mm」这类纯厚度标注
+  const keyword = dimensions.match(/厚(?:度)?\s*(\d+(?:\.\d+)?)/);
+  if (keyword) {
+    const value = Number(keyword[1]);
+    if (plausible(value)) return value;
+  }
+  return null;
+}
+
 /** 用默认值填充为完整的 Device 对象 */
 export function mk(brand: string, seed: PhoneSeed, defaults?: CategoryDefaults): Device {
   const screen: DeviceScreen = {
@@ -176,6 +240,8 @@ export function mk(brand: string, seed: PhoneSeed, defaults?: CategoryDefaults):
 
   const body: DeviceBody = {
     dimensions: seed.body?.dimensions ?? null,
+    // 显式厚度优先，其次从三围串解析回填，都拿不到才 null
+    thickness: seed.body?.thickness ?? parseThickness(seed.body?.dimensions),
     weight: seed.body?.weight ?? null,
     material: seed.body?.material ?? null,
     ip: seed.body?.ip ?? null,
@@ -332,6 +398,11 @@ export interface CompactSeed {
   sat?: string | null;
   /** 三围 */
   bdim?: string | null;
+  /**
+   * 机身厚度（mm）。不写时由工厂从 `bdim` 第三段解析回填，
+   * 只有 `bdim` 缺失或格式不规整才需要显式补。
+   */
+  th?: number | null;
   /** 重量 */
   wt?: number | null;
   /** 机身材质 */
@@ -418,6 +489,7 @@ function fromCompact(brand: string, s: CompactSeed, defaults?: CategoryDefaults)
     },
     body: {
       dimensions: s.bdim ?? null,
+      thickness: s.th ?? null,
       weight: s.wt ?? null,
       material: s.bm ?? null,
       ip: s.ip ?? null,
