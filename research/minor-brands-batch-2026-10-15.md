@@ -243,10 +243,10 @@ Pixel 官方术语是 **Battery Share**，Google **从不公布瓦数**。若后
 | 魅族 | 21 | 3 | 18 | 官网无线充电栏带反充字样才有值 |
 | 索尼 | 16 | 8 | 8 | 统一 `支持无线反向充电（电量共享）`（官网从不给瓦数） |
 | 努比亚/红魔 | 23 | 18 | 5 | 第三方 `支持OTG反向充电`（17 款）+ 官方 `支持反向充电`（11S Pro，1 款） |
-| others | 31 | 23 | 8 | 第一轮未动；第二轮（第 9 节）复核后改为 23 有值 / 8 null |
-| **合计** | **151** | **61** | **90** | |
+| others | 31 | 20 | 11 | 第一轮未动；第二、三轮复核后 20 有值 / 11 null（见第 9、10 节） |
+| **合计** | **151** | **58** | **93** | |
 
-**删除的编造「10W」共 15（realme）+ 11（魅族）+ 8（索尼）+ 19（努比亚/红魔）+ 9（Pixel）= 62 款。**
+**删除的编造「10W」共 15（realme）+ 11（魅族）+ 8（索尼）+ 19（努比亚/红魔）+ 9（Pixel）+ 5（ROG 三款置 null + 夏普两款改功能名）= 67 款。**
 
 ---
 
@@ -331,10 +331,77 @@ Phone (2a) SPECS › Battery & Charging › Charging：
 
 | 值 | 款数 |
 | --- | --- |
-| `10W反向`（ROG / Zenfone / Y900 / 8848 / 夏普，待复核） | 12 |
+| `10W反向`（ROG / Zenfone / Y900 / 8848 / 夏普） | 12（第三轮复核后余 7，见第 10 节） |
 | `支持无线反向充电（Battery Share）` | 6 |
 | `7.5W有线反向` | 2 |
 | `5W反向` | 3 |
 | `null` | 8（5 款中兴/传音 + Pixel 10 三款） |
 
 **第二轮删除的编造「10W」：9 款（Pixel 全系）。**
+
+---
+
+# 10. 第三轮：ROG / Zenfone / 联想 / 8848 / 夏普 / 中兴 12 款复查
+
+- 范围：**仍只改 `src/data/phones/others.ts` 一个文件**
+- 触发：第二轮末尾发现这 12 款清一色 `10W反向`，与 realme / 索尼 / 努比亚红魔 / Pixel 是同一模式
+- 校验：`npx tsc -p tsconfig.app.json --noEmit` → **0 错误**；`node scripts/_qa-validate.mjs` → **558/644（86.65%）**，违规 134，必填缺失 **62**
+- 带到本轮的两条经验：① 先分清有线/无线，**不能因为 `bwl=0` 就判反向充电数据有误**；② 官方给瓦数就照抄，只写「支持」就照抄功能名不补数字，官方明确不支持或名单外才 null
+
+## 10.1 华硕 ROG —— 官方规格页有完整充电栏，但从不列反向充电
+
+| 机型 | 官方来源 | 官方原文 | 新值 |
+| --- | --- | --- | --- |
+| `asus-rog-phone-9-pro` | `https://www.asus.com/Phone/ROG-Phone-9-Pro/techspec/` | BATTERY：5800 mAh / HyperCharge（Footnote 14：65W 充电器）/「15 W wireless charging」（Footnote 15：max 15W, Qi EPP）；**无 reverse charging** | **`null`** |
+| `asus-rog-phone-8-pro` | `https://www.asus.com/Phone/ROG-Phone-8-Pro/techspec/` | 「5500 mAh equivalent high-capacity battery / HyperCharge enabled / 39 mins / **65-watt USB PD charger / 15-watt Wireless charging**」；**无 reverse charging** | **`null`** |
+| `asus-rog-phone-7-ultimate` | `https://rog.asus.com/phones/rog-phone-7-ultimate/` | 「monster **6000 mAh** battery, and a powerful **65-watt HyperCharge** USB PD charger that can top it up to 100% in as little as 42 minutes」；另列 Steady Charging / Bypass Charging，**无 reverse charging** | **`null`** |
+
+三款官方页都有完整的 Battery/Charging 栏，却**通篇未出现 reverse charging / charging other devices**（含脚注）→ 属「官网没公布」→ null，原 `10W反向` 是编造瓦数。
+
+## 10.2 夏普 AQUOS —— 官方写「チャージシェア対応」，给功能名不给瓦数
+
+| 机型 | 官方来源 | 官方原文 | 新值 |
+| --- | --- | --- | --- |
+| `sharp-aquos-r9-pro` | `https://jp.sharp/k-tai/products/aquos-r9-pro/specs/` | バッテリー：容量 5,000mAh / **給電W数 32W** / 充電時間 約140分 / 対応急速充電規格 USB Power delivery Revision3.0 / ワイヤレス充電 ○（Qi規格対応）/ **チャージシェア対応** | **`支持反向充电（Charge Share 充电分享）`** |
+| `sharp-aquos-r8-pro` | `https://jp.sharp/products/aquos-r8-pro/s/` | バッテリー容量 **5,000mAh** / 充電時間 約100分 / 対応急速充電規格 USB Power delivery Revision3.0 / ワイヤレス充電 〇（Qi規格対応）/ **チャージシェア対応** | **`支持反向充电（Charge Share 充电分享）`** |
+
+- 官方只写「チャージシェア対応」（支持充电分享），**不给瓦数** → 照抄功能名，不补数字
+- 官方原文**没有写「ワイヤレス」**，所以也没有擅自标成「无线反向」——与索尼（官方明确写「無線反向充電」故标无线）区别对待
+
+### 顺带按官方原文修正的两处明显错误
+| 机型 | 字段 | 原值 | 新值 | 依据 |
+| --- | --- | --- | --- | --- |
+| `sharp-aquos-r9-pro` | `bw` | 36 | **32** | 官网「給電W数 32W」，日本站与台湾站（供電W數 32W）一致 |
+| `sharp-aquos-r8-pro` | `bc` | 4570 | **5000** | 官网「バッテリー容量 5,000mAh」；4570 是 **AQUOS R8 标准版**的容量，pro 为 5000 |
+
+### 夏普取证时踩的坑
+同一机型**日本站与台湾站规格栏不一致**：台湾站 `https://aquosmobile.sharp.com.tw/product/specs?product_category_id=2&product_id=2`（AQUOS R9 pro）只有「容量 5,000mAh / 供電W數 32W / 充電時間 約140分 / 對應快速充電規格 USB PD Rev3.0 / 無線充電 ○(Qi規格對應) / **旁路充電 ○**」，**没有「チャージシェア」行**。
+本轮以**日本站（品牌本国官网，字段更全）**为准。台湾站连续请求会返回 **HTTP 403**。
+
+## 10.3 未能核实、保持原值 `10W反向` 的 7 款（不因「大概率是错的」直接 null）
+
+| 机型 | 官方取证情况 |
+| --- | --- |
+| `asus-rog-phone-6-pro` | `rog.asus.com/phones/rog-phone-6-pro/spec/` 与 `www.asus.com/Phone/ROG-Phone-6-Pro/techspec/` 均已下线（回落到 "All series" 列表页，HTTP 200 但内容不是规格页） |
+| `asus-zenfone-11-ultra` | `www.asus.com/Phone/Zenfone-11-Ultra/techspec/`、`/Phone/ZenFone-11-Ultra/techspec/` 均已下线（同上的静默回落） |
+| `asus-zenfone-10` | 同上，`/Phone/Zenfone-10/techspec/`、`/Phone/ZenFone-10/techspec/` 均已下线 |
+| `lenovo-legion-y900` | 联想官网未找到该机型规格页（`lenovo.com.cn/phones/legion-y900/` 等均 404） |
+| `8848-titanium-m6` | `8848.com` 仅首页可访问，无机型规格参数页 |
+| `zte-nubia-axon-40-ultra` | `zte.com.cn` 该产品路径返回 404；`nubia.com`（含 /en）为纯营销站无规格表 |
+| `zte-nubia-z60-ultra-lead` | 同上 |
+
+> 注：华硕在售机型规格页 URL 为 `https://www.asus.com/Phone/<机型>/techspec/`，老机型（ROG 6 Pro / Zenfone 11 Ultra / Zenfone 10）页面已下线；ROG 老机型可试 `https://rog.asus.com/phones/<机型>/spec/`（ROG 7 Ultimate 可用，ROG 6 Pro 不可用）。
+
+## 10.4 第三轮之后 `others.ts` 的 br 分布（31 款）
+
+| 值 | 款数 | 说明 |
+| --- | --- | --- |
+| `null` | 11 | 中兴/传音 5 + Pixel 10 三款 + ROG 9 Pro/8 Pro/7 Ultimate |
+| `10W反向` | 7 | **未核实，待复核**：ROG 6 Pro、Zenfone 11 Ultra、Zenfone 10、联想 Y900、8848 M6、中兴 Axon 40 Ultra、中兴 Axon 60 Ultra |
+| `支持无线反向充电（Battery Share）` | 6 | Pixel 7 Pro / 8 / 8 Pro / 9 / 9 Pro / 9 Pro XL |
+| `5W反向` | 3 | Nothing 2a / Phone 2 / Phone 1 |
+| `7.5W有线反向` | 2 | Nothing 3a / 3a Pro |
+| `支持反向充电（Charge Share 充电分享）` | 2 | 夏普 AQUOS R9 Pro / R8 Pro |
+
+**第三轮删除的编造「10W」：5 款（ROG 9 Pro / 8 Pro / 7 Ultimate 置 null，夏普两款改功能名）。**
+**三轮累计删除编造「10W」：15（realme）+ 11（魅族）+ 8（索尼）+ 19（努比亚红魔）+ 9（Pixel）+ 5（ROG/夏普）= 67 款。**
