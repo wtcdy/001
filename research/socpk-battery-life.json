@@ -1,0 +1,1448 @@
+{
+ "source": "https://www.socpk.com/chart/battery-life-5-0",
+ "api": [
+  "https://www.socpk.com/api/pages/battery-life-5-0",
+  "https://www.socpk.com/api/pages/battery-life-5-0/data"
+ ],
+ "fetchedAt": "2026-10-15",
+ "dataVersion": "7ddf4f90e2c1",
+ "title": "手机续航排行榜",
+ "subtitle": "均使用自购零售机测试。点击机型或系统版本可观看全程录像。",
+ "unit": "min（页面按 小时+分钟 展示，如 12h6min；坐标轴单位为小时）",
+ "testOrg": "极客湾 Geekerwan（SOCPK 为其官方数据库网站）",
+ "matched": 62,
+ "total": 80,
+ "matchRate": "62/80 = 77.5%",
+ "rows": [
+  {
+   "rank": 1,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "WIN RT",
+    "nameEn": null,
+    "runtimeMin": 726,
+    "runtimeHuman": "12h6min",
+    "ratedEnergyWh": 36.88,
+    "systemVersion": "MagicOS 10.0.0.160",
+    "videoUrl": "https://www.bilibili.com/video/BV1z83G6hEAj/"
+   },
+   "ours": {
+    "id": "honor-win-rt",
+    "brand": "荣耀",
+    "name": "荣耀 WIN RT",
+    "releaseDate": "2025-12"
+   }
+  },
+  {
+   "rank": 2,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "WIN",
+    "nameEn": null,
+    "runtimeMin": 713,
+    "runtimeHuman": "11h53min",
+    "ratedEnergyWh": 36.88,
+    "systemVersion": "MagicOS 10.0.0.160",
+    "videoUrl": "https://www.bilibili.com/video/BV1n43G6YEwa/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 3,
+   "socpk": {
+    "brand": "红米",
+    "name": "K90 至尊版",
+    "nameEn": "K90 Ultra",
+    "runtimeMin": 707,
+    "runtimeHuman": "11h47min",
+    "ratedEnergyWh": 31.85,
+    "systemVersion": "HyperOS 3.0.306.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1sJ3G6MEJH/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 4,
+   "socpk": {
+    "brand": "红米",
+    "name": "Turbo 5 Max",
+    "nameEn": null,
+    "runtimeMin": 686,
+    "runtimeHuman": "11h26min",
+    "ratedEnergyWh": 33.53,
+    "systemVersion": "HyperOS 3.0.304.0",
+    "videoUrl": "https://www.bilibili.com/video/BV12A376WEiZ/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 5,
+   "socpk": {
+    "brand": "红米",
+    "name": "K90 Max",
+    "nameEn": null,
+    "runtimeMin": 684,
+    "runtimeHuman": "11h24min",
+    "ratedEnergyWh": 31.85,
+    "systemVersion": "HyperOS 3.0.310.0",
+    "videoUrl": "https://www.bilibili.com/video/BV13w3G6SEXU/"
+   },
+   "ours": {
+    "id": "redmi-k90-max",
+    "brand": "Redmi",
+    "name": "REDMI K90 Max",
+    "releaseDate": "2026-04"
+   }
+  },
+  {
+   "rank": 6,
+   "socpk": {
+    "brand": "红魔",
+    "name": "11 Pro",
+    "nameEn": null,
+    "runtimeMin": 681,
+    "runtimeHuman": "11h21min",
+    "ratedEnergyWh": 29.66,
+    "systemVersion": "RedMagicOS 11.0.23MR1",
+    "videoUrl": "https://www.bilibili.com/video/BV1wMga6WEfg/"
+   },
+   "ours": {
+    "id": "nubia-redmagic-11-pro",
+    "brand": "努比亚",
+    "name": "红魔 11 Pro",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 7,
+   "socpk": {
+    "brand": "小米",
+    "name": "17 Max",
+    "nameEn": null,
+    "runtimeMin": 658,
+    "runtimeHuman": "10h58min",
+    "ratedEnergyWh": 29.84,
+    "systemVersion": "HyperOS 3.0.307.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Xm356dEV9/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 8,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "Z11 Turbo",
+    "nameEn": null,
+    "runtimeMin": 658,
+    "runtimeHuman": "10h58min",
+    "ratedEnergyWh": 27.83,
+    "systemVersion": "OriginOS 6 16.0.11.3",
+    "videoUrl": "https://www.bilibili.com/video/BV1JGgX63Edn/"
+   },
+   "ours": {
+    "id": "iqoo-z11-turbo",
+    "brand": "iQOO",
+    "name": "iQOO Z11 Turbo",
+    "releaseDate": "2026-01"
+   }
+  },
+  {
+   "rank": 9,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "Z10 Turbo+",
+    "nameEn": null,
+    "runtimeMin": 657,
+    "runtimeHuman": "10h57min",
+    "ratedEnergyWh": 29.72,
+    "systemVersion": "OriginOS 6 16.1.14.1",
+    "videoUrl": "https://www.bilibili.com/video/BV1JGgX63Erd/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 10,
+   "socpk": {
+    "brand": "一加",
+    "name": "Ace6T",
+    "nameEn": null,
+    "runtimeMin": 640,
+    "runtimeHuman": "10h40min",
+    "ratedEnergyWh": 30.88,
+    "systemVersion": "ColorOS 16.0.5.702",
+    "videoUrl": "https://www.bilibili.com/video/BV1Cz336vEop/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 11,
+   "socpk": {
+    "brand": "一加",
+    "name": "15T",
+    "nameEn": null,
+    "runtimeMin": 624,
+    "runtimeHuman": "10h24min",
+    "ratedEnergyWh": 27.05,
+    "systemVersion": "ColorOS 16.0.8.300",
+    "videoUrl": "https://www.bilibili.com/video/BV1pr336PEr6/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 12,
+   "socpk": {
+    "brand": "一加",
+    "name": "Ace6 至尊版",
+    "nameEn": "Ace6 Ultra",
+    "runtimeMin": 609,
+    "runtimeHuman": "10h9min",
+    "ratedEnergyWh": 31.6,
+    "systemVersion": "ColorOS 16.0.8.300",
+    "videoUrl": "https://www.bilibili.com/video/BV1pz336vEmz/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 13,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "Neo 11",
+    "nameEn": null,
+    "runtimeMin": 608,
+    "runtimeHuman": "10h8min",
+    "ratedEnergyWh": 27.59,
+    "systemVersion": "OriginOS 6 16.0.24.6",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WERW/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 14,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "Magic8 Pro",
+    "nameEn": null,
+    "runtimeMin": 603,
+    "runtimeHuman": "10h3min",
+    "ratedEnergyWh": 26.54,
+    "systemVersion": "MagicOS 10.0.0.160",
+    "videoUrl": "https://www.bilibili.com/video/BV1aw3G6SE8L/"
+   },
+   "ours": {
+    "id": "honor-magic8-pro",
+    "brand": "荣耀",
+    "name": "荣耀 Magic8 Pro",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 15,
+   "socpk": {
+    "brand": "OPPO",
+    "name": "Find X9 Pro",
+    "nameEn": null,
+    "runtimeMin": 600,
+    "runtimeHuman": "9h60min",
+    "ratedEnergyWh": 27.34,
+    "systemVersion": "ColorOS 16.0.5.703",
+    "videoUrl": "https://www.bilibili.com/video/BV1VhgC6MELX/"
+   },
+   "ours": {
+    "id": "oppo-find-x9-pro",
+    "brand": "OPPO",
+    "name": "OPPO Find X9 Pro",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 16,
+   "socpk": {
+    "brand": "华为",
+    "name": "Nova 16",
+    "nameEn": null,
+    "runtimeMin": 600,
+    "runtimeHuman": "9h60min",
+    "ratedEnergyWh": 25.98,
+    "systemVersion": "HarmonyOS 6.1.0.130",
+    "videoUrl": "https://www.bilibili.com/video/BV1pr336PEth/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 17,
+   "socpk": {
+    "brand": "华为",
+    "name": "Nova 16 Pro",
+    "nameEn": null,
+    "runtimeMin": 596,
+    "runtimeHuman": "9h56min",
+    "ratedEnergyWh": 25.98,
+    "systemVersion": "HarmonyOS 6.1.0.130",
+    "videoUrl": "https://www.bilibili.com/video/BV16GgX63EeA/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 18,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "15 Ultra",
+    "nameEn": null,
+    "runtimeMin": 593,
+    "runtimeHuman": "9h53min",
+    "ratedEnergyWh": 27.08,
+    "systemVersion": "OriginOS 6 16.0.14.9",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WEuA/"
+   },
+   "ours": {
+    "id": "iqoo-15-ultra",
+    "brand": "iQOO",
+    "name": "iQOO 15 Ultra",
+    "releaseDate": "2026-02"
+   }
+  },
+  {
+   "rank": 19,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "15T",
+    "nameEn": null,
+    "runtimeMin": 591,
+    "runtimeHuman": "9h51min",
+    "ratedEnergyWh": 29.35,
+    "systemVersion": "OriginOS 6 16.0.11.2",
+    "videoUrl": "https://www.bilibili.com/video/BV1zGgX63Emo/"
+   },
+   "ours": {
+    "id": "iqoo-15t",
+    "brand": "iQOO",
+    "name": "iQOO 15T",
+    "releaseDate": "2026-05"
+   }
+  },
+  {
+   "rank": 20,
+   "socpk": {
+    "brand": "红米",
+    "name": "K90 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 581,
+    "runtimeHuman": "9h41min",
+    "ratedEnergyWh": 28.13,
+    "systemVersion": "HyperOS 3.0.306.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WE1G/"
+   },
+   "ours": {
+    "id": "redmi-k90-pro-max",
+    "brand": "Redmi",
+    "name": "REDMI K90 Pro Max",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 21,
+   "socpk": {
+    "brand": "一加",
+    "name": "Ace6",
+    "nameEn": null,
+    "runtimeMin": 580,
+    "runtimeHuman": "9h40min",
+    "ratedEnergyWh": 28.66,
+    "systemVersion": "ColorOS 16.0.5.702",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WEAe/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 22,
+   "socpk": {
+    "brand": "努比亚",
+    "name": "Z80 Ultra",
+    "nameEn": null,
+    "runtimeMin": 578,
+    "runtimeHuman": "9h38min",
+    "ratedEnergyWh": 26.67,
+    "systemVersion": "NebulaAIOS 2.0.26",
+    "videoUrl": "https://www.bilibili.com/video/BV1pr336PENj/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 23,
+   "socpk": {
+    "brand": "华为",
+    "name": "Pura 90 Pro",
+    "nameEn": null,
+    "runtimeMin": 576,
+    "runtimeHuman": "9h36min",
+    "ratedEnergyWh": 22.35,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1Rj336nECc/"
+   },
+   "ours": {
+    "id": "huawei-pura-90-pro",
+    "brand": "华为",
+    "name": "华为 Pura 90 Pro",
+    "releaseDate": "2026-04"
+   }
+  },
+  {
+   "rank": 24,
+   "socpk": {
+    "brand": "红米",
+    "name": "K80 至尊版",
+    "nameEn": "K80 Ultra",
+    "runtimeMin": 573,
+    "runtimeHuman": "9h33min",
+    "ratedEnergyWh": 27.78,
+    "systemVersion": "HyperOS 3.0.302.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1D23G6UEvR/."
+   },
+   "ours": {
+    "id": "redmi-k80-ultra",
+    "brand": "Redmi",
+    "name": "Redmi K80 至尊版",
+    "releaseDate": "2025-06"
+   }
+  },
+  {
+   "rank": 25,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "GT Pro",
+    "nameEn": null,
+    "runtimeMin": 570,
+    "runtimeHuman": "9h30min",
+    "ratedEnergyWh": 27.51,
+    "systemVersion": "MagicOS 10.0.0.150",
+    "videoUrl": "https://www.bilibili.com/video/BV1fUgU6FELN/"
+   },
+   "ours": {
+    "id": "honor-gt-pro",
+    "brand": "荣耀",
+    "name": "荣耀 GT Pro",
+    "releaseDate": "2025-04"
+   }
+  },
+  {
+   "rank": 26,
+   "socpk": {
+    "brand": "华为",
+    "name": "Nova 15 Pro",
+    "nameEn": null,
+    "runtimeMin": 568,
+    "runtimeHuman": "9h28min",
+    "ratedEnergyWh": 24.21,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1Hr336PEd6/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 27,
+   "socpk": {
+    "brand": "小米",
+    "name": "17T Pro",
+    "nameEn": null,
+    "runtimeMin": 558,
+    "runtimeHuman": "9h18min",
+    "ratedEnergyWh": 25.82,
+    "systemVersion": "HyperOS 3.0.308.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WEyK/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 28,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "15",
+    "nameEn": null,
+    "runtimeMin": 557,
+    "runtimeHuman": "9h17min",
+    "ratedEnergyWh": 25.62,
+    "systemVersion": "OriginOS 6 16.0.26.22",
+    "videoUrl": "https://www.bilibili.com/video/BV161gt6rE1e/"
+   },
+   "ours": {
+    "id": "iqoo-15",
+    "brand": "iQOO",
+    "name": "iQOO 15",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 29,
+   "socpk": {
+    "brand": "OPPO",
+    "name": "Find X9s Pro",
+    "nameEn": null,
+    "runtimeMin": 553,
+    "runtimeHuman": "9h13min",
+    "ratedEnergyWh": 25.64,
+    "systemVersion": "ColorOS 16.0.8.306",
+    "videoUrl": "https://www.bilibili.com/video/BV1wkgU6NEHf/"
+   },
+   "ours": {
+    "id": "oppo-find-x9s-pro",
+    "brand": "OPPO",
+    "name": "OPPO Find X9s Pro",
+    "releaseDate": "2026-04-21"
+   }
+  },
+  {
+   "rank": 30,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "Neo 10 Pro+",
+    "nameEn": null,
+    "runtimeMin": 553,
+    "runtimeHuman": "9h13min",
+    "ratedEnergyWh": 25.26,
+    "systemVersion": "OriginOS 6 16.1.18.6",
+    "videoUrl": "https://www.bilibili.com/video/BV1HW3G6vEJ1/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 31,
+   "socpk": {
+    "brand": "一加",
+    "name": "15",
+    "nameEn": null,
+    "runtimeMin": 552,
+    "runtimeHuman": "9h12min",
+    "ratedEnergyWh": 27.03,
+    "systemVersion": "ColorOS 16.0.5.702",
+    "videoUrl": "https://www.bilibili.com/video/BV1WMga6WEH5/"
+   },
+   "ours": {
+    "id": "oneplus-15",
+    "brand": "一加",
+    "name": "一加 15",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 32,
+   "socpk": {
+    "brand": "华为",
+    "name": "Pura 90 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 552,
+    "runtimeHuman": "9h12min",
+    "ratedEnergyWh": 22.35,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1Yn336UEWx/"
+   },
+   "ours": {
+    "id": "huawei-pura-90-pro-max",
+    "brand": "华为",
+    "name": "华为 Pura 90 Pro Max",
+    "releaseDate": "2026-04"
+   }
+  },
+  {
+   "rank": 33,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "Magic8",
+    "nameEn": null,
+    "runtimeMin": 552,
+    "runtimeHuman": "9h12min",
+    "ratedEnergyWh": 25.78,
+    "systemVersion": "MagicOS 10.0.0.155",
+    "videoUrl": "https://www.bilibili.com/video/BV1Gw3G6SErZ/"
+   },
+   "ours": {
+    "id": "honor-magic8",
+    "brand": "荣耀",
+    "name": "荣耀 Magic8",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 34,
+   "socpk": {
+    "brand": "Realme",
+    "name": "GT8",
+    "nameEn": null,
+    "runtimeMin": 544,
+    "runtimeHuman": "9h4min",
+    "ratedEnergyWh": 26.78,
+    "systemVersion": "ColorOS 16.0.5.793",
+    "videoUrl": "https://www.bilibili.com/video/BV1wMga6WEfT/"
+   },
+   "ours": {
+    "id": "realme-gt8",
+    "brand": "realme",
+    "name": "realme GT8",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 35,
+   "socpk": {
+    "brand": "华为",
+    "name": "Pura 90",
+    "nameEn": null,
+    "runtimeMin": 542,
+    "runtimeHuman": "9h2min",
+    "ratedEnergyWh": 24.21,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1qQ3364Ehm/"
+   },
+   "ours": {
+    "id": "huawei-pura-90",
+    "brand": "华为",
+    "name": "华为 Pura 90",
+    "releaseDate": "2026-04"
+   }
+  },
+  {
+   "rank": 36,
+   "socpk": {
+    "brand": "vivo",
+    "name": "X300s",
+    "nameEn": null,
+    "runtimeMin": 542,
+    "runtimeHuman": "9h2min",
+    "ratedEnergyWh": 25.81,
+    "systemVersion": "OriginOS 6 16.0.8.7",
+    "videoUrl": "https://www.bilibili.com/video/BV13m356oEUE/"
+   },
+   "ours": {
+    "id": "vivo-x300s",
+    "brand": "vivo",
+    "name": "vivo X300s",
+    "releaseDate": "2026-03"
+   }
+  },
+  {
+   "rank": 37,
+   "socpk": {
+    "brand": "小米",
+    "name": "17 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 536,
+    "runtimeHuman": "8h56min",
+    "ratedEnergyWh": 27.64,
+    "systemVersion": "HyperOS 3.0.306.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1yu376nEim/"
+   },
+   "ours": {
+    "id": "xiaomi-17-pro-max",
+    "brand": "小米",
+    "name": "小米 17 Pro Max",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 38,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 17 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 534,
+    "runtimeHuman": "8h54min",
+    "ratedEnergyWh": 18.75,
+    "systemVersion": "iOS 26.5 RC",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WE6u/"
+   },
+   "ours": {
+    "id": "iphone-17-pro-max",
+    "brand": "Apple",
+    "name": "iPhone 17 Pro Max",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 39,
+   "socpk": {
+    "brand": "小米",
+    "name": "17",
+    "nameEn": null,
+    "runtimeMin": 525,
+    "runtimeHuman": "8h45min",
+    "ratedEnergyWh": 25.94,
+    "systemVersion": "HyperOS 3.0.306.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Qm356dEQc/"
+   },
+   "ours": {
+    "id": "xiaomi-17",
+    "brand": "小米",
+    "name": "小米 17",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 40,
+   "socpk": {
+    "brand": "OPPO",
+    "name": "Find X9",
+    "nameEn": null,
+    "runtimeMin": 524,
+    "runtimeHuman": "8h44min",
+    "ratedEnergyWh": 25.65,
+    "systemVersion": "ColorOS 16.0.5.701",
+    "videoUrl": "https://www.bilibili.com/video/BV1XhgC6TEmN/"
+   },
+   "ours": {
+    "id": "oppo-find-x9",
+    "brand": "OPPO",
+    "name": "OPPO Find X9",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 41,
+   "socpk": {
+    "brand": "小米",
+    "name": "17T",
+    "nameEn": null,
+    "runtimeMin": 521,
+    "runtimeHuman": "8h41min",
+    "ratedEnergyWh": 25.82,
+    "systemVersion": "HyperOS 3.0.304.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Xm356dEM5/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 42,
+   "socpk": {
+    "brand": "红米",
+    "name": "K90",
+    "nameEn": null,
+    "runtimeMin": 516,
+    "runtimeHuman": "8h36min",
+    "ratedEnergyWh": 26.52,
+    "systemVersion": "HyperOS 3.0.304.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1di3G6xECC/"
+   },
+   "ours": {
+    "id": "redmi-k90",
+    "brand": "Redmi",
+    "name": "REDMI K90",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 43,
+   "socpk": {
+    "brand": "OPPO",
+    "name": "Find X9 Ultra",
+    "nameEn": null,
+    "runtimeMin": 513,
+    "runtimeHuman": "8h33min",
+    "ratedEnergyWh": 25.64,
+    "systemVersion": "ColorOS 16.0.7.210",
+    "videoUrl": "https://www.bilibili.com/video/BV1ahgC6TEtL/"
+   },
+   "ours": {
+    "id": "oppo-find-x9-ultra",
+    "brand": "OPPO",
+    "name": "OPPO Find X9 Ultra",
+    "releaseDate": "2026-04"
+   }
+  },
+  {
+   "rank": 44,
+   "socpk": {
+    "brand": "华为",
+    "name": "Mate 80",
+    "nameEn": null,
+    "runtimeMin": 512,
+    "runtimeHuman": "8h32min",
+    "ratedEnergyWh": 21.36,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1CMga6WEDJ/"
+   },
+   "ours": {
+    "id": "huawei-mate-80",
+    "brand": "华为",
+    "name": "华为 Mate 80",
+    "releaseDate": "2025-11"
+   }
+  },
+  {
+   "rank": 45,
+   "socpk": {
+    "brand": "一加",
+    "name": "Ace5 至尊版",
+    "nameEn": "Ace5 Ultra",
+    "runtimeMin": 506,
+    "runtimeHuman": "8h26min",
+    "ratedEnergyWh": 25.28,
+    "systemVersion": "ColorOS 16.0.8.300",
+    "videoUrl": "https://www.bilibili.com/video/BV1WMga6WEpV/"
+   },
+   "ours": {
+    "id": "oneplus-ace-5-ultra",
+    "brand": "一加",
+    "name": "一加 Ace 5 至尊版",
+    "releaseDate": "2025-05"
+   }
+  },
+  {
+   "rank": 46,
+   "socpk": {
+    "brand": "vivo",
+    "name": "X300 Pro",
+    "nameEn": null,
+    "runtimeMin": 501,
+    "runtimeHuman": "8h21min",
+    "ratedEnergyWh": 24.55,
+    "systemVersion": "OriginOS 6 16.0.28.30",
+    "videoUrl": "https://www.bilibili.com/video/BV1Qm356dEDo/"
+   },
+   "ours": {
+    "id": "vivo-x300-pro",
+    "brand": "vivo",
+    "name": "vivo X300 Pro",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 47,
+   "socpk": {
+    "brand": "vivo",
+    "name": "X300",
+    "nameEn": null,
+    "runtimeMin": 500,
+    "runtimeHuman": "8h20min",
+    "ratedEnergyWh": 22.34,
+    "systemVersion": "OriginOS 6 16.0.28.30",
+    "videoUrl": "https://www.bilibili.com/video/BV1Nn356LEyE/"
+   },
+   "ours": {
+    "id": "vivo-x300",
+    "brand": "vivo",
+    "name": "vivo X300",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 48,
+   "socpk": {
+    "brand": "Realme",
+    "name": "GT8 Pro",
+    "nameEn": null,
+    "runtimeMin": 499,
+    "runtimeHuman": "8h19min",
+    "ratedEnergyWh": 25.9,
+    "systemVersion": "ColorOS 16.0.5.704",
+    "videoUrl": "https://www.bilibili.com/video/BV1Xn336mEta/"
+   },
+   "ours": {
+    "id": "realme-gt8-pro",
+    "brand": "realme",
+    "name": "realme GT8 Pro",
+    "releaseDate": "2025-10"
+   }
+  },
+  {
+   "rank": 49,
+   "socpk": {
+    "brand": "华为",
+    "name": "Mate 70 Pro+",
+    "nameEn": null,
+    "runtimeMin": 496,
+    "runtimeHuman": "8h16min",
+    "ratedEnergyWh": 21.34,
+    "systemVersion": "HarmonyOS 6.1.0.117",
+    "videoUrl": "https://www.bilibili.com/video/BV1Gw3G6SEzg/"
+   },
+   "ours": {
+    "id": "huawei-mate-70-pro-plus",
+    "brand": "华为",
+    "name": "华为 Mate 70 Pro+",
+    "releaseDate": "2024-11"
+   }
+  },
+  {
+   "rank": 50,
+   "socpk": {
+    "brand": "华为",
+    "name": "Mate 80 Pro",
+    "nameEn": null,
+    "runtimeMin": 494,
+    "runtimeHuman": "8h14min",
+    "ratedEnergyWh": 21.36,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1Xw3G6SE2F/"
+   },
+   "ours": {
+    "id": "huawei-mate-80-pro",
+    "brand": "华为",
+    "name": "华为 Mate 80 Pro",
+    "releaseDate": "2025-11"
+   }
+  },
+  {
+   "rank": 51,
+   "socpk": {
+    "brand": "华为",
+    "name": "Mate 80 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 494,
+    "runtimeHuman": "8h14min",
+    "ratedEnergyWh": 22.31,
+    "systemVersion": "HarmonyOS 6.1.0.125",
+    "videoUrl": "https://www.bilibili.com/video/BV1TV3G6GErp/"
+   },
+   "ours": {
+    "id": "huawei-mate-80-pro-max",
+    "brand": "华为",
+    "name": "华为 Mate 80 Pro Max",
+    "releaseDate": "2025-11"
+   }
+  },
+  {
+   "rank": 52,
+   "socpk": {
+    "brand": "vivo",
+    "name": "X300 Ultra",
+    "nameEn": null,
+    "runtimeMin": 490,
+    "runtimeHuman": "8h10min",
+    "ratedEnergyWh": 23.92,
+    "systemVersion": "OriginOS 6 16.0.21.11",
+    "videoUrl": "https://www.bilibili.com/video/BV13m356oEXz/"
+   },
+   "ours": {
+    "id": "vivo-x300-ultra",
+    "brand": "vivo",
+    "name": "vivo X300 Ultra",
+    "releaseDate": "2026-03"
+   }
+  },
+  {
+   "rank": 53,
+   "socpk": {
+    "brand": "小米",
+    "name": "17 Ultra",
+    "nameEn": null,
+    "runtimeMin": 478,
+    "runtimeHuman": "7h58min",
+    "ratedEnergyWh": 25.11,
+    "systemVersion": "HyperOS 3.0.303.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Ym356oE3m/"
+   },
+   "ours": {
+    "id": "xiaomi-17-ultra",
+    "brand": "小米",
+    "name": "小米 17 Ultra",
+    "releaseDate": "2025-12"
+   }
+  },
+  {
+   "rank": 54,
+   "socpk": {
+    "brand": "iQOO",
+    "name": "13",
+    "nameEn": null,
+    "runtimeMin": 475,
+    "runtimeHuman": "7h55min",
+    "ratedEnergyWh": 22.97,
+    "systemVersion": "OriginOS 6 16.1.16.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1WMga6WEuA/"
+   },
+   "ours": {
+    "id": "iqoo-13",
+    "brand": "iQOO",
+    "name": "iQOO 13",
+    "releaseDate": "2024-10"
+   }
+  },
+  {
+   "rank": 55,
+   "socpk": {
+    "brand": "OPPO",
+    "name": "Find X8 Ultra",
+    "nameEn": null,
+    "runtimeMin": 472,
+    "runtimeHuman": "7h52min",
+    "ratedEnergyWh": 22.87,
+    "systemVersion": "ColorOS 16.0.8.300",
+    "videoUrl": "https://www.bilibili.com/video/BV1uCKa6RE4E/"
+   },
+   "ours": {
+    "id": "oppo-find-x8-ultra",
+    "brand": "OPPO",
+    "name": "OPPO Find X8 Ultra",
+    "releaseDate": "2025-04"
+   }
+  },
+  {
+   "rank": 56,
+   "socpk": {
+    "brand": "红米",
+    "name": "K80 Pro",
+    "nameEn": null,
+    "runtimeMin": 467,
+    "runtimeHuman": "7h47min",
+    "ratedEnergyWh": 22.62,
+    "systemVersion": "HyperOS 3.0.303.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WEFj/"
+   },
+   "ours": {
+    "id": "redmi-k80-pro",
+    "brand": "Redmi",
+    "name": "Redmi K80 Pro",
+    "releaseDate": "2024-11"
+   }
+  },
+  {
+   "rank": 57,
+   "socpk": {
+    "brand": "一加",
+    "name": "Ace5 Pro",
+    "nameEn": null,
+    "runtimeMin": 465,
+    "runtimeHuman": "7h45min",
+    "ratedEnergyWh": 22.76,
+    "systemVersion": "ColorOS 16.0.5.701",
+    "videoUrl": "https://www.bilibili.com/video/BV1AMga6WEzZ/"
+   },
+   "ours": {
+    "id": "oneplus-ace-5-pro",
+    "brand": "一加",
+    "name": "一加 Ace 5 Pro",
+    "releaseDate": "2024-12"
+   }
+  },
+  {
+   "rank": 58,
+   "socpk": {
+    "brand": "小米",
+    "name": "17 Pro",
+    "nameEn": null,
+    "runtimeMin": 460,
+    "runtimeHuman": "7h40min",
+    "ratedEnergyWh": 23.13,
+    "systemVersion": "HyperOS 3.0.306.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Qm356dEtD/"
+   },
+   "ours": {
+    "id": "xiaomi-17-pro",
+    "brand": "小米",
+    "name": "小米 17 Pro",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 59,
+   "socpk": {
+    "brand": "荣耀",
+    "name": "Magic7 Pro",
+    "nameEn": null,
+    "runtimeMin": 458,
+    "runtimeHuman": "7h38min",
+    "ratedEnergyWh": 21.97,
+    "systemVersion": "MagicOS 10.0.0.150",
+    "videoUrl": "https://www.bilibili.com/video/BV1Yw3G6SEGM/"
+   },
+   "ours": {
+    "id": "honor-magic7-pro",
+    "brand": "荣耀",
+    "name": "荣耀 Magic7 Pro",
+    "releaseDate": "2024-10"
+   }
+  },
+  {
+   "rank": 60,
+   "socpk": {
+    "brand": "一加",
+    "name": "13",
+    "nameEn": null,
+    "runtimeMin": 456,
+    "runtimeHuman": "7h36min",
+    "ratedEnergyWh": 22.31,
+    "systemVersion": "ColorOS 16.0.5.703",
+    "videoUrl": "https://www.bilibili.com/video/BV1WMga6WEGp/"
+   },
+   "ours": {
+    "id": "oneplus-13",
+    "brand": "一加",
+    "name": "一加 13",
+    "releaseDate": "2024-10"
+   }
+  },
+  {
+   "rank": 61,
+   "socpk": {
+    "brand": "小米",
+    "name": "15s Pro",
+    "nameEn": null,
+    "runtimeMin": 454,
+    "runtimeHuman": "7h34min",
+    "ratedEnergyWh": 22.95,
+    "systemVersion": "HyperOS 3.0.301.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1am356oE4K/"
+   },
+   "ours": null
+  },
+  {
+   "rank": 62,
+   "socpk": {
+    "brand": "小米",
+    "name": "15 Pro",
+    "nameEn": null,
+    "runtimeMin": 445,
+    "runtimeHuman": "7h25min",
+    "ratedEnergyWh": 22.95,
+    "systemVersion": "HyperOS 3.0.302.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1Cu376JELP/"
+   },
+   "ours": {
+    "id": "xiaomi-15-pro",
+    "brand": "小米",
+    "name": "小米 15 Pro",
+    "releaseDate": "2024-10"
+   }
+  },
+  {
+   "rank": 63,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 17 Pro",
+    "nameEn": null,
+    "runtimeMin": 439,
+    "runtimeHuman": "7h19min",
+    "ratedEnergyWh": 15.53,
+    "systemVersion": "iOS 26.5 RC",
+    "videoUrl": "https://www.bilibili.com/video/BV1U3gb69EvL/"
+   },
+   "ours": {
+    "id": "iphone-17-pro",
+    "brand": "Apple",
+    "name": "iPhone 17 Pro",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 64,
+   "socpk": {
+    "brand": "三星",
+    "name": "S26 Ultra",
+    "nameEn": null,
+    "runtimeMin": 435,
+    "runtimeHuman": "7h15min",
+    "ratedEnergyWh": 18.94,
+    "systemVersion": "OneUI 8.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1qg336sEdZ/"
+   },
+   "ours": {
+    "id": "samsung-galaxy-s26-ultra",
+    "brand": "三星",
+    "name": "三星 Galaxy S26 Ultra",
+    "releaseDate": "2026-02"
+   }
+  },
+  {
+   "rank": 65,
+   "socpk": {
+    "brand": "vivo",
+    "name": "X200 Ultra",
+    "nameEn": null,
+    "runtimeMin": 434,
+    "runtimeHuman": "7h14min",
+    "ratedEnergyWh": 22.35,
+    "systemVersion": "OriginOS 6 16.1.17.2",
+    "videoUrl": "https://www.bilibili.com/video/BV1qg336sEHb/"
+   },
+   "ours": {
+    "id": "vivo-x200-ultra",
+    "brand": "vivo",
+    "name": "vivo X200 Ultra",
+    "releaseDate": "2025-04"
+   }
+  },
+  {
+   "rank": 66,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 16 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 423,
+    "runtimeHuman": "7h3min",
+    "ratedEnergyWh": 18.17,
+    "systemVersion": "iOS 26.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1U3gb69EG5/?spm_id_from=333.1387.upload.video_card.click"
+   },
+   "ours": {
+    "id": "iphone-16-pro-max",
+    "brand": "Apple",
+    "name": "iPhone 16 Pro Max",
+    "releaseDate": "2024-09"
+   }
+  },
+  {
+   "rank": 67,
+   "socpk": {
+    "brand": "小米",
+    "name": "15",
+    "nameEn": null,
+    "runtimeMin": 422,
+    "runtimeHuman": "7h2min",
+    "ratedEnergyWh": 20.26,
+    "systemVersion": "HyperOS 3.0.302.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1yu376JEFE/"
+   },
+   "ours": {
+    "id": "xiaomi-15",
+    "brand": "小米",
+    "name": "小米 15",
+    "releaseDate": "2024-10"
+   }
+  },
+  {
+   "rank": 68,
+   "socpk": {
+    "brand": "三星",
+    "name": "S25 Ultra",
+    "nameEn": null,
+    "runtimeMin": 406,
+    "runtimeHuman": "6h46min",
+    "ratedEnergyWh": 18.84,
+    "systemVersion": "OneUI 8.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1qg336sEnb/"
+   },
+   "ours": {
+    "id": "samsung-galaxy-s25-ultra",
+    "brand": "三星",
+    "name": "三星 Galaxy S25 Ultra",
+    "releaseDate": "2025-02"
+   }
+  },
+  {
+   "rank": 69,
+   "socpk": {
+    "brand": "三星",
+    "name": "S26",
+    "nameEn": null,
+    "runtimeMin": 400,
+    "runtimeHuman": "6h40min",
+    "ratedEnergyWh": 16.29,
+    "systemVersion": "OneUI 8.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1v5336QEkJ/"
+   },
+   "ours": {
+    "id": "samsung-galaxy-s26",
+    "brand": "三星",
+    "name": "三星 Galaxy S26",
+    "releaseDate": "2026-02"
+   }
+  },
+  {
+   "rank": 70,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 15 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 396,
+    "runtimeHuman": "6h36min",
+    "ratedEnergyWh": 17.11,
+    "systemVersion": "iOS 26.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1cCgU6eEqs/"
+   },
+   "ours": {
+    "id": "iphone-15-pro-max",
+    "brand": "Apple",
+    "name": "iPhone 15 Pro Max",
+    "releaseDate": "2023-09"
+   }
+  },
+  {
+   "rank": 71,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 17",
+    "nameEn": null,
+    "runtimeMin": 385,
+    "runtimeHuman": "6h25min",
+    "ratedEnergyWh": 14.35,
+    "systemVersion": "iOS 26.5 RC",
+    "videoUrl": "https://www.bilibili.com/video/BV1f2gU6hEYw/"
+   },
+   "ours": {
+    "id": "iphone-17",
+    "brand": "Apple",
+    "name": "iPhone 17",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 72,
+   "socpk": {
+    "brand": "华为",
+    "name": "Mate 60 Pro",
+    "nameEn": null,
+    "runtimeMin": 356,
+    "runtimeHuman": "5h56min",
+    "ratedEnergyWh": 19.15,
+    "systemVersion": "HarmonyOS 6.1.0.117",
+    "videoUrl": "https://www.bilibili.com/video/BV1Yw3G6SEGV/"
+   },
+   "ours": {
+    "id": "huawei-mate-60-pro",
+    "brand": "华为",
+    "name": "华为 Mate 60 Pro",
+    "releaseDate": "2023-08"
+   }
+  },
+  {
+   "rank": 73,
+   "socpk": {
+    "brand": "三星",
+    "name": "S25 Edge",
+    "nameEn": null,
+    "runtimeMin": 354,
+    "runtimeHuman": "5h54min",
+    "ratedEnergyWh": 14.77,
+    "systemVersion": "OneUI 8.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1ej336nEtA/"
+   },
+   "ours": {
+    "id": "samsung-galaxy-s25-edge",
+    "brand": "三星",
+    "name": "三星 Galaxy S25 Edge",
+    "releaseDate": "2025-05"
+   }
+  },
+  {
+   "rank": 74,
+   "socpk": {
+    "brand": "谷歌",
+    "name": "Pixel 10 Pro XL",
+    "nameEn": null,
+    "runtimeMin": 351,
+    "runtimeHuman": "5h51min",
+    "ratedEnergyWh": 19.76,
+    "systemVersion": "Android 16",
+    "videoUrl": "https://www.bilibili.com/video/BV1pz336vEqd/"
+   },
+   "ours": {
+    "id": "google-pixel-10-pro-xl",
+    "brand": "Google",
+    "name": "Google Pixel 10 Pro XL",
+    "releaseDate": "2025-08"
+   }
+  },
+  {
+   "rank": 75,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 16",
+    "nameEn": null,
+    "runtimeMin": 342,
+    "runtimeHuman": "5h42min",
+    "ratedEnergyWh": 13.84,
+    "systemVersion": "iOS 26.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1cCgU6eErz/"
+   },
+   "ours": {
+    "id": "iphone-16",
+    "brand": "Apple",
+    "name": "iPhone 16",
+    "releaseDate": "2024-09"
+   }
+  },
+  {
+   "rank": 76,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 16 Pro",
+    "nameEn": null,
+    "runtimeMin": 333,
+    "runtimeHuman": "5h33min",
+    "ratedEnergyWh": 13.94,
+    "systemVersion": "iOS 26.5",
+    "videoUrl": "https://www.bilibili.com/video/BV1U3gb69EZY/"
+   },
+   "ours": {
+    "id": "iphone-16-pro",
+    "brand": "Apple",
+    "name": "iPhone 16 Pro",
+    "releaseDate": "2024-09"
+   }
+  },
+  {
+   "rank": 77,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone Air",
+    "nameEn": null,
+    "runtimeMin": 331,
+    "runtimeHuman": "5h31min",
+    "ratedEnergyWh": 12.26,
+    "systemVersion": "iOS 26.5.2",
+    "videoUrl": "https://www.bilibili.com/video/BV1mYgt6SEAc/"
+   },
+   "ours": {
+    "id": "iphone-air",
+    "brand": "Apple",
+    "name": "iPhone Air",
+    "releaseDate": "2025-09"
+   }
+  },
+  {
+   "rank": 78,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 15 Pro",
+    "nameEn": null,
+    "runtimeMin": 300,
+    "runtimeHuman": "5h0min",
+    "ratedEnergyWh": 12.7,
+    "systemVersion": "iOS 26.5 RC",
+    "videoUrl": "https://www.bilibili.com/video/BV1KSKa6DEsD/"
+   },
+   "ours": {
+    "id": "iphone-15-pro",
+    "brand": "Apple",
+    "name": "iPhone 15 Pro",
+    "releaseDate": "2023-09"
+   }
+  },
+  {
+   "rank": 79,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 18 Pro",
+    "nameEn": null,
+    "runtimeMin": 470,
+    "runtimeHuman": "7h50min",
+    "ratedEnergyWh": null,
+    "systemVersion": "iOS 27.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1yye26tE7s/"
+   },
+   "ours": {
+    "id": "iphone-18-pro",
+    "brand": "Apple",
+    "name": "iPhone 18 Pro",
+    "releaseDate": "2026-09"
+   }
+  },
+  {
+   "rank": 80,
+   "socpk": {
+    "brand": "苹果",
+    "name": "iPhone 18 Pro Max",
+    "nameEn": null,
+    "runtimeMin": 637,
+    "runtimeHuman": "10h37min",
+    "ratedEnergyWh": null,
+    "systemVersion": "iOS 27.0",
+    "videoUrl": "https://www.bilibili.com/video/BV1BkeS64EHS/"
+   },
+   "ours": {
+    "id": "iphone-18-pro-max",
+    "brand": "Apple",
+    "name": "iPhone 18 Pro Max",
+    "releaseDate": "2026-09"
+   }
+  }
+ ]
+}

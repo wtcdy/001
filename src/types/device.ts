@@ -138,6 +138,18 @@ export interface DeviceBattery {
   wirelessCharge: number | null;
   /** 反向充电描述 */
   reverseCharge: string | null;
+  /**
+   * 第三方实测续航（分钟）：极客湾 Geekerwan 续航测试 5.0，非官方口径。
+   *
+   * 与 `capacity` / `batteryWh`（官方容量）是两回事，不可换算、不可互相替代：
+   * 这是零售机满电连续使用**至关机**的实测总时长，站点未公布测试项目明细。
+   * 数据落在 `src/data/batteryBench.ts`，未收录机型为 undefined（界面显示「—」）。
+   */
+  batteryLifeMin?: number | null;
+  /** 实测续航对应的测试系统版本（同机型换版本重测会更新） */
+  batteryBenchSystemVersion?: string | null;
+  /** 实测续航全程录像（B 站），用于溯源 */
+  batteryBenchVideoUrl?: string | null;
 }
 
 /** 系统与网络 */

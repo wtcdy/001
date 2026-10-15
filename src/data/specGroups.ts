@@ -376,6 +376,24 @@ export const SPEC_GROUPS: SpecGroup[] = [
         crossComparable: false,
       },
       {
+        // 第三方实测续航（极客湾 socpk.com）。与上面「电池容量」是两回事：
+        // 容量是官方参数，这里是零售机满电连续用至关机的实测时长，站点未公布测试项目明细，
+        // 因此必须带 title 角标 + 悬浮说明，不能让用户误当成官方口径。
+        key: 'battery.batteryLifeMin',
+        label: '实测续航',
+        get: (device: Device) => v(device.battery?.batteryLifeMin ?? null),
+        format: (value: SpecValue) => {
+          if (typeof value !== 'number') return null;
+          const total = Math.round(value);
+          return `${Math.floor(total / 60)}小时${total % 60}分`;
+        },
+        better: 'higher',
+        numeric: true,
+        // 手机 12 小时 vs 平板续航口径不同，跨品类不可比
+        crossComparable: false,
+        title: '极客湾续航测试 5.0（socpk.com）· 零售机满电连续测试至关机 · 非官方口径',
+      },
+      {
         key: 'battery.wiredCharge',
         label: '有线充电',
         get: (device: Device) => v(device.battery?.wiredCharge ?? null),

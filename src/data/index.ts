@@ -28,6 +28,7 @@ import { SONY_PHONES } from './phones/sony';
 import { VIVO_PHONES } from './phones/vivo';
 import { XIAOMI_PHONES } from './phones/xiaomi';
 import { ALL_TABLETS } from './tablets';
+import { BATTERY_BENCH } from './batteryBench';
 
 /**
  * 全部设备数据源。
@@ -90,7 +91,26 @@ export const ALL_PHONES: Device[] = [
  * 手机侧派生索引仍以它为口径，避免平板把它们污染掉。
  * 分品类的索引用 `DEVICES_BY_CATEGORY` / `BOUNDS_BY_CATEGORY`。
  */
-export const ALL_DEVICES: Device[] = [...ALL_PHONES, ...ALL_TABLETS];
+/**
+ * 全部设备（跨品类总表，含第三方实测续航注入）。
+ *
+ * 实测续航是第三方数据（极客湾 socpk.com），不写进 `src/data/phones/*.ts` 的品牌参数文件——
+ * 那里只放官方口径参数。注入不动原对象，map 产出新 Device；没有实测数据的机型
+ * （平板 / 笔记本 / 未被极客湾测到的手机）保持 undefined，界面显示「—」。
+ */
+export const ALL_DEVICES: Device[] = [...ALL_PHONES, ...ALL_TABLETS].map((device) => {
+  const bench = BATTERY_BENCH[device.id];
+  if (!bench) return device;
+  return {
+    ...device,
+    battery: {
+      ...device.battery,
+      batteryLifeMin: bench.batteryLifeMin,
+      batteryBenchSystemVersion: bench.systemVersion,
+      batteryBenchVideoUrl: bench.videoUrl,
+    },
+  };
+});
 
 /* ------------------------------------------------------------------ */
 /* 数据自检：跨品类 id 唯一性校验                                       */

@@ -1,0 +1,114 @@
+[
+ {
+  "slug": "mobile-soc-spec26",
+  "cat": "mobile-soc",
+  "type": "line-chart",
+  "n": 88,
+  "unit": "",
+  "dataVersion": "da499c8cf493"
+ },
+ {
+  "slug": "mobile-soc-efficiency-gb7",
+  "cat": "mobile-soc",
+  "type": "line-chart",
+  "n": 57,
+  "unit": "",
+  "dataVersion": "59b299b7c524"
+ },
+ {
+  "slug": "mobile-soc-efficiency-snl",
+  "cat": "mobile-soc",
+  "type": "line-chart",
+  "n": 31,
+  "unit": "",
+  "dataVersion": "f8d0caaa329f"
+ },
+ {
+  "slug": "charge-curves",
+  "cat": "battery-5.0",
+  "type": "line-chart",
+  "n": 74,
+  "unit": "",
+  "dataVersion": "1c39dfc8d314"
+ },
+ {
+  "slug": "battery-life-5-0",
+  "cat": "battery-5.0",
+  "type": "bar-chart",
+  "n": 80,
+  "unit": "min",
+  "dataVersion": "7ddf4f90e2c1"
+ },
+ {
+  "slug": "laptop-gpu-efficiency",
+  "cat": "laptop-gpu-curve",
+  "type": "line-chart",
+  "n": 37,
+  "unit": "",
+  "dataVersion": "7e1ed1f71768"
+ },
+ {
+  "slug": "geekbench-6",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 82,
+  "unit": "分",
+  "dataVersion": "60362ab97420"
+ },
+ {
+  "slug": "geekbench-5",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 147,
+  "unit": "分",
+  "dataVersion": "104fb1748fc2"
+ },
+ {
+  "slug": "gfxbench-5",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 143,
+  "unit": "fps",
+  "dataVersion": "93746f89268d"
+ },
+ {
+  "slug": "3dmark-wle",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 82,
+  "unit": "",
+  "dataVersion": "c6bb1d12fd38"
+ },
+ {
+  "slug": "chip-overall",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 158,
+  "unit": "分",
+  "dataVersion": "5b54ea1add7f"
+ },
+ {
+  "slug": "chip-cpu",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 158,
+  "unit": "分",
+  "dataVersion": "189a6ed584f1"
+ },
+ {
+  "slug": "chip-gpu",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 158,
+  "unit": "分",
+  "dataVersion": "66049bbaa73c"
+ },
+ {
+  "slug": "chip-cpu-efficiency",
+  "cat": "history",
+  "type": "bar-chart",
+  "n": 51,
+  "unit": "分",
+  "dataVersion": "c517f38e36fe"
+ }
+]
