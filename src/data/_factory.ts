@@ -218,6 +218,8 @@ export function mk(brand: string, seed: PhoneSeed, defaults?: CategoryDefaults):
     video: seed.cam?.video ?? null,
     // 影像联名：未标注的机型保留 undefined（不落 null），与「官网没写」语义一致
     coBranding: seed.cam?.coBranding ?? null,
+    // 自研影像品牌：未标注的机型保留 undefined
+    imagingBrand: seed.cam?.imagingBrand ?? null,
   };
 
   const battery: DeviceBattery = {
@@ -368,6 +370,11 @@ export interface CompactSeed {
    * 官网未标注联名的机型一律不写本键（undefined），严禁填空串 / 「无」。
    */
   cb?: string | null;
+  /**
+   * 自研影像品牌（如华为「XMAGE」），区别于第三方联名的 `cb`。
+   * 官网未标注的机型一律不写本键（undefined），严禁填空串 / 「无」。
+   */
+  ib?: string | null;
   /** 前置 */
   fc?: string | null;
   /** 电池容量（mAh） */
@@ -476,6 +483,7 @@ function fromCompact(brand: string, s: CompactSeed, defaults?: CategoryDefaults)
       zoom: s.cz ?? null,
       video: s.cv ?? null,
       coBranding: s.cb ?? null,
+      imagingBrand: s.ib ?? null,
     },
     front: s.fc ?? null,
     bat: {

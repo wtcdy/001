@@ -315,6 +315,15 @@ export const SPEC_GROUPS: SpecGroup[] = [
         crossComparable: false,
       },
       {
+        // 自研影像品牌（华为 XMAGE），与上面「影像联名」是两回事：
+        // 联名是「和谁一起调」，品牌是「厂商自己的影像招牌」，两者可同时有值，故分两行。
+        key: 'camera.imagingBrand',
+        label: '影像品牌',
+        get: (device: Device) => v(device.camera?.imagingBrand ?? null),
+        // 同为纯文本，不做优劣判定
+        crossComparable: false,
+      },
+      {
         key: 'camera.main',
         label: '主摄',
         get: (device: Device) => v(device.camera?.main ?? null),

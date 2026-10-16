@@ -124,6 +124,14 @@ export interface DeviceCamera {
    * 华为 XMAGE 属**自研**影像品牌，不算联名，故不填。
    */
   coBranding?: string | null;
+  /**
+   * 自研影像品牌，如华为 "XMAGE"。
+   *
+   * 与 `coBranding` 的区别：`coBranding` 是**第三方联名**（徕卡 / 蔡司 / 哈苏…），
+   * 本字段是**厂商自己的影像品牌**（华为 XMAGE），两者语义不同，不可混填。
+   * 官网未标注的机型不填该字段（undefined），严禁填「无」或空串。
+   */
+  imagingBrand?: string | null;
 }
 
 /**
