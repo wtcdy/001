@@ -64,12 +64,16 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
   const columnWidth = phones.length >= 4 ? 'min-w-[150px]' : 'min-w-[180px]';
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#151822]">
-      <div className="psc-scroll-x overflow-x-auto">
-        <table className="w-full border-collapse text-sm">
+    // 单一滚动容器同时承担横向与纵向滚动：
+    // ① 表头 sticky top-0 → 纵向翻参数时机型名始终可见；
+    // ② 参数名列 sticky left-0 → 机型多（横向溢出）时参数名始终可见。
+    // 注意：sticky 的参照系是「最近的滚动容器」，所以外层不能再套 overflow-hidden/auto，
+    // 也不能把纵向滚动交给页面 —— 一旦容器只做 overflow-x，纵向就会被浏览器算成 auto 而失效。
+    <div className="psc-scroll-x max-h-[70vh] overflow-auto overscroll-y-contain rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-[#151822]">
+      <table className="w-full border-collapse text-sm">
           <thead>
             <tr>
-              <th className="sticky left-0 z-20 w-28 min-w-[7rem] border-b border-r border-slate-200 bg-slate-100 px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <th className="sticky left-0 top-0 z-30 w-28 min-w-[7rem] border-b border-r border-slate-200 bg-slate-100 px-3 py-3 text-left text-xs font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 参数项
               </th>
               {phones.map((phone) => {
@@ -77,7 +81,7 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
                 return (
                   <th
                     key={phone.id}
-                    className={`${columnWidth} border-b border-slate-200 px-3 py-3 text-left align-top dark:border-slate-700`}
+                    className={`sticky top-0 z-20 ${columnWidth} border-b border-slate-200 bg-white px-3 py-3 text-left align-top dark:border-slate-700 dark:bg-[#151822]`}
                   >
                     <div className="text-sm font-semibold text-slate-900 dark:text-slate-50">{phone.name}</div>
                     <div className="mt-0.5 text-xs font-normal text-slate-500 dark:text-slate-400">
@@ -193,7 +197,6 @@ export function SpecTable({ phones, diffOnly }: SpecTableProps) {
             })}
           </tbody>
         </table>
-      </div>
     </div>
   );
 }
