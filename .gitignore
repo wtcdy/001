@@ -58,3 +58,6 @@ preview/
 # WorkBuddy 本地记忆与工作区文件
 .workbuddy/
 .wbapp_*.genie
+
+# socpk.com 原始 API 转储（可由脚本重新抓取，charge-curves 单文件 3MB+，不进仓库）
+research/socpk-raw/
